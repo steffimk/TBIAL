@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta charset="utf-8" />
+<title>Register</title>
+</head>
+
+<body>
+  <wicket:extend>
+  <span wicket:id="feedback">The registration feedback goes here.</span>
+
+  <form wicket:id="register" class="boxedform">
+
+    <label for="name">Name<span class="small" wicket:id="nameFeedback">Whether the name is valid</span></label>
+    <input wicket:id="name" type="text" name="name" />
+    <label for="password">Password</label>
+    <input wicket:id="password" type="password" name="password" />
+    <label for="passwordConfirm">Password confirmation</label>
+    <input wicket:id="passwordConfirm" type="password" name="passwordConfirm" />
+    <input type="submit" value="Register" wicket:id="register" /> 
+    <div class="spacer"></div>
+  </form>
+  </wicket:extend>
+
+</body>
+
+</html>

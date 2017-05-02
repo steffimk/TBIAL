@@ -1,0 +1,11 @@
+The following XML fragment has to be inserted in CATALINA_HOME/conf/server.xml at the
+XML path /server/GlobalNamingResources :
+
+<Resource driverClassName="com.mysql.jdbc.Driver"
+		maxActive="100" maxIdle="30" maxWait="10000" name="jdbc/tbial_shared" username="bug" password="bug1984"
+		type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/tbial_staging" />
+		
+		
+This installs the global JNDI resource jdbc/tbial_shared which will in turn be referenced
+in the web app's context.xml by a ResourceLink with the name jdbc/tbial. The path to access
+the data source in the application code is then java:/comp/env/jdbc/tbial .  

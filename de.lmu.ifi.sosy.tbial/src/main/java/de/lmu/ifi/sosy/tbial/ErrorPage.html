@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta charset="utf-8" />
+<title>An internal server error occurred.</title>
+</head>
+
+<body>
+	<wicket:extend>
+		<h3>Error!</h3>
+		<wicket:message key="msg.errorOccurred">An internal server error occurred.</wicket:message> <br>
+		
+		<span wicket:id="errorCode">Error Code: 000</span> <br/>
+		
+		<pre class="boxed" wicket:id="stackTrace">STACK TRACE</pre>
+	</wicket:extend>
+</body>
+
+</html>
