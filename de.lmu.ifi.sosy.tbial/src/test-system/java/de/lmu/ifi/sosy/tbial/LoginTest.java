@@ -1,6 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
 import static de.lmu.ifi.sosy.tbial.TestUtil.hasNameAndPassword;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +10,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import de.lmu.ifi.sosy.tbial.db.User;
+import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
@@ -20,6 +23,7 @@ public class LoginTest extends PageTestBase {
   public void setUp() {
     setupApplication();
     database.register("testuser", "testpassword");
+    database.register("testuser2", "testpassword2");
   }
 
   @Test
@@ -43,6 +47,7 @@ public class LoginTest extends PageTestBase {
     assertThat(user, hasNameAndPassword("testuser", "testpassword"));
 
     tester.assertRenderedPage(Lobby.class);
+    tester.assertLabel("users", "1 player online.");
   }
 
   private void attemptLogin(String name, String password) {
@@ -68,6 +73,7 @@ public class LoginTest extends PageTestBase {
     assertThat(session.getUser(), nullValue());
 
     tester.assertRenderedPage(Login.class);
+    tester.assertLabel("users", "0 players online.");
   }
 
   @Test
@@ -80,6 +86,31 @@ public class LoginTest extends PageTestBase {
     assertThat(session.getUser(), nullValue());
 
     tester.assertRenderedPage(Login.class);
+    tester.assertLabel("users", "0 players online.");
+  }
+
+  @Test
+  public void login_whenLoggedIn_doesNothing() {
+    attemptLogin("testuser", "testpassword");
+
+    TBIALSession session = getSession();
+    assertNotNull(session);
+    assertTrue(session.isSignedIn());
+    // check that the first user is logged in
+    assertThat(session.getUser(), equalTo(new User("testuser", "testpassword")));
+
+    attemptLogin("testuser2", "testpassword2");
+
+    session = getSession();
+    assertNotNull(session);
+    assertTrue(session.isSignedIn());
+    // check that the second user is logged in // TODO why not keep first user?
+    assertThat(session.getUser(), equalTo(new User("testuser2", "testpassword2")));
+
+    assertThat(usersLoggedIn(), is(2));
+
+    tester.assertRenderedPage(Application.get().getHomePage());
+    tester.assertLabel("users", "2 players online.");
   }
 
   @Test
@@ -100,5 +131,9 @@ public class LoginTest extends PageTestBase {
 
     // check redirection to login.
     tester.assertRenderedPage(Login.class);
+  }
+
+  private int usersLoggedIn() {
+    return ((TBIALApplication) Application.get()).getUsersLoggedIn();
   }
 }

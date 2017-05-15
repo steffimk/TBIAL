@@ -48,12 +48,17 @@ public class TBIALSession extends AuthenticatedWebSession {
     }
 
     setUser(user);
+    getTbialApplication().userLoggedIn();
     LOGGER.info("User '" + name + "' login successful");
     return true;
   }
 
   private Database getDatabase() {
     return TBIALApplication.getDatabase();
+  }
+
+  protected TBIALApplication getTbialApplication() {
+    return (TBIALApplication) getApplication();
   }
 
   /** Signs out and clears the user. */
@@ -63,6 +68,7 @@ public class TBIALSession extends AuthenticatedWebSession {
     if (user != null) {
       String name = user.getName();
       user = null;
+      getTbialApplication().userLoggedOut();
       LOGGER.info("User '" + name + "' signed out.");
     }
   }

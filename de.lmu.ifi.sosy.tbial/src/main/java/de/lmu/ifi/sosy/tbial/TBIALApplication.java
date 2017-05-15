@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial;
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
 import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
+import java.util.concurrent.atomic.AtomicLong;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.RuntimeConfigurationType;
@@ -24,6 +25,12 @@ import org.apache.wicket.request.resource.IResource;
 public class TBIALApplication extends WebApplication {
 
   private final Database database;
+
+  /**
+   * Primitive counter without error-handling when counting. Multiple logins/logouts also cause
+   * multiple increments/decrements for the same user.
+   */
+  private final AtomicLong loggedInUsers = new AtomicLong(0);
 
   public static Database getDatabase() {
     return ((TBIALApplication) get()).database;
@@ -110,5 +117,17 @@ public class TBIALApplication extends WebApplication {
                 return true;
               }
             });
+  }
+
+  public int getUsersLoggedIn() {
+    return loggedInUsers.intValue();
+  }
+
+  public void userLoggedIn() {
+    loggedInUsers.incrementAndGet();
+  }
+
+  public void userLoggedOut() {
+    loggedInUsers.decrementAndGet();
   }
 }
