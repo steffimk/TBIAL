@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial.db;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A user with a user name and a plain-text password.
@@ -65,5 +66,24 @@ public class User implements Serializable {
    */
   void setId(int id) {
     this.id = id;
+  }
+
+  @Override
+  public String toString() {
+    return "User(" + id + ", " + name + ", " + password + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || !(o instanceof User)) {
+      return false;
+    }
+    User other = (User) o;
+    return name.equals(other.name) && password.equals(other.password);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, password);
   }
 }
