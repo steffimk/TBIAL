@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="de.lmu.ifi.sosy.tbial:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>de.lmu.ifi.sosy.tbial</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="tbial-1.0.war">
+      <element id="artifact" artifact-name="de.lmu.ifi.sosy.tbial:war exploded" />
+    </root>
+  </artifact>
+</component>
