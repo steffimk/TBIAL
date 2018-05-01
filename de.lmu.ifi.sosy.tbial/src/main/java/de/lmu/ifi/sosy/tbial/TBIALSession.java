@@ -47,8 +47,7 @@ public class TBIALSession extends AuthenticatedWebSession {
       return false;
     }
 
-    setUser(user);
-    getTbialApplication().userLoggedIn();
+    setSignedIn(user);
     LOGGER.info("User '" + name + "' login successful");
     return true;
   }
@@ -77,6 +76,7 @@ public class TBIALSession extends AuthenticatedWebSession {
     Objects.requireNonNull(user);
     setUser(user);
     signIn(true);
+    getTbialApplication().userLoggedIn();
     bind();
   }
 
