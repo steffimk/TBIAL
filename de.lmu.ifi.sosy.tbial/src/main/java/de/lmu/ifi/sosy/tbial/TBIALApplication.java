@@ -2,8 +2,8 @@ package de.lmu.ifi.sosy.tbial;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
+import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
-import java.util.concurrent.atomic.AtomicLong;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.RuntimeConfigurationType;
@@ -17,6 +17,8 @@ import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
 
+import java.util.*;
+
 /**
  * The web application "The Bug Is A Lie".
  *
@@ -26,11 +28,8 @@ public class TBIALApplication extends WebApplication {
 
   private final Database database;
 
-  /**
-   * Primitive counter without error-handling when counting. Multiple logins/logouts also cause
-   * multiple increments/decrements for the same user.
-   */
-  private final AtomicLong loggedInUsers = new AtomicLong(0);
+  // Use LinkedHashSet to keep iteration order over current users always the same
+  private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
 
   public static Database getDatabase() {
     return ((TBIALApplication) get()).database;
@@ -119,15 +118,19 @@ public class TBIALApplication extends WebApplication {
             });
   }
 
-  public int getUsersLoggedIn() {
-    return loggedInUsers.intValue();
+  public int getUsersLoggedInCount() {
+    return loggedInUsers.size();
   }
 
-  public void userLoggedIn() {
-    loggedInUsers.incrementAndGet();
+  public List<User> getLoggedInUsers() {
+    return new ArrayList<>(loggedInUsers);
   }
 
-  public void userLoggedOut() {
-    loggedInUsers.decrementAndGet();
+  public void userLoggedIn(final User pUser) {
+    loggedInUsers.add(pUser);
+  }
+
+  public void userLoggedOut(final User pUser) {
+    loggedInUsers.remove(pUser);
   }
 }

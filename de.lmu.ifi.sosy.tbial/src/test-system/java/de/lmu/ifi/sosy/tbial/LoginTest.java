@@ -134,6 +134,6 @@ public class LoginTest extends PageTestBase {
   }
 
   private int usersLoggedIn() {
-    return ((TBIALApplication) Application.get()).getUsersLoggedIn();
+    return ((TBIALApplication) Application.get()).getUsersLoggedInCount();
   }
 }

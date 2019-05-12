@@ -8,7 +8,13 @@
 <body>
   <wicket:extend>
     <h3>The Lobby.</h3>
-  </wicket:extend>
+    <div wicket:id="playerlistContainer">
+        Players online:
+       <ul wicket:id="loggedInUsers">
+            <li wicket:id="name">Player</li>
+       </ul>
+    </div>
+</wicket:extend>
 </body>
 
 </html>

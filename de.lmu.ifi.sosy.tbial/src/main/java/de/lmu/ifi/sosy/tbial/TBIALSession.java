@@ -1,15 +1,16 @@
 package de.lmu.ifi.sosy.tbial;
 
-import static java.util.Objects.requireNonNull;
-
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.User;
-import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.request.Request;
+
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * An authenticated TBIAL session.
@@ -66,8 +67,8 @@ public class TBIALSession extends AuthenticatedWebSession {
     super.signOut();
     if (user != null) {
       String name = user.getName();
+      getTbialApplication().userLoggedOut(user);
       user = null;
-      getTbialApplication().userLoggedOut();
       LOGGER.info("User '" + name + "' signed out.");
     }
   }
@@ -76,7 +77,7 @@ public class TBIALSession extends AuthenticatedWebSession {
     Objects.requireNonNull(user);
     setUser(user);
     signIn(true);
-    getTbialApplication().userLoggedIn();
+    getTbialApplication().userLoggedIn(user);
     bind();
   }
 

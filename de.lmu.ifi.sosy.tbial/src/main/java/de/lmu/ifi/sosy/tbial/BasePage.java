@@ -67,7 +67,7 @@ public abstract class BasePage extends WebPage {
   }
 
   public String getUsersString() {
-    int users = getTbialApplication().getUsersLoggedIn();
+    int users = getTbialApplication().getUsersLoggedInCount();
     return users == 1 ? "1 player online." : users + " players online.";
   }
 }
