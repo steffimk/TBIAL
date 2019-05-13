@@ -3,3 +3,4 @@ logs/*
 target
 tbial_test
 bin
+.idea/libraries/
