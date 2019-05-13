@@ -20,10 +20,15 @@ Nachfolgend ist grob skizziert, wie das Projekt in Eclipse ausgeführt wird.
 
 ### Vorbereitung
 
-- *Eclipse IDE for Java EE Developers* (Paket [hier](https://www.eclipse.org/downloads/eclipse-packages/) verfügbar
-  (**Achtung**: das EE Developers Paket wählen!)
-- *Apache Tomcat 8* (oder neuer) in Eclipse einrichten
-  (`Window/Preferences/Server/Runtime Environment -> Add -> Apache Tomcat 8` (oder neuer))
+- IDE installieren:
+    + *Eclipse IDE for Java EE Developers* (Paket [hier](https://www.eclipse.org/downloads/eclipse-packages/) verfügbar)
+      (**Achtung**: das EE Developers Paket wählen!)
+    + oder *Intellij IDEA Ultimate Edition* (Paket [hier](https://www.jetbrains.com/idea/download/#section=linux) verfügbar)
+- [*Apache Tomcat 8*](http://tomcat.apache.org/) (oder neuer) einrichten
+    + in Eclipse: `Window/Preferences/Server/Runtime Environment -> Add -> Apache Tomcat 8` (oder neuer)
+    + in Intellij: `Run/Edit Configurations -> Templates -> Tomcat Server -> Configure ...`  
+      Dies benötigt eine lokale Tomcat-Installation. Die Paketquellen von Ubuntu können
+      eine non-konforme Verzeichnisstruktur verwenden, weswegen wir die Verwendung der [offiziellen Pakete](http://tomcat.apache.org/) empfehlen.
 - *Apache Derby* installieren und einrichten, Anleitung [hier](https://db.apache.org/derby/quick_start.html) verfügbar
 - *Maven* installieren und einrichten, falls notwendig
 
@@ -31,15 +36,18 @@ Nachfolgend ist grob skizziert, wie das Projekt in Eclipse ausgeführt wird.
 
 - Dieses Projekt-Repository auschecken und den Unterordner
   [`de.lmu.ifi.sosy.tbial`](de.lmu.ifi.sosy.tbial)
-  als Eclipse-Projekt einrichten - Apache Derby starten (als separaten Prozess!), ansonsten steht keine Datenbank zur Verfügung
+  als IDE-Projekt einrichten
+- Apache Derby starten (als separaten Prozess!), ansonsten steht keine Datenbank zur Verfügung
+    + *zum Beispiel* per `java -jar DERBY_HOME/lib/derbyrun.jar server start`
 - Aus dem Unterordner `de.lmu.ifi.sosy.tbial` heraus ausführen:
     + `mvn exec:exec@create-development-db` einmalig, um die Datenbank zu initialisieren
     + `mvn install`, um das Projekt zu kompilieren
 - Eclipse: `Run on Server`, dann den eingerichteten Tomcat-Server wählen, um das Projekt zu deployen
+- Intellij: In der Run Configuration `Tomcat Server -> Deployment -> + -> Artifact -> de.lmu.ifi.sosy.tbial:war`
 
 Sollten bei der erstmaligen Ausführung Fehler wie `ClassNotFound` bzgl. Wicket auftreten,
-kann es sein, dass Eclipse noch nicht alle benötigten Libraries erkannt hat.
-Möglicherweise hilft dann `maven clean` oder ein Neustart von Eclipse,
+kann es sein, dass die IDE noch nicht alle benötigten Libraries erkannt hat.
+Möglicherweise hilft dann `maven clean` oder ein Neustart der IDE,
 gefolgt von den oben genannten Schritten.
 
 ### Screenshot
