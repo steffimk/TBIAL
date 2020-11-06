@@ -3,7 +3,7 @@ package de.lmu.ifi.sosy.tbial.db;
 import static de.lmu.ifi.sosy.tbial.TestUtil.hasNameAndPassword;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;

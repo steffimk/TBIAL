@@ -1,10 +1,10 @@
 package de.lmu.ifi.sosy.tbial;
 
 import static de.lmu.ifi.sosy.tbial.TestUtil.hasNameAndPassword;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.FormTester;
