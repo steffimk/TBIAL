@@ -28,9 +28,9 @@ public class Lobby extends BasePage {
   public Lobby() {
     IModel<List<User>> playerModel = (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
 
-    ListView<User> playerList = new PropertyListView<User>("loggedInUsers", playerModel) {
+    ListView<User> playerList = new PropertyListView<>("loggedInUsers", playerModel) {
       @Override
-      protected void populateItem(final ListItem listItem) {
+      protected void populateItem(final ListItem<User> listItem) {
         listItem.add(new Label("name"));
       }
     };
