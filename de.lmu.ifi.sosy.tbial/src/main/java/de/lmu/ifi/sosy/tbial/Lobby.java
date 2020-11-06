@@ -29,7 +29,10 @@ public class Lobby extends BasePage {
     IModel<List<User>> playerModel = (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
 
     ListView<User> playerList = new PropertyListView<>("loggedInUsers", playerModel) {
-      @Override
+ 
+      private static final long serialVersionUID = 1L;
+
+	  @Override
       protected void populateItem(final ListItem<User> listItem) {
         listItem.add(new Label("name"));
       }
