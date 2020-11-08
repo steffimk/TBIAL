@@ -27,8 +27,6 @@ public class Login extends BasePage {
   public Login() {
     add(new FeedbackPanel("feedback"));
 
-    Form<?> form = new Form<>("login");
-
     nameField = new TextField<>("name", new Model<>(""));
     nameField.setRequired(true);
     passwordField = new PasswordTextField("password", new Model<>(""));
@@ -44,6 +42,8 @@ public class Login extends BasePage {
             performLogin(name, password);
           }
         };
+
+    Form<?> form = new Form<>("login");
     form.add(nameField).add(passwordField).add(loginButton);
 
     add(form);

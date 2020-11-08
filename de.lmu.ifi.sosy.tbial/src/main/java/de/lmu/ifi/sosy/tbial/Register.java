@@ -43,8 +43,6 @@ public class Register extends BasePage {
     messagePanel = new FeedbackPanel("feedback");
     add(messagePanel);
 
-    Form<?> form = new Form<>("register");
-
     nameField = new TextField<String>("name", new Model<>(""));
     nameField.setRequired(true);
     messageLabel = new Label("nameFeedback", new Model<>(" "));
@@ -66,6 +64,8 @@ public class Register extends BasePage {
             performRegistration(name, password, confirm);
           }
         };
+
+    Form<?> form = new Form<>("register");
     form.add(nameField)
         .add(messageLabel)
         .add(passwordField)
