@@ -1,7 +1,7 @@
 package de.lmu.ifi.sosy.tbial;
 
-
 import de.lmu.ifi.sosy.tbial.db.User;
+import java.util.List;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -10,8 +10,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.time.Duration;
-
-import java.util.List;
 
 /**
  * Basic lobby page. It <b>should</b> show the list of currently available games. Needs to be
@@ -32,7 +30,7 @@ public class Lobby extends BasePage {
  
       private static final long serialVersionUID = 1L;
 
-	  @Override
+      @Override
       protected void populateItem(final ListItem<User> listItem) {
         listItem.add(new Label("name"));
       }
