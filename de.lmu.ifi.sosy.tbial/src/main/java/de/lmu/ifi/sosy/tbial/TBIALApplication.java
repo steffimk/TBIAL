@@ -54,7 +54,10 @@ public class TBIALApplication extends WebApplication {
     return Lobby.class;
   }
 
-  /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
+  /**
+   * Returns a new {@link TBIALSession} instead of a default Wicket
+   * {@link Session}.
+   */
   @Override
   public TBIALSession newSession(Request request, Response response) {
     return new TBIALSession(request);
