@@ -70,3 +70,9 @@ tests:jdk15:
   <<: *verify
   image: maven:3.6.3-openjdk-15-slim
 
+spotbugs:
+  stage: test
+  image: maven:3.6.3-jdk-11-slim
+  script:
+    - 'mvn --file de.lmu.ifi.sosy.tbial/ $MAVEN_CLI_OPTS spotbugs:check'
+
