@@ -46,7 +46,7 @@ public abstract class BasePage extends WebPage {
 
           @Override
           public void onClick() {
-            Session session = getSession();
+            Session session = super.getSession();
             if (session instanceof AuthenticatedWebSession) {
               ((AuthenticatedWebSession) session).signOut();
             }
