@@ -34,29 +34,9 @@ cache:
   paths:
     - .m2/repository
 
-
-# Run tests on all JDKs
-.verify: &verify
-  stage: test
-  script:
-    - 'mvn --file de.lmu.ifi.sosy.tbial/ $MAVEN_CLI_OPTS verify'
-    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' de.lmu.ifi.sosy.tbial/target/coverage-reports/jacoco-ut/jacoco.csv
-
-verify:jdk11:
-  <<: *verify
-  image: maven:3.6.3-jdk-11-slim
-  artifacts:
-    paths:
-      - de.lmu.ifi.sosy.tbial/target/coverage-reports/jacoco-ut
-    reports:
-      junit:
-        - de.lmu.ifi.sosy.tbial/target/surefire-reports/TEST-*.xml
-  coverage: '/\d+.\d+ \% covered/'
-
-verify:jdk15:
-  <<: *verify
-  image: maven:3.6.3-openjdk-15-slim
-
+stages:
+  - build
+  - test
 
 # Build WAR file and make it available (only for one JDK)
 package:
@@ -67,3 +47,26 @@ package:
   artifacts:
     paths:
     - de.lmu.ifi.sosy.tbial/target/*.war
+
+# Run tests on all JDKs
+.verify: &verify
+  stage: test
+  script:
+    - 'mvn --file de.lmu.ifi.sosy.tbial/ $MAVEN_CLI_OPTS verify'
+    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' de.lmu.ifi.sosy.tbial/target/coverage-reports/jacoco-ut/jacoco.csv
+
+tests:jdk11:
+  <<: *verify
+  image: maven:3.6.3-jdk-11-slim
+  artifacts:
+    paths:
+      - de.lmu.ifi.sosy.tbial/target/coverage-reports/jacoco-ut
+    reports:
+      junit:
+        - de.lmu.ifi.sosy.tbial/target/surefire-reports/TEST-*.xml
+  coverage: '/\d+.\d+ \% covered/'
+
+tests:jdk15:
+  <<: *verify
+  image: maven:3.6.3-openjdk-15-slim
+
