@@ -39,8 +39,16 @@ Nachfolgend ist grob skizziert, wie das Projekt in Eclipse ausgeführt wird.
   als IDE-Projekt einrichten
 - Apache Derby starten (als separaten Prozess!), ansonsten steht keine Datenbank zur Verfügung
     + Beispiel (bis Java 8): `java -jar DERBY_HOME/lib/derbyrun.jar server start`
-    + In Java 9 und aufwärts: Seit dieser Version wird eine sehr aggresive *security policy* durchgesetzt, daher kommt es aufgrund einer Misskonfiguration in der JVM zu einer Exception. Als Lösung kann entweder [java.home]/lib/security/java.policy editiert und mit den entsprechenden Richtlinien angepasst werden, oder alternativ kann Derby auch mit folgendem Befehl ausgeführt werden: 
-      `java -Dderby.system.home=.derby -Djava.security.manager -Djava.security.policy=de.lmu.ifi.sosy.tbial/etc/database/security.policy -Dderby.security.port=1527 -Dderby.install.url=file:$DERBY_HOME/lib/ -jar $DERBY_HOME/lib/derbyrun.jar server start`
+    + In Java 9 und aufwärts: Seit dieser Version wird eine sehr aggresive *security policy* durchgesetzt, daher kommt es aufgrund einer Misskonfiguration in der JVM zu einer Exception. Als Lösung kann entweder [java.home]/lib/security/java.policy editiert und mit den entsprechenden Richtlinien angepasst werden, oder alternativ kann Derby auch mit folgendem Befehl ausgeführt werden:
+      ```
+      java -Dderby.system.home=.derby
+           -Djava.security.manager
+           -Djava.security.policy=de.lmu.ifi.sosy.tbial/etc/database/security.policy
+           -Dderby.security.port=1527
+           -Dderby.install.url=file:$DERBY_HOME/lib/
+           -jar $DERBY_HOME/lib/derbyrun.jar server start
+      ```
+      
 - Aus dem Unterordner `de.lmu.ifi.sosy.tbial` heraus ausführen:
     + `mvn exec:exec@create-development-db` einmalig, um die Datenbank zu initialisieren
     + `mvn install`, um das Projekt zu kompilieren
