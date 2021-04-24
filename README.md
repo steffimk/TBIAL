@@ -24,7 +24,7 @@ Nachfolgend ist grob skizziert, wie das Projekt in Eclipse ausgeführt wird.
     + *Eclipse IDE for Java EE Developers* (Paket [hier](https://www.eclipse.org/downloads/eclipse-packages/) verfügbar)
       (**Achtung**: das EE Developers Paket wählen!)
     + oder *Intellij IDEA Ultimate Edition* (Paket [hier](https://www.jetbrains.com/idea/download/#section=linux) verfügbar)
-- [*Apache Tomcat 8*](http://tomcat.apache.org/) (oder neuer) einrichten
+- [*Apache Tomcat 9*](http://tomcat.apache.org/) einrichten (Tomcat 10 ist aktuell nicht kompatibel wegen Umstellung auf Jakarta)
     + in Eclipse: `Window/Preferences/Server/Runtime Environment -> Add -> Apache Tomcat 8` (oder neuer)
     + in Intellij: `Run/Edit Configurations -> Templates -> Tomcat Server -> Configure ...`  
       Dies benötigt eine lokale Tomcat-Installation. Die Paketquellen von Ubuntu können
