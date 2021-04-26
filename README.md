@@ -4,7 +4,7 @@ Dieses Repository soll als Einstieg in das Praktikum dienen.
 Es wird eine Beispielanwendung (Prototyp) bereitgestellt,
 welche bereits einige der erforderlichen Technologien verwendet.
 
-Weitere Informationen befinden sich im [Uni2Work](https://uni2work.ifi.lmu.de/course/W20/IfI/SWEP).
+Weitere Informationen befinden sich im [Uni2Work](https://uni2work.ifi.lmu.de/course/S21/IfI/SWEP).
 
 ## Spielanleitung
 
