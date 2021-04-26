@@ -20,34 +20,34 @@ Nachfolgend ist grob skizziert, wie das Projekt in Eclipse ausgeführt wird.
 
 ### Vorbereitung
 
-- IDE installieren:
-    + *Eclipse IDE for Java EE Developers* (Paket [hier](https://www.eclipse.org/downloads/eclipse-packages/) verfügbar)
+- IDE installieren oder updaten (die Version sollte einigermaßen aktuell sein):
+    + *Eclipse IDE for Enterprise Java and Web Developers* (Paket [hier](https://www.eclipse.org/downloads/eclipse-packages/) verfügbar)
       (**Achtung**: das EE Developers Paket wählen!)
     + oder *Intellij IDEA Ultimate Edition* (Paket [hier](https://www.jetbrains.com/idea/download/#section=linux) verfügbar)
 - [*Apache Tomcat 9*](http://tomcat.apache.org/) einrichten (Tomcat 10 ist aktuell nicht kompatibel wegen Umstellung auf Jakarta)
-    + in Eclipse: `Window/Preferences/Server/Runtime Environment -> Add -> Apache Tomcat 8` (oder neuer)
+    + in Eclipse: `Window/Preferences/Server/Runtime Environment -> Add -> Apache Tomcat v9.0` (`Download and Install...` anklicken, ggf. vorher mit `Browse` einen Ordner für die Installation auswählen)
     + in Intellij: `Run/Edit Configurations -> Templates -> Tomcat Server -> Configure ...`  
       Dies benötigt eine lokale Tomcat-Installation. Die Paketquellen von Ubuntu können
       eine non-konforme Verzeichnisstruktur verwenden, weswegen wir die Verwendung der [offiziellen Pakete](http://tomcat.apache.org/) empfehlen.
-- *Apache Derby* installieren und einrichten, Anleitung [hier](https://db.apache.org/derby/quick_start.html) verfügbar
+- *Apache Derby* installieren und einrichten, Anleitung [hier](https://db.apache.org/derby/papers/DerbyTut/install_software.html#derby) verfügbar (Schritte `Configure Embedded Derby` und `Verify Derby`) nicht nötig).
 - *Maven* installieren und einrichten, falls notwendig
 
 ### Projekt Setup und Ausführung
 
 - Dieses Projekt-Repository auschecken und den Unterordner
   [`de.lmu.ifi.sosy.tbial`](de.lmu.ifi.sosy.tbial)
-  als IDE-Projekt einrichten
+  als IDE-Projekt einrichten (Eclipse: `Import -> Existing Projects into Workspace`).
 - Apache Derby starten (als separaten Prozess!), ansonsten steht keine Datenbank zur Verfügung
-    + Beispiel (bis Java 8): `java -jar DERBY_HOME/lib/derbyrun.jar server start`
-    + In Java 9 und aufwärts: Seit dieser Version wird eine sehr aggresive *security policy* durchgesetzt, daher kommt es aufgrund einer Misskonfiguration in der JVM zu einer Exception. Als Lösung kann entweder [java.home]/lib/security/java.policy editiert und mit den entsprechenden Richtlinien angepasst werden, oder alternativ kann Derby auch mit folgendem Befehl ausgeführt werden:
+    + Seit Java 9 wird eine sehr aggressive *security policy* durchgesetzt, daher kommt es aufgrund einer Misskonfiguration in der JVM zu einer Exception. Daher Derby mit folgendem Befehl ausführen:
+      Mac/Linux:
       ```
-      java -Dderby.system.home=.derby
-           -Djava.security.manager
-           -Djava.security.policy=de.lmu.ifi.sosy.tbial/etc/database/security.policy
-           -Dderby.security.port=1527
-           -Dderby.install.url=file:$DERBY_HOME/lib/
-           -jar $DERBY_HOME/lib/derbyrun.jar server start
+      java -Dderby.system.home=.derby -Djava.security.manager -Djava.security.policy=de.lmu.ifi.sosy.tbial/etc/database/security.policy -Dderby.security.port=1527 -Dderby.install.url=file:$DERBY_INSTALL/lib/ -jar $DERBY_INSTALL/lib/derbyrun.jar server start
       ```
+      Windows:
+      ```
+      java -Dderby.system.home=.derby -Djava.security.manager -Djava.security.policy=de.lmu.ifi.sosy.tbial/etc/database/security.policy -Dderby.security.port=1527 -Dderby.install.url=file:%DERBY_INSTALL%/lib/ -jar %DERBY_INSTALL%/lib/derbyrun.jar server start
+      ```
+      `$DERBY_INSTALL` muss wie in der Derby-Installationsanleitung beschrieben auf den Derby-Installationsordner zeigen.
       
 - Aus dem Unterordner `de.lmu.ifi.sosy.tbial` heraus ausführen:
     + `mvn exec:exec@create-development-db` einmalig, um die Datenbank zu initialisieren
