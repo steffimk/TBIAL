@@ -3,18 +3,21 @@ package de.lmu.ifi.sosy.tbial;
 import de.lmu.ifi.sosy.tbial.db.User;
 import java.util.List;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
+import org.apache.wicket.markup.html.form.PasswordTextField;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 
 /**
@@ -29,7 +32,11 @@ public class Lobby extends BasePage {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
-  private final AjaxLink newGameButton;
+  private final Button newGameButton;
+  private final TextField<String> newGameNameField;
+  private final NumberTextField<Integer> maxPlayersField;
+  private final AjaxCheckBox isPrivate;
+  private final PasswordTextField newGamePwField;
 
   public Lobby() {
     IModel<List<User>> playerModel = (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
@@ -45,14 +52,33 @@ public class Lobby extends BasePage {
     };
 
     newGameButton =
-        new AjaxLink<Void>("newGameButton") {
+        new Button("newGameButton") {
 
           /** UID for serialization. */
           private static final long serialVersionUID = 1;
 
           @Override
-          public void onClick(AjaxRequestTarget target) {
-            createNewGame("defaultName", 4, "pw"); // TODO SK
+          public void onSubmit() {
+            String gameName = newGameNameField.getModelObject();
+            int maxPlayers = maxPlayersField.getModelObject();
+            createNewGame(gameName, maxPlayers, "pw"); // TODO SK
+          }
+        };
+    newGameNameField = new TextField<String>("newGameName", new Model<>("My New Game"));
+    newGameNameField.setRequired(true);
+    maxPlayersField = new NumberTextField<Integer>("maxPlayers", new Model<>(4));
+    maxPlayersField.setRequired(true);
+    maxPlayersField.setMinimum(4);
+    maxPlayersField.setMaximum(7);
+    newGamePwField = new PasswordTextField("newGamePw");
+    isPrivate =
+        new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
+          /** UID for serialization. */
+          private static final long serialVersionUID = 2;
+
+          @Override
+          protected void onUpdate(AjaxRequestTarget target) {
+            newGamePwField.setVisible(isPrivate.getModelObject()); // TODO SK
           }
         };
 
@@ -62,12 +88,20 @@ public class Lobby extends BasePage {
     playerListContainer.setOutputMarkupId(true);
 
     add(playerListContainer);
-    add(newGameButton);
+
+    Form<?> newGameForm = new Form<>("newGameForm");
+    newGameForm
+        .add(newGameNameField)
+        .add(maxPlayersField)
+        .add(isPrivate)
+        .add(newGamePwField)
+        .add(newGameButton);
+    add(newGameForm);
   }
 
-  /** */
   private void createNewGame(String name, int maxPlayers, String password) {
     // TODO SK
-    System.out.println("Create new game called");
+    System.out.printf(
+        "Create new game called %s and an max count of %d players\\", name, maxPlayers);
   }
 }
