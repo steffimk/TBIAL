@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
+import de.lmu.ifi.sosy.tbial.db.Game;
 import de.lmu.ifi.sosy.tbial.db.User;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Basic lobby page. It <b>should</b> show the list of currently available games. Needs to be
@@ -32,10 +35,12 @@ public class Lobby extends BasePage {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
+  private static final Logger LOGGER = LogManager.getLogger(Lobby.class);
+
   private final Button newGameButton;
   private final TextField<String> newGameNameField;
   private final NumberTextField<Integer> maxPlayersField;
-  private final AjaxCheckBox isPrivate;
+  private final AjaxCheckBox isPrivateCheckBox;
   private final PasswordTextField newGamePwField;
 
   public Lobby() {
@@ -61,9 +66,12 @@ public class Lobby extends BasePage {
           public void onSubmit() {
             String gameName = newGameNameField.getModelObject();
             int maxPlayers = maxPlayersField.getModelObject();
-            createNewGame(gameName, maxPlayers, "pw"); // TODO SK
+            boolean isPrivate = isPrivateCheckBox.getModelObject();
+            String password = newGamePwField.getModelObject();
+            createNewGame(gameName, maxPlayers, isPrivate, password);
           }
         };
+
     newGameNameField = new TextField<String>("newGameName", new Model<>("My New Game"));
     newGameNameField.setRequired(true);
     maxPlayersField = new NumberTextField<Integer>("maxPlayers", new Model<>(4));
@@ -71,14 +79,16 @@ public class Lobby extends BasePage {
     maxPlayersField.setMinimum(4);
     maxPlayersField.setMaximum(7);
     newGamePwField = new PasswordTextField("newGamePw");
-    isPrivate =
+    newGamePwField.setOutputMarkupPlaceholderTag(true);
+    isPrivateCheckBox =
         new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
           /** UID for serialization. */
           private static final long serialVersionUID = 2;
 
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
-            newGamePwField.setVisible(isPrivate.getModelObject()); // TODO SK
+            newGamePwField.setVisible(isPrivateCheckBox.getModelObject()); // TODO SK
+            target.add(newGamePwField);
           }
         };
 
@@ -93,15 +103,43 @@ public class Lobby extends BasePage {
     newGameForm
         .add(newGameNameField)
         .add(maxPlayersField)
-        .add(isPrivate)
+        .add(isPrivateCheckBox)
         .add(newGamePwField)
         .add(newGameButton);
     add(newGameForm);
   }
 
-  private void createNewGame(String name, int maxPlayers, String password) {
-    // TODO SK
+  /**
+   * Creates a new game and saves it in the database if all requirements are fulfilled.
+   *
+   * @param name of the new game (unique)
+   * @param maxPlayers of the new game
+   * @param isPrivate specifies whether the game is password protected
+   * @param password can be null if the game is not private
+   */
+  private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
     System.out.printf(
-        "Create new game called %s and an max count of %d players\\", name, maxPlayers);
+        "Trying to create new game called %s and an max count of %d players \n", name, maxPlayers);
+    int hostId = getSession().getUser().getId();
+    Game game = getDatabase().newGame(hostId, name, maxPlayers, isPrivate, password);
+    if (game != null) {
+      // TODO SK: getSession().setGame(game);
+      // TODO SK: setResponsePage(getApplication().getGameLobby());
+      info("Game creation successful! You are host of a new game");
+      LOGGER.info("New game '" + name + "' game creation successful");
+      System.out.printf(
+          "Successfully created new game called %s and an max count of %d players \n",
+          name, maxPlayers);
+    } else {
+      error(
+          "There was an error trying to create the game. Please try again."); // TODO SK: Make more
+      // specific
+      LOGGER.debug(
+          "New game '"
+              + name
+              + "' creation failed."); // TODO SK: make more specific, probably name already taken
+      System.out.println("Could not create new game " + name);
+    }
   }
+  
 }

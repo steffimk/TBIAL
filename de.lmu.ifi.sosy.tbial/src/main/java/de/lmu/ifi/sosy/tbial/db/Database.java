@@ -32,4 +32,17 @@ public interface Database {
    *     database.
    */
   User register(String name, String password);
+
+  /**
+   * Creates a new game with the given name, maxPlayers, privacy setting and respectively password.
+   *
+   * @param hostId is id of the user who creates the game and should not be null
+   * @param name should not be null
+   * @param maxPlayers should not be null
+   * @param isPrivate specifies whether the game is password protected
+   * @param password should not be null if isPrivate equals true
+   * @return a new game object or {@code null}, if a game with the given name already exists in the
+   *     database.
+   */
+  Game newGame(int hostId, String name, int maxPlayers, boolean isPrivate, String password);
 }
