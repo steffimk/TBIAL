@@ -123,8 +123,8 @@ public class Lobby extends BasePage {
     int hostId = getSession().getUser().getId();
     Game game = getDatabase().newGame(hostId, name, maxPlayers, isPrivate, password);
     if (game != null) {
-      // TODO SK: getSession().setGame(game);
-      // TODO SK: setResponsePage(getApplication().getGameLobby());
+      getSession().setCurrentGame(game);
+      setResponsePage(((TBIALApplication) getApplication()).getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");
       System.out.printf(

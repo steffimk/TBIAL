@@ -54,6 +54,10 @@ public class TBIALApplication extends WebApplication {
     return Lobby.class;
   }
 
+  public Class<GameLobby> getGameLobbyPage() {
+    return GameLobby.class;
+  }
+
   /**
    * Returns a new {@link TBIALSession} instead of a default Wicket
    * {@link Session}.
