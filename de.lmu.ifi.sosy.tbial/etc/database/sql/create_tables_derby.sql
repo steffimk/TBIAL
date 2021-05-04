@@ -1,5 +1,5 @@
-drop table users ;
 drop table games ;
+drop table users ;
 
 create table users (
 	id int generated always as identity primary key,
@@ -12,5 +12,6 @@ create table games (
 	name varchar(255) unique not null,
 	maxPlayers int not null,
 	isPrivate boolean not null,
-	password varchar (255),
+	hash char (128),
+	salt char(16),
 	check (maxPlayers >= 4 and maxPlayers <= 7));

@@ -19,17 +19,25 @@ public class Game implements Serializable {
 
   private boolean isPrivate;
 
-  private String password = "";
+  private String hash;
+  private String salt;
 
-  public Game(int id, int hostId, String name, int maxPlayers, boolean isPrivate, String password) {
+  public Game(
+      int id,
+      int hostId,
+      String name,
+      int maxPlayers,
+      boolean isPrivate,
+      String hash,
+      String salt) {
     this.id = id;
     this.hostId = requireNonNull(hostId);
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
     this.isPrivate = isPrivate;
-    
     if (isPrivate) {
-      this.password = requireNonNull(password);
+      this.hash = requireNonNull(hash);
+      this.salt = requireNonNull(salt);
     }
   }
 
@@ -41,8 +49,12 @@ public class Game implements Serializable {
     this.name = requireNonNull(name);
   }
 
-  public String getPassword() {
-    return password;
+  public String getHash() {
+    return hash;
+  }
+
+  public String getSalt() {
+    return salt;
   }
 
   public int getMaxPlayers() {

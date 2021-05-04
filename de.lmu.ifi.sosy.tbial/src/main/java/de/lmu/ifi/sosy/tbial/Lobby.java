@@ -78,7 +78,7 @@ public class Lobby extends BasePage {
     maxPlayersField.setRequired(true);
     maxPlayersField.setMinimum(4);
     maxPlayersField.setMaximum(7);
-    newGamePwField = new PasswordTextField("newGamePw");
+    newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
     newGamePwField.setOutputMarkupPlaceholderTag(true);
     isPrivateCheckBox =
         new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
@@ -87,7 +87,7 @@ public class Lobby extends BasePage {
 
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
-            newGamePwField.setVisible(isPrivateCheckBox.getModelObject()); // TODO SK
+            newGamePwField.setVisible(isPrivateCheckBox.getModelObject());
             target.add(newGamePwField);
           }
         };
@@ -119,7 +119,7 @@ public class Lobby extends BasePage {
    */
   private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
     System.out.printf(
-        "Trying to create new game called %s and an max count of %d players \n", name, maxPlayers);
+        "Trying to create new game called %s and a max count of %d players \n", name, maxPlayers);
     int hostId = getSession().getUser().getId();
     Game game = getDatabase().newGame(hostId, name, maxPlayers, isPrivate, password);
     if (game != null) {
@@ -128,7 +128,7 @@ public class Lobby extends BasePage {
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");
       System.out.printf(
-          "Successfully created new game called %s and an max count of %d players \n",
+          "Successfully created new game called %s and a max count of %d players \n",
           name, maxPlayers);
     } else {
       error(

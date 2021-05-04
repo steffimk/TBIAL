@@ -2,6 +2,10 @@ package de.lmu.ifi.sosy.tbial.db;
 
 import de.lmu.ifi.sosy.tbial.ConfigurationException;
 import de.lmu.ifi.sosy.tbial.DatabaseException;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -142,19 +146,32 @@ public class SQLDatabase implements Database {
       String name,
       int maxPlayers,
       boolean isPrivate,
-      String password,
+      String hash,
+      String salt,
       Connection connection)
       throws SQLException {
     PreparedStatement insertGame;
-    insertGame =
-        connection.prepareStatement(
-            "INSERT INTO GAMES (HOSTID, NAME, MAXPLAYERS, ISPRIVATE, PASSWORD) VALUES (?,?,?,?,?)",
-            Statement.RETURN_GENERATED_KEYS);
-    insertGame.setInt(1, hostId);
-    insertGame.setString(2, name);
-    insertGame.setInt(3, maxPlayers);
-    insertGame.setBoolean(4, isPrivate);
-    insertGame.setString(5, password);
+    if (isPrivate) {
+      insertGame =
+          connection.prepareStatement(
+              "INSERT INTO GAMES (HOSTID, NAME, MAXPLAYERS, ISPRIVATE, HASH, SALT) VALUES (?,?,?,?,?,?)",
+              Statement.RETURN_GENERATED_KEYS);
+      insertGame.setInt(1, hostId);
+      insertGame.setString(2, name);
+      insertGame.setInt(3, maxPlayers);
+      insertGame.setBoolean(4, isPrivate);
+      insertGame.setString(5, hash);
+      insertGame.setString(6, salt);
+    } else {
+      insertGame =
+          connection.prepareStatement(
+              "INSERT INTO GAMES (HOSTID, NAME, MAXPLAYERS, ISPRIVATE) VALUES (?,?,?,?)",
+              Statement.RETURN_GENERATED_KEYS);
+      insertGame.setInt(1, hostId);
+      insertGame.setString(2, name);
+      insertGame.setInt(3, maxPlayers);
+      insertGame.setBoolean(4, isPrivate);
+    }
 
     return insertGame;
   }
@@ -165,17 +182,24 @@ public class SQLDatabase implements Database {
     Objects.requireNonNull(name, "game name is null");
     Objects.requireNonNull(maxPlayers, "maxPlayers is null");
     Objects.requireNonNull(isPrivate, "isPrivate is null");
+    String hash = "", salt = "";
     if (isPrivate) {
       Objects.requireNonNull(password, "password is null");
+      SecureRandom random = new SecureRandom();
+      byte[] saltByteArray = new byte[16];
+      random.nextBytes(saltByteArray);
+      hash = getHashedPassword(password, saltByteArray);
+      salt = new String(saltByteArray, StandardCharsets.UTF_8);
     }
+
     try (Connection connection = getConnection(false);
         PreparedStatement insert =
-            insertGameStatement(hostId, name, maxPlayers, isPrivate, password, connection);
+            insertGameStatement(hostId, name, maxPlayers, isPrivate, hash, salt, connection);
         ResultSet result = executeUpdate(insert)) {
 
       if (result != null && result.next()) {
         int id = result.getInt(1);
-        Game game = new Game(id, hostId, name, maxPlayers, isPrivate, password);
+        Game game = new Game(id, hostId, name, maxPlayers, isPrivate, hash, salt);
         connection.commit();
         return game;
       } else {
@@ -188,4 +212,24 @@ public class SQLDatabase implements Database {
     }
   }
 
+  /**
+   * Returns the hash of password and salt
+   *
+   * @param password
+   * @param salt
+   * @return
+   */
+  public static String getHashedPassword(String password, byte[] salt) {
+    String hash = null;
+    try {
+      MessageDigest md = MessageDigest.getInstance("SHA-512");
+      md.update(salt);
+      byte[] hashByteArray = md.digest(password.getBytes(StandardCharsets.UTF_8));
+      hash = new String(hashByteArray, StandardCharsets.UTF_8);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return hash;
+  }
+  
 }
