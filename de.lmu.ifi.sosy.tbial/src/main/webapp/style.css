@@ -392,3 +392,11 @@ pre.boxed {
 	white-space: pre-wrap;
 	border: solid 2px #ff6600;
 }
+
+.chat {
+	width: 70%;
+	height: 900px;
+	margin-left: 1%;
+	margin-top: 10%;
+	border: 2px solid black;
+}
