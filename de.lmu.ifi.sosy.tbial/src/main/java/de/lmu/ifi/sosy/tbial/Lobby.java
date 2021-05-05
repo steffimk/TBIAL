@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -43,6 +44,8 @@ public class Lobby extends BasePage {
   private final NumberTextField<Integer> maxPlayersField;
   private final AjaxCheckBox isPrivateCheckBox;
   private final PasswordTextField newGamePwField;
+  private final Label newGamePwLabel;
+  private final Label nameFeedbackLabel;
 
   public Lobby() {
     IModel<List<User>> playerModel = (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
@@ -75,10 +78,36 @@ public class Lobby extends BasePage {
 
     newGameNameField = new TextField<String>("newGameName", new Model<>("My New Game"));
     newGameNameField.setRequired(true);
+
+    nameFeedbackLabel = new Label("nameFeedback", new Model<>(""));
+    nameFeedbackLabel.setOutputMarkupId(true);
+
+    OnChangeAjaxBehavior onNameChange =
+        new OnChangeAjaxBehavior() {
+
+          /** UID for serialization. */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onUpdate(AjaxRequestTarget target) {
+            String name = newGameNameField.getModelObject();
+            if (getDatabase().gameNameTaken(name)) {
+              nameFeedbackLabel.setDefaultModelObject("Name already taken.");
+            } else {
+              nameFeedbackLabel.setDefaultModelObject(" ");
+            }
+            target.add(nameFeedbackLabel);
+          }
+        };
+
+    newGameNameField.add(onNameChange);
+
     maxPlayersField = new NumberTextField<Integer>("maxPlayers", new Model<>(4));
     maxPlayersField.setRequired(true);
     maxPlayersField.setMinimum(4);
     maxPlayersField.setMaximum(7);
+    newGamePwLabel = new Label("newGamePwLabel", new Model<>("Game password"));
+    newGamePwLabel.setOutputMarkupPlaceholderTag(true);
     newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
     newGamePwField.setOutputMarkupPlaceholderTag(true);
     isPrivateCheckBox =
@@ -89,7 +118,9 @@ public class Lobby extends BasePage {
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
             newGamePwField.setVisible(isPrivateCheckBox.getModelObject());
+            newGamePwLabel.setVisible(isPrivateCheckBox.getModelObject());
             target.add(newGamePwField);
+            target.add(newGamePwLabel);
           }
         };
 
@@ -103,8 +134,10 @@ public class Lobby extends BasePage {
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
         .add(newGameNameField)
+        .add(nameFeedbackLabel)
         .add(maxPlayersField)
         .add(isPrivateCheckBox)
+        .add(newGamePwLabel)
         .add(newGamePwField)
         .add(newGameButton);
     add(newGameForm);

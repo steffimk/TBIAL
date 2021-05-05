@@ -56,7 +56,7 @@ public class SQLDatabase implements Database {
   }
 
   @Override
-  public boolean nameTaken(String name) {
+  public boolean userNameTaken(String name) {
     Objects.requireNonNull(name, "name is null");
 
     try (Connection connection = getConnection();
@@ -117,6 +117,13 @@ public class SQLDatabase implements Database {
   private PreparedStatement userByNameQuery(String name, Connection connection)
       throws SQLException {
     PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE NAME=?");
+    statement.setString(1, name);
+    return statement;
+  }
+
+  private PreparedStatement gameByNameQuery(String name, Connection connection)
+      throws SQLException {
+    PreparedStatement statement = connection.prepareStatement("SELECT * FROM GAMES WHERE NAME=?");
     statement.setString(1, name);
     return statement;
   }
@@ -205,6 +212,20 @@ public class SQLDatabase implements Database {
 
     } catch (SQLException ex) {
       throw new DatabaseException("Error while saving new game " + name + " to the database", ex);
+    }
+  }
+
+  @Override
+  public boolean gameNameTaken(String name) {
+    Objects.requireNonNull(name, "name is null");
+
+    try (Connection connection = getConnection();
+        PreparedStatement query = gameByNameQuery(name, connection);
+        ResultSet result = query.executeQuery()) {
+
+      return result.next();
+    } catch (SQLException e) {
+      throw new DatabaseException("Error while querying for user in DB.", e);
     }
   }
 

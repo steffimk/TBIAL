@@ -15,13 +15,16 @@
        </ul>
     </div>
     <form wicket:id="newGameForm" class="boxedform">
-    	<label for="name">Name of new game</label>
+    	<label for="name">Name of new game
+    		<span class="small" wicket:id="nameFeedback">Whether the name is valid</span>
+    	</label>
       	<input wicket:id="newGameName" type="text" name="name" />
       	<label for="maxPlayers">Max. player count</label>
       	<input wicket:id="maxPlayers" type="number" name="maxPlayers" onKeyDown="return false"/>
-      	<input wicket:id="isPrivate" type="checkbox" name="privateCheckbox"/>
-  		<label for="privateCheckbox">Private game</label>
-  		<input wicket:id="newGamePw" type="password"/>
+	    <label for="privateCheckbox">Private game</label>
+	    <input wicket:id="isPrivate" type="checkbox" name="privateCheckbox"/>
+	    <label wicket:id="newGamePwLabel" for="newGamePw">Game password</label>
+	    <input wicket:id="newGamePw" type="password" name="newGamePw"/>
     	<input type=submit value="New Game" wicket:id="newGameButton"/>
     	<div class="spacer"></div>
     </form>

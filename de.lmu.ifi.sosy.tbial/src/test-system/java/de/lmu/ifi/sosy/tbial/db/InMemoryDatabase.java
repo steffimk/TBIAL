@@ -45,14 +45,14 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public boolean nameTaken(String name) {
+  public boolean userNameTaken(String name) {
     return getUser(name) != null;
   }
 
   @Override
   public User register(String name, String password) {
     synchronized (users) {
-      if (nameTaken(name)) {
+      if (userNameTaken(name)) {
         return null;
       }
 
@@ -97,5 +97,18 @@ public class InMemoryDatabase implements Database {
   public Player createPlayer(int userId, int gameId, boolean isHost) {
     // TODO SK: Implement
     return null;
+  }
+
+  @Override
+  public boolean gameNameTaken(String name) {
+    requireNonNull(name);
+    synchronized (games) {
+      for (Game game : games) {
+        if (name.equals(game.getName())) {
+          return true;
+        }
+      }
+      return false;
+    }
   }
 }

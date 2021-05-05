@@ -21,7 +21,7 @@ public interface Database {
    * @param name should not be null.
    * @return {@code true} if the name is already taken, {@code false} otherwise.
    */
-  boolean nameTaken(String name);
+  boolean userNameTaken(String name);
 
   /**
    * Registers a new user with the given name and password.
@@ -44,6 +44,14 @@ public interface Database {
    *     database.
    */
   Game newGame(String name, int maxPlayers, boolean isPrivate, String password);
+
+  /**
+   * Returns whether a game with the given name exits.
+   *
+   * @param name should not be null.
+   * @return {@code true} if the name is already taken, {@code false} otherwise.
+   */
+  boolean gameNameTaken(String name);
 
   /**
    * Lets a user join a game by creating a player
