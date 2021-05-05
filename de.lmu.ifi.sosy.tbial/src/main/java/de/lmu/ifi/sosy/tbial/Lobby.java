@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial;
 
 import de.lmu.ifi.sosy.tbial.db.Game;
+import de.lmu.ifi.sosy.tbial.db.Player;
 import de.lmu.ifi.sosy.tbial.db.User;
 import java.util.List;
 
@@ -120,10 +121,13 @@ public class Lobby extends BasePage {
   private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
     System.out.printf(
         "Trying to create new game called %s and a max count of %d players \n", name, maxPlayers);
-    int hostId = getSession().getUser().getId();
-    Game game = getDatabase().newGame(hostId, name, maxPlayers, isPrivate, password);
+
+    Game game = getDatabase().newGame(name, maxPlayers, isPrivate, password);
     if (game != null) {
       getSession().setCurrentGame(game);
+      int userId = getSession().getUser().getId();
+      Player player = getDatabase().createPlayer(userId, game.getId(), true);
+      getSession().setCurrentPlayer(player);
       setResponsePage(((TBIALApplication) getApplication()).getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");

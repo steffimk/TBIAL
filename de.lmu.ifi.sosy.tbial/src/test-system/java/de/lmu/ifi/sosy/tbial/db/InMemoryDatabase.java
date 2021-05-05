@@ -70,7 +70,7 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public Game newGame(int hostId, String name, int maxPlayers, boolean isPrivate, String password) {
+  public Game newGame(String name, int maxPlayers, boolean isPrivate, String password) {
     synchronized (games) {
       //      if (nameTaken(name)) { TODO SK
       //        return null;
@@ -86,10 +86,16 @@ public class InMemoryDatabase implements Database {
       }
 
       int id = games.size();
-      Game game = new Game(id, hostId, name, maxPlayers, isPrivate, hash, salt);
+      Game game = new Game(id, name, maxPlayers, isPrivate, hash, salt);
       games.add(game);
 
       return game;
     }
+  }
+
+  @Override
+  public Player createPlayer(int userId, int gameId, boolean isHost) {
+    // TODO SK: Implement
+    return null;
   }
 }

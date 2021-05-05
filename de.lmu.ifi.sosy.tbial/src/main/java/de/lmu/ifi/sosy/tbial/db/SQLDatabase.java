@@ -142,7 +142,6 @@ public class SQLDatabase implements Database {
   }
 
   private PreparedStatement insertGameStatement(
-      int hostId,
       String name,
       int maxPlayers,
       boolean isPrivate,
@@ -154,31 +153,28 @@ public class SQLDatabase implements Database {
     if (isPrivate) {
       insertGame =
           connection.prepareStatement(
-              "INSERT INTO GAMES (HOSTID, NAME, MAXPLAYERS, ISPRIVATE, HASH, SALT) VALUES (?,?,?,?,?,?)",
+              "INSERT INTO GAMES (NAME, MAXPLAYERS, ISPRIVATE, HASH, SALT) VALUES (?,?,?,?,?)",
               Statement.RETURN_GENERATED_KEYS);
-      insertGame.setInt(1, hostId);
-      insertGame.setString(2, name);
-      insertGame.setInt(3, maxPlayers);
-      insertGame.setBoolean(4, isPrivate);
-      insertGame.setString(5, hash);
-      insertGame.setString(6, salt);
+      insertGame.setString(1, name);
+      insertGame.setInt(2, maxPlayers);
+      insertGame.setBoolean(3, isPrivate);
+      insertGame.setString(4, hash);
+      insertGame.setString(5, salt);
     } else {
       insertGame =
           connection.prepareStatement(
-              "INSERT INTO GAMES (HOSTID, NAME, MAXPLAYERS, ISPRIVATE) VALUES (?,?,?,?)",
+              "INSERT INTO GAMES (NAME, MAXPLAYERS, ISPRIVATE) VALUES (?,?,?)",
               Statement.RETURN_GENERATED_KEYS);
-      insertGame.setInt(1, hostId);
-      insertGame.setString(2, name);
-      insertGame.setInt(3, maxPlayers);
-      insertGame.setBoolean(4, isPrivate);
+      insertGame.setString(1, name);
+      insertGame.setInt(2, maxPlayers);
+      insertGame.setBoolean(3, isPrivate);
     }
 
     return insertGame;
   }
 
   @Override
-  public Game newGame(int hostId, String name, int maxPlayers, boolean isPrivate, String password) {
-    Objects.requireNonNull(hostId, "hostId is null");
+  public Game newGame(String name, int maxPlayers, boolean isPrivate, String password) {
     Objects.requireNonNull(name, "game name is null");
     Objects.requireNonNull(maxPlayers, "maxPlayers is null");
     Objects.requireNonNull(isPrivate, "isPrivate is null");
@@ -194,12 +190,12 @@ public class SQLDatabase implements Database {
 
     try (Connection connection = getConnection(false);
         PreparedStatement insert =
-            insertGameStatement(hostId, name, maxPlayers, isPrivate, hash, salt, connection);
+            insertGameStatement(name, maxPlayers, isPrivate, hash, salt, connection);
         ResultSet result = executeUpdate(insert)) {
 
       if (result != null && result.next()) {
         int id = result.getInt(1);
-        Game game = new Game(id, hostId, name, maxPlayers, isPrivate, hash, salt);
+        Game game = new Game(id, name, maxPlayers, isPrivate, hash, salt);
         connection.commit();
         return game;
       } else {
@@ -209,6 +205,44 @@ public class SQLDatabase implements Database {
 
     } catch (SQLException ex) {
       throw new DatabaseException("Error while saving new game " + name + " to the database", ex);
+    }
+  }
+
+  private PreparedStatement createPlayer(
+      int userId, int gameId, boolean isHost, Connection connection) throws SQLException {
+    PreparedStatement statement =
+        connection.prepareStatement(
+            "INSERT INTO PLAYERS (USERID, GAMEID, ISHOST) VALUES (?,?,?)",
+            Statement.RETURN_GENERATED_KEYS);
+    statement.setInt(1, userId);
+    statement.setInt(2, gameId);
+    statement.setBoolean(3, isHost);
+    return statement;
+  }
+
+  @Override
+  public Player createPlayer(int userId, int gameId, boolean isHost) {
+    Objects.requireNonNull(userId, "userId is null");
+    Objects.requireNonNull(gameId, "gameId is null");
+    Objects.requireNonNull(isHost, "isHost is null");
+    try (Connection connection = getConnection(false);
+        PreparedStatement insert = createPlayer(userId, gameId, isHost, connection);
+        ResultSet result = executeUpdate(insert)) {
+
+      if (result != null && result.next()) {
+        int id = result.getInt(1);
+        Player player = new Player(id, userId, gameId, isHost);
+        connection.commit();
+        System.out.println("created new player");
+        return player;
+      } else {
+        connection.rollback();
+        return null;
+      }
+
+    } catch (SQLException ex) {
+      throw new DatabaseException(
+          "Error in the database while user " + userId + " tried to join game " + gameId, ex);
     }
   }
 
@@ -231,5 +265,4 @@ public class SQLDatabase implements Database {
     }
     return hash;
   }
-  
 }

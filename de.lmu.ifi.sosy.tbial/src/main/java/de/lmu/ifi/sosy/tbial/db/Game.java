@@ -11,8 +11,6 @@ public class Game implements Serializable {
 
   private int id = -1;
 
-  private int hostId;
-
   private String name;
 
   private int maxPlayers;
@@ -24,14 +22,12 @@ public class Game implements Serializable {
 
   public Game(
       int id,
-      int hostId,
       String name,
       int maxPlayers,
       boolean isPrivate,
       String hash,
       String salt) {
     this.id = id;
-    this.hostId = requireNonNull(hostId);
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
     this.isPrivate = isPrivate;
