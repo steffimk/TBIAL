@@ -1,14 +1,11 @@
 package de.lmu.ifi.sosy.tbial;
 
-import de.lmu.ifi.sosy.tbial.db.Database;
-import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
-import de.lmu.ifi.sosy.tbial.db.User;
-import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.RuntimeConfigurationType;
@@ -22,6 +19,11 @@ import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
 
+import de.lmu.ifi.sosy.tbial.db.Database;
+import de.lmu.ifi.sosy.tbial.db.Game;
+import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
+import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 
 /**
  * The web application "The Bug Is A Lie".
@@ -30,118 +32,128 @@ import org.apache.wicket.request.resource.IResource;
  */
 public class TBIALApplication extends WebApplication {
 
-  private final Database database;
+	private final Database database;
 
-  // Use LinkedHashSet to keep iteration order over current users always the same
-  private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
+	// Use LinkedHashSet to keep iteration order over current users always the same
+	private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
 
-  public static Database getDatabase() {
-    return ((TBIALApplication) get()).database;
-  }
+	private final Set<Game> openGames = Collections.synchronizedSet(new LinkedHashSet<>());
 
-  public TBIALApplication() {
-    this(new SQLDatabase());
-  }
+	public static Database getDatabase() {
+		return ((TBIALApplication) get()).database;
+	}
 
-  @VisibleForTesting
-  TBIALApplication(Database database) {
-    super();
-    this.database = database;
-  }
+	public TBIALApplication() {
+		this(new SQLDatabase());
+	}
 
-  @Override
-  public Class<Lobby> getHomePage() {
-    return Lobby.class;
-  }
+	@VisibleForTesting
+	TBIALApplication(Database database) {
+		super();
+		this.database = database;
+	}
 
-  public Class<GameLobby> getGameLobbyPage() {
-    return GameLobby.class;
-  }
+	@Override
+	public Class<Lobby> getHomePage() {
+		return Lobby.class;
+	}
 
-  /**
-   * Returns a new {@link TBIALSession} instead of a default Wicket
-   * {@link Session}.
-   */
-  @Override
-  public TBIALSession newSession(Request request, Response response) {
-    return new TBIALSession(request);
-  }
+	public Class<GameLobby> getGameLobbyPage() {
+		return GameLobby.class;
+	}
 
-  @Override
-  protected void init() {
-    initMarkupSettings();
-    initPageMounts();
-    initAuthorization();
-    // initExceptionHandling();
-  }
+	/**
+	 * Returns a new {@link TBIALSession} instead of a default Wicket
+	 * {@link Session}.
+	 */
+	@Override
+	public TBIALSession newSession(Request request, Response response) {
+		return new TBIALSession(request);
+	}
 
-  private void initMarkupSettings() {
-    if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
-      getMarkupSettings().setStripWicketTags(true);
-      getMarkupSettings().setStripComments(true);
-      getMarkupSettings().setCompressWhitespace(true);
-    }
-  }
+	@Override
+	protected void init() {
+		initMarkupSettings();
+		initPageMounts();
+		initAuthorization();
+		// initExceptionHandling();
+	}
 
-  private void initPageMounts() {
-    mountPage("home", getHomePage());
-    mountPage("login", Login.class);
-    mountPage("register", Register.class);
-    mountPage("lobby", Lobby.class);
-  }
+	private void initMarkupSettings() {
+		if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
+			getMarkupSettings().setStripWicketTags(true);
+			getMarkupSettings().setStripComments(true);
+			getMarkupSettings().setCompressWhitespace(true);
+		}
+	}
 
-  /**
-   * Initializes authorization so that pages annotated with {@link AuthenticationRequired} require a
-   * valid, signed-in user.
-   */
-  private void initAuthorization() {
-    getSecuritySettings()
-        .setAuthorizationStrategy(
-            new IAuthorizationStrategy() {
+	private void initPageMounts() {
+		mountPage("home", getHomePage());
+		mountPage("login", Login.class);
+		mountPage("register", Register.class);
+		mountPage("lobby", Lobby.class);
+	}
 
-              @Override
-              public <T extends IRequestableComponent> boolean isInstantiationAuthorized(
-                  Class<T> componentClass) {
-                boolean requiresAuthentication =
-                    componentClass.isAnnotationPresent(AuthenticationRequired.class);
-                boolean isSignedIn = ((TBIALSession) Session.get()).isSignedIn();
+	/**
+	 * Initializes authorization so that pages annotated with
+	 * {@link AuthenticationRequired} require a valid, signed-in user.
+	 */
+	private void initAuthorization() {
+		getSecuritySettings().setAuthorizationStrategy(new IAuthorizationStrategy() {
 
-                if (requiresAuthentication && !isSignedIn) {
-                  // redirect the user to the login page.
-                  throw new RestartResponseAtInterceptPageException(Login.class);
-                }
+			@Override
+			public <T extends IRequestableComponent> boolean isInstantiationAuthorized(Class<T> componentClass) {
+				boolean requiresAuthentication = componentClass.isAnnotationPresent(AuthenticationRequired.class);
+				boolean isSignedIn = ((TBIALSession) Session.get()).isSignedIn();
 
-                // continue.
-                return true;
-              }
+				if (requiresAuthentication && !isSignedIn) {
+					// redirect the user to the login page.
+					throw new RestartResponseAtInterceptPageException(Login.class);
+				}
 
-              @Override
-              public boolean isActionAuthorized(Component component, Action action) {
-                // all actions are authorized.
-                return true;
-              }
+				// continue.
+				return true;
+			}
 
-              @Override
-              public boolean isResourceAuthorized(IResource arg0, PageParameters arg1) {
-                // all resources are authorized
-                return true;
-              }
-            });
-  }
+			@Override
+			public boolean isActionAuthorized(Component component, Action action) {
+				// all actions are authorized.
+				return true;
+			}
 
-  public int getUsersLoggedInCount() {
-    return loggedInUsers.size();
-  }
+			@Override
+			public boolean isResourceAuthorized(IResource arg0, PageParameters arg1) {
+				// all resources are authorized
+				return true;
+			}
+		});
+	}
 
-  public List<User> getLoggedInUsers() {
-    return new ArrayList<>(loggedInUsers);
-  }
+	public int getUsersLoggedInCount() {
+		return loggedInUsers.size();
+	}
 
-  public void userLoggedIn(final User pUser) {
-    loggedInUsers.add(pUser);
-  }
+	public List<User> getLoggedInUsers() {
+		return new ArrayList<>(loggedInUsers);
+	}
 
-  public void userLoggedOut(final User pUser) {
-    loggedInUsers.remove(pUser);
-  }
+	public void userLoggedIn(final User pUser) {
+		loggedInUsers.add(pUser);
+	}
+
+	public void userLoggedOut(final User pUser) {
+		loggedInUsers.remove(pUser);
+	}
+
+	public List<Game> getOpenGames() {
+		return new ArrayList<>(openGames);
+	}
+
+	public void gameCreated(final Game pGame) {
+		openGames.add(pGame);
+	}
+
+	public void gameDeleted(final Game pGame) {
+		openGames.remove(pGame);
+	}
 }

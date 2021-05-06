@@ -25,24 +25,25 @@
 		    <th> </th>
 		  </tr>
 		 </thead>
-		  <tr>
-		    <td>pl</td>
-		    <td>one</td>
-		    <td>5/5</td>
-		    <td>pr</td>
-		  </tr>
-		  <tr>
-		    <td>pa</td>
-		    <td>two</td>
-		    <td>4/6</td>
-		    <td>pr</td>
-		  </tr>
-		  <tr>
-		    <td>s</td>
-		    <td>three</td>
-		    <td>2/5</td>
-		    <td>pr</td>
-		  </tr>
+		 <tbody wicket:id="gameListContainer">
+			  <tr wicket:id="openGames">
+			  	<td> </td>
+			    <td wicket:id="name">one</td>
+			    <td> </td>
+			  </tr>
+			  <tr>
+			    <td>pa</td>
+			    <td>two</td>
+			    <td>4/6</td>
+			    <td>pr</td>
+			  </tr>
+			  <tr>
+			    <td>s</td>
+			    <td>three</td>
+			    <td>2/5</td>
+			    <td>pr</td>
+			  </tr>
+		  </tbody>
 		</table>
 		<br>
 	</section>
@@ -58,7 +59,7 @@
 	    <input wicket:id="isPrivate" type="checkbox" name="privateCheckbox"/>
 	    <label wicket:id="newGamePwLabel" for="newGamePw">Game password</label>
 	    <input wicket:id="newGamePw" type="password" name="newGamePw"/>
-    	<input type=submit value="New Game" wicket:id="newGameButton"/>
+    	<input type=submit value="New Game" wicket:id="newGameButton" />
     	<div class="spacer"></div>
     </form>
 </wicket:extend>
