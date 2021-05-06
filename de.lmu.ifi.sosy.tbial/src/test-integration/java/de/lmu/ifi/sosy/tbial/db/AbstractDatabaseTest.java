@@ -43,13 +43,13 @@ public abstract class AbstractDatabaseTest {
 
   @Test
   public void hasUserWithNameWhenUserNotRegisteredReturnsFalse() {
-    assertThat(database.nameTaken(name), is(false));
+    assertThat(database.userNameTaken(name), is(false));
   }
 
   @Test
   public void hasUserWithNameWhenUserRegisteredReturnsTrue() {
     addUser();
-    assertThat(database.nameTaken(name), is(true));
+    assertThat(database.userNameTaken(name), is(true));
   }
 
   @Test
