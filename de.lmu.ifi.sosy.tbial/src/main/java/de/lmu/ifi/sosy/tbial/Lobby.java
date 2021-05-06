@@ -69,7 +69,10 @@ public class Lobby extends BasePage {
 
 			@Override
 			protected void populateItem(final ListItem<Game> listItem) {
-				listItem.add(new Label("name"));
+				final Game game = listItem.getModelObject();
+				listItem.add(new Label("name", game.getName()));
+				listItem.add(new Label("numberOfPlayers", "/" + game.getMaxPlayers()));
+				listItem.add(new Label("access", game.isPrivate()));
 			}
 
 		};
@@ -176,7 +179,7 @@ public class Lobby extends BasePage {
 			int userId = getSession().getUser().getId();
 			Player player = getDatabase().createPlayer(userId, game.getId(), true);
 			getSession().setCurrentPlayer(player);
-			setResponsePage(((TBIALApplication) getApplication()).getGameLobbyPage());
+			// setResponsePage(((TBIALApplication) getApplication()).getGameLobbyPage());
 			info("Game creation successful! You are host of a new game");
 			LOGGER.info("New game '" + name + "' game creation successful");
 			System.out.printf("Successfully created new game called %s and a max count of %d players \n", name,
