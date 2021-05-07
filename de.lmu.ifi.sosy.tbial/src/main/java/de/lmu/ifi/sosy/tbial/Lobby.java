@@ -1,8 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
-import de.lmu.ifi.sosy.tbial.db.Game;
-import de.lmu.ifi.sosy.tbial.db.Player;
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
+
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -91,7 +91,7 @@ public class Lobby extends BasePage {
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
             String name = newGameNameField.getModelObject();
-            if (getDatabase().gameNameTaken(name)) {
+            if (getGameManager().gameNameTaken(name)) {
               nameFeedbackLabel.setDefaultModelObject("Name already taken.");
             } else {
               nameFeedbackLabel.setDefaultModelObject(" ");
@@ -155,26 +155,21 @@ public class Lobby extends BasePage {
     System.out.printf(
         "Trying to create new game called %s and a max count of %d players \n", name, maxPlayers);
 
-    Game game = getDatabase().newGame(name, maxPlayers, isPrivate, password);
-    if (game != null) {
+    String hostName = getSession().getUser().getName();
+    // if game name not taken
+    if (!getGameManager().gameNameTaken(name)) {
+      Game game = new Game(name, maxPlayers, isPrivate, password, hostName);
+      getGameManager().addGame(game);
       getSession().setCurrentGame(game);
-      int userId = getSession().getUser().getId();
-      Player player = getDatabase().createPlayer(userId, game.getId(), true);
-      getSession().setCurrentPlayer(player);
-      setResponsePage(((TBIALApplication) getApplication()).getGameLobbyPage());
+      setResponsePage(getTbialApplication().getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");
       System.out.printf(
           "Successfully created new game called %s and a max count of %d players \n",
           name, maxPlayers);
     } else {
-      error(
-          "There was an error trying to create the game. Please try again."); // TODO SK: Make more
-      // specific
-      LOGGER.debug(
-          "New game '"
-              + name
-              + "' creation failed."); // TODO SK: make more specific, probably name already taken
+      error("The name is already taken. Please try again.");
+      LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
       System.out.println("Could not create new game " + name);
     }
   }

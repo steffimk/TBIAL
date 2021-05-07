@@ -3,9 +3,9 @@ package de.lmu.ifi.sosy.tbial;
 import static java.util.Objects.requireNonNull;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
-import de.lmu.ifi.sosy.tbial.db.Game;
-import de.lmu.ifi.sosy.tbial.db.Player;
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
+
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +28,6 @@ public class TBIALSession extends AuthenticatedWebSession {
   private User user;
 
   private Game currentGame = null; // TODO SK: maybe move to other class?
-  private Player currentPlayer = null; // TODO SK: maybe move to other class?
 
   public TBIALSession(Request request) {
     super(request);
@@ -106,7 +105,4 @@ public class TBIALSession extends AuthenticatedWebSession {
     this.currentGame = game;
   }
 
-  public void setCurrentPlayer(Player player) {
-    this.currentPlayer = player;
-  }
 }

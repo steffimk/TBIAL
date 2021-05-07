@@ -1,6 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
+
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
@@ -26,6 +28,10 @@ public abstract class BasePage extends WebPage {
 
   protected Database getDatabase() {
     return TBIALApplication.getDatabase();
+  }
+
+  protected GameManager getGameManager() {
+    return getTbialApplication().getGameManager();
   }
 
   protected TBIALApplication getTbialApplication() {
