@@ -1,0 +1,13 @@
+Fri May 07 11:52:09 CEST 2021 : Apache Derby Network Server - 10.15.2.0 - (1873585) started and ready to accept connections on port 1527
+----------------------------------------------------------------
+Fri May 07 11:54:20 CEST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-0179-463d-8957-0000542fbcba 
+on database directory /Users/juli/Desktop/SWEP/swep21-tbial-team3/.derby/tbial_development with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@799f7e29 
+Loaded from file:/Users/juli/Desktop/SWEP/apache/db-derby-10.15.2.0-bin/lib/derby.jar
+java.vendor=AdoptOpenJDK
+user.dir=/Users/juli/Desktop/SWEP/swep21-tbial-team3
+os.name=Mac OS X
+os.arch=x86_64
+os.version=10.15.7
+derby.system.home=.derby
+Database Class Loader started - derby.database.classpath=''

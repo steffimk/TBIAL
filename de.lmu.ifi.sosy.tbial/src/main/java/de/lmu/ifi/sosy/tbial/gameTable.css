@@ -9,6 +9,7 @@
 	width: 100%;
 	height: 900px;
 	margin-left: 1%;
+	background-image: url("table.png");
 /* 	border: 1px solid black; */
 }
 
@@ -21,7 +22,7 @@
 	width: 300px;
 	background: white;
 	border-radius: 50%;
-	border: 1px solid black;
+	border: 1px solid black;	
 }
 
 .arrow-up {
