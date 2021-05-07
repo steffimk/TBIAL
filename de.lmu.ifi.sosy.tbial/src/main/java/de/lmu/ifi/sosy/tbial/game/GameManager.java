@@ -1,21 +1,23 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /** Manages the current games. */
 public class GameManager {
 
-  private HashMap<String, Game> currentGames;
+  private Map<String, Game> currentGames;
 
   public GameManager() {
-    this.currentGames = new HashMap<>();
+    this.currentGames = Collections.synchronizedMap(new HashMap<String, Game>());
   }
 
-  public HashMap<String, Game> getCurrentGames() {
+  public Map<String, Game> getCurrentGames() {
     return currentGames;
   }
 
-  public void addGame(Game game) {
+  public synchronized void addGame(Game game) {
     if (!gameNameTaken(game.getName())) {
 	    this.currentGames.put(game.getName(), game);
 	}
