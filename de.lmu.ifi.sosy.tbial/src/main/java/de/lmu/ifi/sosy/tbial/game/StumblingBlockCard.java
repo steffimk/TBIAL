@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+/** Stumbling Block Cards are modeled with this class. */
 public class StumblingBlockCard extends Card implements StackCard {
 
   private final StumblingBlock stumblingBlock;
@@ -13,6 +14,7 @@ public class StumblingBlockCard extends Card implements StackCard {
     return stumblingBlock;
   }
 
+  /** Enum containing information about the specific stumbling block cards. */
   public enum StumblingBlock {
     MAINTENANCE("Fortran Maintenance", 1),
     TRAINING("Off-The-Job Training", 3);

@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+/** Character Cards are modeled with this class. */
 public class CharacterCard extends Card {
 
   private final Character character;
@@ -13,6 +14,11 @@ public class CharacterCard extends Card {
     return this.character;
   }
 
+  public int getMaxHealthPoints() {
+    return character.maxHealthPoints;
+  }
+
+  /** Enum containing information about the specific character cards. */
   public enum Character {
     ZUCKERBERG("Mark Zuckerberg", 3),
     ANDERSON("Tom Anderson", 4),

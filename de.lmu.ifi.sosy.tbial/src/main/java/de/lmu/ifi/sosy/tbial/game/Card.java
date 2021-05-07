@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+/** Every card in the game inherits from this class. Includes the CardType. */
 public abstract class Card {
 
   private final CardType cardType;
@@ -12,6 +13,7 @@ public abstract class Card {
     return this.cardType;
   }
 
+  /** The card types and the respective colors. */
   public enum CardType {
     ROLE("Role Card", Color.GREEN),
     CHARACTER("Character Card", Color.YELLOW),
@@ -32,6 +34,8 @@ public abstract class Card {
       return this.label;
     }
 
+    // TODO: Not sure if we even need this.
+    /** The colors of the cards */
     public enum Color {
       GREEN("#33cc33"),
       YELLOW("#ffbf00"),

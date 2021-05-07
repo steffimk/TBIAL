@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+/** Ability Cards are modeled with this class. */
 public class AbilityCard extends Card implements StackCard {
 
   private final Ability ability;
@@ -13,6 +14,7 @@ public class AbilityCard extends Card implements StackCard {
     return ability;
   }
 
+  /** Enum containing information about the specific ability cards. */
   public enum Ability {
     SUNGLASSES("Wears Sunglasses at Work", 1, AbilityType.GARMENT),
     TIE("Wears Tie at Work", 2, AbilityType.GARMENT),

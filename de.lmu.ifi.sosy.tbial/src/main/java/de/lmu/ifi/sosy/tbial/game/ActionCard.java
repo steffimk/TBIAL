@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+/** Action Cards are modeled with this class. */
 public class ActionCard extends Card implements StackCard {
 
   private final Action action;
@@ -13,6 +14,7 @@ public class ActionCard extends Card implements StackCard {
     return action;
   }
 
+  /** Enum containing information about the specific action cards. */
   public enum Action {
     RED_BULL("Red Bull Dispenser", 1, ActionType.SPECIAL),
     HEISENBUG("Heisenbug", 1, ActionType.SPECIAL),

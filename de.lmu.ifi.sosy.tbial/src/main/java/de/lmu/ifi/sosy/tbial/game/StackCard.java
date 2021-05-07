@@ -1,7 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
-import de.lmu.ifi.sosy.tbial.game.Card.CardType;
-
+/** All cards that are part of the stack must implement this interface. */
 public interface StackCard {
-  public CardType getCardType();
+  // public boolean playCard();
 }
