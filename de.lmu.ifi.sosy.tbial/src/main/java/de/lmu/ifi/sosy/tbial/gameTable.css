@@ -9,20 +9,33 @@
 	width: 100%;
 	height: 900px;
 	margin-left: 1%;
-	background-image: url("table.png");
+	/*background-image: url("table.png");*/
 /* 	border: 1px solid black; */
 }
 
-.circle {
+.circleBase {
+	border-radius: 50%;
+	border: 1px solid black;	
+}
+
+.center {
 	position: absolute;
 	top : 50%;
 	left : 50%;
 	transform : translate( -50%, -50%);
-	height: 300px;
-	width: 300px;
-	background: white;
-	border-radius: 50%;
-	border: 1px solid black;	
+	height: 200px;
+	width: 200px;
+	background: transparent;
+}
+
+.profile {
+	position: relative;
+	top : 50%;
+	right : 50%;
+	/*transform : translate( -50%, 400%);*/
+	height: 70px;
+	width: 70px;
+	background: transparent;
 }
 
 /* polygons start in the middle and then go clockwise */
@@ -30,21 +43,25 @@
 .player-1 {
 	width: 100%;
 	height: 100%;
-	background: black;
+	
+	/*background-image: url("table.png");*/
 	clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-1:before {
   content: '';
   clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
-  background: white;
+  background-image: url("table.png");
+  opacity: 0.5;
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-4-2 {
@@ -53,18 +70,20 @@
 	background: black;
 	clip-path: polygon(50% 50%, 0% 100%, 0% 0%);
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-4-2:before {
   content: '';
   clip-path: polygon(50% 50%, 0% 100%, 0% 0%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-4-3 {
@@ -73,18 +92,20 @@
 	background: black;
 	position: absolute;
 	clip-path: polygon(50% 50%, 100% 0%, 0% 0%);
+	border: 1px solid black;
 }
 
 .player-4-3:before {
   content: '';
   clip-path: polygon(50% 50%, 100% 0%, 0% 0%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-4-4 {
@@ -93,18 +114,20 @@
 	background: black;
 	clip-path: polygon(50% 50%, 100% 0%, 100% 100%);
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-4-4:before {
   content: '';
   clip-path: polygon(50% 50%, 100% 0%, 100% 100%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-5-2 {
@@ -112,19 +135,22 @@
 	width: 100%;
 	height: 100%;
 	background: black;
+	background-image: url("table.png");
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-5-2:before {
   content: '';
   clip-path: polygon(50% 50%, 0 100%, 0% 25%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-5-3 {
@@ -134,18 +160,20 @@
 	float: left;
 	position: absolute;
 	clip-path: polygon(50% 50%, 0% 25%, 0% 0%, 50% 0%);
+	border: 1px solid black;
 }
 
 .player-5-3:before {
   content: '';
   clip-path: polygon(50% 50%, 0% 25%, 0% 0%, 50% 0%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-5-4 {
@@ -154,18 +182,20 @@
 	background: black;
 	position: absolute;
 	clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 25%);
+	border: 1px solid black;
 }
 
 .player-5-4:before {
   content: '';
   clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 25%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-5-5 {
@@ -174,18 +204,20 @@
 	height: 100%;
 	background: black;
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-5-5:before {
   content: '';
   clip-path: polygon(50% 50%, 100% 25%, 100% 100%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-6-2 {
@@ -194,18 +226,20 @@
 	height: 100%;
 	background: black;
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-6-2:before {
   content: '';
   clip-path: polygon(50% 50%, 0% 100%, 0% 40%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-6-3 {
@@ -215,18 +249,20 @@
 	float: left;
 	position: absolute;
 	clip-path: polygon(50% 50%, 0% 40%, 0% 0%, 20% 0%);
+	border: 1px solid black;
 }
 
 .player-6-3:before {
   content: '';
   clip-path: polygon(50% 50%, 0% 40%, 0% 0%, 20% 0%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-6-4 {
@@ -235,18 +271,20 @@
 	background: black;
 	position: absolute;
 	clip-path: polygon(50% 50%, 20% 0%, 80% 0%);
+	border: 1px solid black;
 }
 
 .player-6-4:before {
   content: '';
   clip-path: polygon(50% 50%, 20% 0%, 80% 0%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-6-5 {
@@ -255,18 +293,20 @@
 	background: black;
 	position: absolute;
 	clip-path: polygon(50% 50%, 80% 0%, 100% 0%, 100% 40%);
+	border: 1px solid black;
 }
 
 .player-6-5:before {
   content: '';
   clip-path: polygon(50% 50%, 80% 0%, 100% 0%, 100% 40%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-6-6 {
@@ -275,18 +315,20 @@
 	height: 100%;
 	background: black;
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-6-6:before {
   content: '';
   clip-path: polygon(50% 50%, 100% 40%, 100% 100%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-7-2 {
@@ -295,18 +337,21 @@
 	height: 100%;
 	background: black;
 	position: absolute;
+	border: 1px solid black;
+	
 }
 
 .player-7-2:before {
   content: '';
   clip-path: polygon(50% 50%, 0% 100%, 0% 50%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-7-3 {
@@ -315,18 +360,20 @@
 	height: 100%;
 	background: black;
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-7-3:before {
   content: '';
   clip-path: polygon(50% 50%, 0% 50%, 0% 0%);
-  background: white;
+  background-image: url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-7-4 {
@@ -336,18 +383,20 @@
 	float: left;
 	position: absolute;
 	clip-path: polygon(50% 50%, 0% 0%, 50% 0%);
+	border: 1px solid black;
 }
 
 .player-7-4:before {
   content: '';
   clip-path: polygon(50% 50%, 0% 0%, 50% 0%);
-  background: white;
+  background-image:url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-7-5 {
@@ -357,18 +406,20 @@
 	float: left;
 	position: absolute;
 	clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
+	border: 1px solid black;
 }
 
 .player-7-5:before {
   content: '';
   clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
-  background: white;
+  background-image:url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-7-6 {
@@ -377,18 +428,20 @@
 	background: black;
 	position: absolute;
 	clip-path: polygon(50% 50%, 100% 0%, 100% 50%);
+	border: 1px solid black;
 }
 
 .player-7-6:before {
   content: '';
   clip-path: polygon(50% 50%, 100% 0%, 100% 50%);
-  background: white;
+  background-image:url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .player-7-7 {
@@ -397,18 +450,20 @@
 	height: 100%;
 	background: black;
 	position: absolute;
+	border: 1px solid black;
 }
 
 .player-7-7:before {
   content: '';
   clip-path: polygon(50% 50%, 100% 50%, 100% 100%);
-  background: white;
+  background-image:url("table.png");
   display: block;
   position: absolute;
   top: 1px;
   left: 1px;
   right: 1px;
   bottom: 1px;
+  border: 1px solid black;
 }
 
 .stack {	
@@ -427,3 +482,6 @@
 	display: inline-block;
 	margin-left: 5%;
 }
+
+
+
