@@ -25,17 +25,448 @@
 	transform : translate( -50%, -50%);
 	height: 200px;
 	width: 200px;
-	background: transparent;
+	background-image: url("table.png");
 }
 
 .profile {
 	position: relative;
-	top : 50%;
-	right : 50%;
-	/*transform : translate( -50%, 400%);*/
+	top : 90%;
+	left : 80%;
+	display: inline-block;
+	/*transform : translate( -50%, 400%); */
 	height: 70px;
 	width: 70px;
 	background: transparent;
+}
+
+.container1 {
+	height: 100%;
+	width: 100%;
+	
+}
+
+.container4-2 {
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg);
+	display: inline-block;
+}
+
+.container4-2 .points {
+	transform: rotate(-90deg);
+	top: 85%;
+}
+
+.container4-3 {
+	width: 100%;
+	height: 900px;
+	transform: rotate(180deg);
+	display: inline-block;
+}
+
+.container4-3 .points {
+	transform: rotate(180deg);
+	top: 90%;
+}
+
+.container4-3 .handcard {
+	transform: rotate(180deg);
+}
+
+.container4-4 {
+	float: right;
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+/* 	display: inline-block; */
+	overflow: hidden;
+}
+
+.container4-4 .points {
+	transform: rotate(90deg);
+	top: 85%;
+}
+
+.container5-2 {
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg);
+	display: inline-block;
+}
+
+.container5-2 .points {
+	transform: rotate(-90deg);
+	top: 85%;
+}
+
+.container5-3 {
+	width: 100%;
+	height: 900px;
+	transform: rotate(180deg);
+	display: inline-block;
+	
+}
+
+.container5-3 .profile {
+	left: 90%;
+}
+
+.container5-3 .points {
+	transform: rotate(180deg);
+	left: 85%;
+	top: 80%;
+}
+
+.container5-3 .cards{
+	left: 53%;
+}
+
+.container5-3 .handcard {
+	transform: rotate(180deg);
+}
+
+.container5-4 {
+	float: right;
+	width: 100%;
+	height: 900px;
+	transform: rotate(180deg);
+}
+
+.container5-4 .profile {
+	left: 5%;
+}
+
+.container5-4 .points {
+	transform: rotate(180deg);
+	left: 10%;
+	top: 80%;
+}
+
+.container5-4 .cards{
+	left: 25%;
+}
+
+.container5-4 .handcard {
+	transform: rotate(180deg);
+}
+
+.container5-5 {
+	float: right;
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container5-5 .profile {
+	left: 10%;
+}
+
+.container5-5 .points {
+	transform: rotate(90deg);
+	left: 20%;
+	top: 85%;
+}
+
+.container5-5 .cards{
+	left: 35%;
+}
+
+.container6-2 {
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg);
+	display: inline-block;
+}
+
+.container6-2 .points {
+	transform: rotate(-90deg);
+	top: 87%;
+	left: 70%;
+}
+
+.container6-2 .cards {
+	left: 44%;
+}
+
+.container6-3 {
+	width: 100%;
+	height: 900px;
+	transform: rotate(180deg);
+	display: inline-block;
+}
+
+.container6-3 .profile {
+	left: 90%;
+}
+
+.container6-3 .points {
+	transform: rotate(180deg);
+	left: 88%;
+	top: 80%;
+}
+
+.container6-3 .cards{
+	left: 65%;
+	top: 54%;
+	transform: rotate(-45deg);
+}
+
+.container6-3 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container6-4 {
+	float: right;
+	width: 100%;
+	height: 900px;
+	transform: rotate(180deg);
+}
+
+.container6-4 .profile {
+	left: 65%;
+}
+
+.container6-4 .points {
+	transform: rotate(150deg);
+	left: 59%;
+	top: 84%;
+}
+
+.container6-4 .cards{
+	left: 37%;
+	top: 64%;
+	transform: rotate(20deg);
+}
+
+.container6-4 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container6-5 {
+	float: right;
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container6-5 .profile {
+	left: 90%;
+}
+
+.container6-5 .points {
+	transform: rotate(90deg);
+	left: 88%;
+	top: 78%;
+}
+
+.container6-5 .cards{
+	left: 59%;
+	top: 58%;
+	transform: rotate(-45deg);
+}
+
+.container6-5 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container6-6 {
+	float: right;
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container6-6 .profile {
+	left: 10%;
+}
+
+.container6-6 .points {
+	transform: rotate(90deg);
+	left: 18%;
+	top: 85%;
+}
+
+.container6-6 .cards{
+	left: 29%;
+}
+
+.container7-2 {
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg);
+	display: inline-block;
+}
+
+.container7-2 .points {
+	transform: rotate(-90deg);
+	top: 87%;
+	left: 71%;
+}
+
+.container7-2 .cards {
+	left: 50%;
+	top: 65%;
+}
+
+.container7-2 .handcard {
+	height: 80px;
+	width: 48px;
+}
+
+.container7-3 {
+	width: 100%;
+	height: 900px;
+	transform: rotate(180deg);
+	display: inline-block;
+}
+
+.container7-3 .profile {
+	left: 92%;
+	top: 85%;
+}
+
+.container7-3 .points {
+	transform: rotate(180deg);
+	left: 88%;
+	top: 77%;
+}
+
+.container7-3 .cards{
+	left: 69%;
+	top: 45%;
+	transform: rotate(-75deg);
+}
+
+.container7-3 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-4 {
+	float: right;
+	width: 100%;
+	height: 900px;
+	transform: rotate(180deg);
+}
+
+.container7-4 .profile {
+	left: 80%;
+}
+
+.container7-4 .points {
+	transform: rotate(150deg);
+	left: 75%;
+	top: 84%;
+}
+
+.container7-4 .cards{
+	left: 51%;
+	top: 62%;
+	transform: rotate(-25deg);
+}
+
+.container7-4 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-5 {
+	float: right;
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container7-5 .profile {
+	left: 91%;
+	top: 81%;
+}
+
+.container7-5 .points {
+	transform: rotate(90deg);
+	left: 90%;
+	top: 73%;
+}
+
+.container7-5 .cards{
+	left: 66%;
+	top: 40%;
+	transform: rotate(-65deg);
+}
+
+.container7-5 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-6 {
+	float: right;
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container7-6 .profile {
+	left: 85%;
+}
+
+.container7-6 .points {
+	transform: rotate(90deg);
+	left: 75%;
+	top: 85%;
+}
+
+.container7-6 .cards{
+	left: 50%;
+	transform: rotate(-20deg);
+}
+
+.container7-6 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-7 {
+	float: right;
+	height: 100%;
+	width: 900px;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container7-7 .profile {
+	left: 12%;
+}
+
+.container7-7 .points {
+	transform: rotate(90deg);
+	left: 19%;
+	top: 88%;
+}
+
+.container7-7 .cards{
+	left: 27%;
+	top: 65%;
+}
+
+.container7-7 .handcard {
+	height: 80px;
+	width: 48px;
 }
 
 /* polygons start in the middle and then go clockwise */

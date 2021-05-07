@@ -7,9 +7,31 @@
 <body>
 
 	<wicket:panel>
-		
-		<h1>Player Area</h1>
-		
+		<wicket:link>
+		<link rel="stylesheet" href="playerAreaPanel.css" type="text/css" />
+	</wicket:link>
+		<div class="circleBase profile"></div>
+		<ul class="points">
+			<li>Mental Health: </li>
+			<li>Prestige: </li>
+			<li>Bug: </li>
+		</ul>
+		<div class="cards">
+			<div class="blocked">
+				<div class="handcard">Block Card 1</div>
+				<div class="handcard">Block Card 2</div>
+			</div>
+			<div class="played">
+				<div class="handcard">Played Card 1</div>
+				<div class="handcard">Played Card 2</div>
+				<div class="handcard">Played Card 3</div>
+			</div>
+			<div class="handcards">
+				<div class="handcard">Hand Card 1</div>
+				<div class="handcard">Hand Card 2</div>
+				<div class="handcard">Hand Card 3</div>
+			</div>
+		</div>
 	</wicket:panel>
 
 </body>
