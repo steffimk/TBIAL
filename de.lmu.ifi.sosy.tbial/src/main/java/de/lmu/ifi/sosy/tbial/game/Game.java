@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
-/** A game. */
+/** A game. Contains all information about a game. */
 public class Game implements Serializable {
 
   /** UID for serialization. */
@@ -28,20 +28,24 @@ public class Game implements Serializable {
   private String hash;
   private String salt;
 
+  private boolean hasStarted;
+
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
-    this.host = userName;
+    this.setHost(userName);
     this.players = new HashMap<>();
     addNewPlayer(userName);
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
+      requireNonNull(password);
       SecureRandom random = new SecureRandom();
       byte[] saltByteArray = new byte[16];
       random.nextBytes(saltByteArray);
       this.salt = new String(saltByteArray, StandardCharsets.UTF_8);
       this.hash = getHashedPassword(password, saltByteArray);
     }
+    this.hasStarted = false;
   }
 
   /**
@@ -97,5 +101,21 @@ public class Game implements Serializable {
       e.printStackTrace();
     }
     return hash;
+  }
+
+  public boolean hasStarted() {
+    return hasStarted;
+  }
+
+  public void setHasStarted(boolean hasStarted) {
+    this.hasStarted = hasStarted;
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public void setHost(String host) {
+    this.host = host;
   }
 }

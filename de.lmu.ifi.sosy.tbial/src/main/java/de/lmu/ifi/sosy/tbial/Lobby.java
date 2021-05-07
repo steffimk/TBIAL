@@ -152,8 +152,6 @@ public class Lobby extends BasePage {
    * @param password can be null if the game is not private
    */
   private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
-    System.out.printf(
-        "Trying to create new game called %s and a max count of %d players \n", name, maxPlayers);
 
     String hostName = getSession().getUser().getName();
     // if game name not taken
@@ -164,13 +162,9 @@ public class Lobby extends BasePage {
       setResponsePage(getTbialApplication().getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");
-      System.out.printf(
-          "Successfully created new game called %s and a max count of %d players \n",
-          name, maxPlayers);
     } else {
       error("The name is already taken. Please try again.");
       LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
-      System.out.println("Could not create new game " + name);
     }
   }
   

@@ -2,8 +2,9 @@ package de.lmu.ifi.sosy.tbial.game;
 
 import java.util.HashMap;
 
+/** Manages the current games. */
 public class GameManager {
-	
+
   private HashMap<String, Game> currentGames;
 
   public GameManager() {
