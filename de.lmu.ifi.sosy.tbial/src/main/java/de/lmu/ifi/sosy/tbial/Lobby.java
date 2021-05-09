@@ -71,7 +71,8 @@ public class Lobby extends BasePage {
 			protected void populateItem(final ListItem<Game> listItem) {
 				final Game game = listItem.getModelObject();
 				listItem.add(new Label("name", game.getName()));
-				listItem.add(new Label("numberOfPlayers", "/" + game.getMaxPlayers()));
+				listItem.add(
+						new Label("numberOfPlayers", game.getCurrentNumberOfPlayers() + "/" + game.getMaxPlayers()));
 				listItem.add(new Label("access", game.isPrivate()));
 			}
 

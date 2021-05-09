@@ -1,96 +1,95 @@
 package de.lmu.ifi.sosy.tbial.db;
 
-import java.io.Serializable;
 import static java.util.Objects.requireNonNull;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /** A game. */
 public class Game implements Serializable {
 
-  /** UID for serialization. */
-  private static final long serialVersionUID = 1L;
+	/** UID for serialization. */
+	private static final long serialVersionUID = 1L;
 
-  private int id = -1;
+	private int id = -1;
 
-  private String name;
+	private String name;
 
-  private int maxPlayers;
+	private List<Player> currentPlayers;
+	private int maxPlayers;
 
-  private boolean isPrivate;
+	private boolean isPrivate;
 
-  private String hash;
-  private String salt;
+	private String hash;
+	private String salt;
 
-  public Game(
-      int id,
-      String name,
-      int maxPlayers,
-      boolean isPrivate,
-      String hash,
-      String salt) {
-    this.id = id;
-    this.name = requireNonNull(name);
-    this.maxPlayers = requireNonNull(maxPlayers);
-    this.isPrivate = isPrivate;
-    if (isPrivate) {
-      this.hash = requireNonNull(hash);
-      this.salt = requireNonNull(salt);
-    }
-  }
+	public Game(int id, String name, int maxPlayers, boolean isPrivate, String hash, String salt) {
+		this.id = id;
+		this.name = requireNonNull(name);
+		this.currentPlayers = new ArrayList<Player>();
+		this.maxPlayers = requireNonNull(maxPlayers);
+		this.isPrivate = isPrivate;
+		if (isPrivate) {
+			this.hash = requireNonNull(hash);
+			this.salt = requireNonNull(salt);
+		}
+	}
 
-  public String getName() {
-    return name;
-  }
+	public void addPlayerToGame(Player player) {
+		currentPlayers.add(player);
+	}
 
-  public void setName(String name) {
-    this.name = requireNonNull(name);
-  }
+	public String getName() {
+		return name;
+	}
 
-  public String getHash() {
-    return hash;
-  }
+	public void setName(String name) {
+		this.name = requireNonNull(name);
+	}
 
-  public String getSalt() {
-    return salt;
-  }
+	public String getHash() {
+		return hash;
+	}
 
-  public int getMaxPlayers() {
-    return maxPlayers;
-  }
+	public String getSalt() {
+		return salt;
+	}
 
-  public boolean isPrivate() {
-    return isPrivate;
-  }
+	public int getCurrentNumberOfPlayers() {
+		return currentPlayers.size();
+	}
 
-  /**
-   * Returns the database id of the game. This id is only used for persistence and is only set when
-   * a user object is written or read form the database.
-   *
-   * @return the database id of the game.
-   */
-  public int getId() {
-    return id;
-  }
+	public int getMaxPlayers() {
+		return maxPlayers;
+	}
 
-  /**
-   * Sets the games's persistence id. This is package private so only database implementations can
-   * use it.
-   *
-   * @param id the game's persistence id.
-   */
-  void setId(int id) {
-    this.id = id;
-  }
+	public boolean isPrivate() {
+		return isPrivate;
+	}
 
-  @Override
-  public String toString() {
-    return "Game(Id:"
-        + id
-        + ", Name: "
-        + name
-        + ", maxPlayers: "
-        + maxPlayers
-        + ", isPrivate: "
-        + isPrivate
-        + ")";
-  }
+	/**
+	 * Returns the database id of the game. This id is only used for persistence and
+	 * is only set when a user object is written or read form the database.
+	 *
+	 * @return the database id of the game.
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * Sets the games's persistence id. This is package private so only database
+	 * implementations can use it.
+	 *
+	 * @param id the game's persistence id.
+	 */
+	void setId(int id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "Game(Id:" + id + ", Name: " + name + ", maxPlayers: " + maxPlayers + ", isPrivate: " + isPrivate + ")";
+	}
 }
