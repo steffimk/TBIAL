@@ -5,8 +5,10 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -19,6 +21,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
@@ -44,7 +47,6 @@ public class Lobby extends BasePage {
   private final NumberTextField<Integer> maxPlayersField;
   private final AjaxCheckBox isPrivateCheckBox;
   private final PasswordTextField newGamePwField;
-  private final Label newGamePwLabel;
   private final Label nameFeedbackLabel;
 
   public Lobby() {
@@ -106,10 +108,14 @@ public class Lobby extends BasePage {
     maxPlayersField.setRequired(true);
     maxPlayersField.setMinimum(4);
     maxPlayersField.setMaximum(7);
-    newGamePwLabel = new Label("newGamePwLabel", new Model<>("Game password"));
-    newGamePwLabel.setOutputMarkupPlaceholderTag(true);
+
+    WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
+    passwordContainer.setOutputMarkupPlaceholderTag(true);
+
     newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
-    newGamePwField.setOutputMarkupPlaceholderTag(true);
+
+    passwordContainer.add(newGamePwField);
+
     isPrivateCheckBox =
         new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
           /** UID for serialization. */
@@ -117,10 +123,10 @@ public class Lobby extends BasePage {
 
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
-            newGamePwField.setVisible(isPrivateCheckBox.getModelObject());
-            newGamePwLabel.setVisible(isPrivateCheckBox.getModelObject());
-            target.add(newGamePwField);
-            target.add(newGamePwLabel);
+            // Change visibility
+            passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
+
+            target.add(passwordContainer);
           }
         };
 
@@ -137,8 +143,7 @@ public class Lobby extends BasePage {
         .add(nameFeedbackLabel)
         .add(maxPlayersField)
         .add(isPrivateCheckBox)
-        .add(newGamePwLabel)
-        .add(newGamePwField)
+        .add(passwordContainer)
         .add(newGameButton);
     add(newGameForm);
   }
@@ -163,7 +168,7 @@ public class Lobby extends BasePage {
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");
     } else {
-      error("The name is already taken. Please try again.");
+      error("The name is already taken or the password is empty.");
       LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
     }
   }
