@@ -23,8 +23,12 @@
       	<input wicket:id="maxPlayers" type="number" name="maxPlayers" onKeyDown="return false"/>
 	    <label for="privateCheckbox">Private game</label>
 	    <input wicket:id="isPrivate" type="checkbox" name="privateCheckbox"/>
-	    <label wicket:id="newGamePwLabel" for="newGamePw">Game password</label>
-	    <input wicket:id="newGamePw" type="password" name="newGamePw"/>
+	  	<div wicket:id="passwordContainer">
+	  		<label for="newGamePw">Game password
+		    	<span class="small">Password cannot be empty</span>
+		    </label>
+		 	<input wicket:id="newGamePw" type="password" name="newGamePw"/>
+		 </div>
     	<input type=submit value="New Game" wicket:id="newGameButton"/>
     	<div class="spacer"></div>
     </form>

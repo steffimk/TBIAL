@@ -1,8 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
-import de.lmu.ifi.sosy.tbial.db.Game;
-import de.lmu.ifi.sosy.tbial.db.Player;
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
+
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -44,7 +44,6 @@ public class Lobby extends BasePage {
   private final NumberTextField<Integer> maxPlayersField;
   private final AjaxCheckBox isPrivateCheckBox;
   private final PasswordTextField newGamePwField;
-  private final Label newGamePwLabel;
   private final Label nameFeedbackLabel;
 
   public Lobby() {
@@ -91,7 +90,7 @@ public class Lobby extends BasePage {
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
             String name = newGameNameField.getModelObject();
-            if (getDatabase().gameNameTaken(name)) {
+            if (getGameManager().gameNameTaken(name)) {
               nameFeedbackLabel.setDefaultModelObject("Name already taken.");
             } else {
               nameFeedbackLabel.setDefaultModelObject(" ");
@@ -106,10 +105,14 @@ public class Lobby extends BasePage {
     maxPlayersField.setRequired(true);
     maxPlayersField.setMinimum(4);
     maxPlayersField.setMaximum(7);
-    newGamePwLabel = new Label("newGamePwLabel", new Model<>("Game password"));
-    newGamePwLabel.setOutputMarkupPlaceholderTag(true);
+
+    WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
+    passwordContainer.setOutputMarkupPlaceholderTag(true);
+
     newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
-    newGamePwField.setOutputMarkupPlaceholderTag(true);
+
+    passwordContainer.add(newGamePwField);
+
     isPrivateCheckBox =
         new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
           /** UID for serialization. */
@@ -117,10 +120,10 @@ public class Lobby extends BasePage {
 
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
-            newGamePwField.setVisible(isPrivateCheckBox.getModelObject());
-            newGamePwLabel.setVisible(isPrivateCheckBox.getModelObject());
-            target.add(newGamePwField);
-            target.add(newGamePwLabel);
+            // Change visibility
+            passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
+
+            target.add(passwordContainer);
           }
         };
 
@@ -137,8 +140,7 @@ public class Lobby extends BasePage {
         .add(nameFeedbackLabel)
         .add(maxPlayersField)
         .add(isPrivateCheckBox)
-        .add(newGamePwLabel)
-        .add(newGamePwField)
+        .add(passwordContainer)
         .add(newGameButton);
     add(newGameForm);
   }
@@ -152,30 +154,19 @@ public class Lobby extends BasePage {
    * @param password can be null if the game is not private
    */
   private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
-    System.out.printf(
-        "Trying to create new game called %s and a max count of %d players \n", name, maxPlayers);
 
-    Game game = getDatabase().newGame(name, maxPlayers, isPrivate, password);
-    if (game != null) {
+    String hostName = getSession().getUser().getName();
+    // if game name not taken
+    if (!getGameManager().gameNameTaken(name)) {
+      Game game = new Game(name, maxPlayers, isPrivate, password, hostName);
+      getGameManager().addGame(game);
       getSession().setCurrentGame(game);
-      int userId = getSession().getUser().getId();
-      Player player = getDatabase().createPlayer(userId, game.getId(), true);
-      getSession().setCurrentPlayer(player);
-      setResponsePage(((TBIALApplication) getApplication()).getGameLobbyPage());
+      setResponsePage(getTbialApplication().getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");
-      System.out.printf(
-          "Successfully created new game called %s and a max count of %d players \n",
-          name, maxPlayers);
     } else {
-      error(
-          "There was an error trying to create the game. Please try again."); // TODO SK: Make more
-      // specific
-      LOGGER.debug(
-          "New game '"
-              + name
-              + "' creation failed."); // TODO SK: make more specific, probably name already taken
-      System.out.println("Could not create new game " + name);
+      error("The name is already taken or the password is empty.");
+      LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
     }
   }
   
