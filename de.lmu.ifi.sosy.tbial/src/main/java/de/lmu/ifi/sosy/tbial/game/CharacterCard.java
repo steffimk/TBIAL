@@ -18,28 +18,35 @@ public class CharacterCard extends Card {
     return character.maxHealthPoints;
   }
 
+  @Override
+  public String getResourceFileName() {
+    return character.fileName;
+  }
+
   /** Enum containing information about the specific character cards. */
   public enum Character {
-    ZUCKERBERG("Mark Zuckerberg", 3),
-    ANDERSON("Tom Anderson", 4),
-    TAYLOR("Jeff Taylor", 4),
-    PAGE("Larry Page", 4),
-    ELLISON("Larry Ellison", 4),
-    BECK("Kent Beck", 4),
-    JOBS("Steve Jobs", 4),
-    BALLMER("Steve Ballmer", 4),
-    TORVALDS("Linus Torvalds", 4),
-    THOU("Holier than Thou", 4),
-    ZUSE("Konrad Zuse", 3),
-    SCHNEIER("Bruce Schneier", 4),
-    WEISSMAN("Terry Weissman", 4);
+    ZUCKERBERG("Mark Zuckerberg", 3, "card1.pdf"),
+    ANDERSON("Tom Anderson", 4, "card2.pdf"),
+    TAYLOR("Jeff Taylor", 4, "card3.pdf"),
+    PAGE("Larry Page", 4, "card4.pdf"),
+    ELLISON("Larry Ellison", 4, "card5.pdf"),
+    BECK("Kent Beck", 4, "card6.pdf"),
+    JOBS("Steve Jobs", 4, "card7.pdf"),
+    BALLMER("Steve Ballmer", 4, "card8.pdf"),
+    TORVALDS("Linus Torvalds", 4, "card9.pdf"),
+    THOU("Holier than Thou", 4, "card10.pdf"),
+    ZUSE("Konrad Zuse", 3, "card11.pdf"),
+    SCHNEIER("Bruce Schneier", 4, "card12.pdf"),
+    WEISSMAN("Terry Weissman", 4, "card13.pdf");
 
     public final String name;
     public final int maxHealthPoints;
+    public final String fileName;
 
-    private Character(String name, int maxHealthPoints) {
+    private Character(String name, int maxHealthPoints, String fileName) {
       this.name = name;
       this.maxHealthPoints = maxHealthPoints;
+      this.fileName = fileName;
     }
 
     @Override

@@ -13,6 +13,9 @@ public abstract class Card {
     return this.cardType;
   }
 
+  /** @return filename of the resource including format (i.e. "card1.pdf") */
+  public abstract String getResourceFileName();
+
   /** The card types and the respective colors. */
   public enum CardType {
     ROLE("Role Card", Color.GREEN),
