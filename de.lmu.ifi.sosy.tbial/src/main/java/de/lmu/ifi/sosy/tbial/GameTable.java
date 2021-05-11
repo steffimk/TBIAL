@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
@@ -28,6 +29,8 @@ public class GameTable extends BasePage {
     
     int NumberOfPlayers = 4;
     //    		test.getMaxPlayers();
+
+    add(new Label("gameName", test.getName()));
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
     WebMarkupContainer container4 = new WebMarkupContainer("myContainer4");
     WebMarkupContainer container5 = new WebMarkupContainer("myContainer5");
