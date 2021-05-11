@@ -26,7 +26,7 @@ public class Game implements Serializable {
   private boolean isPrivate;
 
   private String hash;
-  private String salt;
+  private byte[] salt;
 
   private boolean hasStarted;
 
@@ -47,7 +47,7 @@ public class Game implements Serializable {
       SecureRandom random = new SecureRandom();
       byte[] saltByteArray = new byte[16];
       random.nextBytes(saltByteArray);
-      this.salt = new String(saltByteArray, StandardCharsets.UTF_8);
+      this.salt = saltByteArray;
       this.hash = getHashedPassword(password, saltByteArray);
     }
     this.hasStarted = false;
@@ -71,7 +71,7 @@ public class Game implements Serializable {
     return hash;
   }
 
-  public String getSalt() {
+  public byte[] getSalt() {
     return salt;
   }
 

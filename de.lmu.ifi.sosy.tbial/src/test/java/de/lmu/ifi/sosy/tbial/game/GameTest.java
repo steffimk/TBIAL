@@ -66,7 +66,7 @@ public class GameTest {
     assertThat(game.getPlayers().containsKey(newPlayer), is(true));
   }
 
-  @Test
+  @Test(expected = NullPointerException.class)
   public void addNewPlayer_whenNullUserNameGiven_throwsException() {
     game.addNewPlayer(null);
   }
@@ -85,9 +85,9 @@ public class GameTest {
   @Test
   public void getHashedPassword_returnsHashedPassword() {
     String hash = game.getHash();
-    String salt = game.getSalt();
+    byte[] salt = game.getSalt();
 
-    String calculatedHash = Game.getHashedPassword(password, salt.getBytes(StandardCharsets.UTF_8));
+    String calculatedHash = Game.getHashedPassword(password, salt);
     assertThat(calculatedHash, is(hash));
   }
 
