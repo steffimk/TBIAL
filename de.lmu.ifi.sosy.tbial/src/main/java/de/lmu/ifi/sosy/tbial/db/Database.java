@@ -21,7 +21,7 @@ public interface Database {
    * @param name should not be null.
    * @return {@code true} if the name is already taken, {@code false} otherwise.
    */
-  boolean nameTaken(String name);
+  boolean userNameTaken(String name);
 
   /**
    * Registers a new user with the given name and password.
@@ -32,4 +32,5 @@ public interface Database {
    *     database.
    */
   User register(String name, String password);
+
 }

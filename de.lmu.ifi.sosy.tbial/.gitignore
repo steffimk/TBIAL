@@ -5,3 +5,4 @@ tbial_test
 bin
 .idea/libraries/
 .derby/
+.DS_Store

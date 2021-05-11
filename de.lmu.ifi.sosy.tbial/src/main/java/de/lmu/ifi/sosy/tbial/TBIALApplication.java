@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial;
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
 import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,11 +33,17 @@ public class TBIALApplication extends WebApplication {
 
   private final Database database;
 
+  private final GameManager gameManager = new GameManager();
+
   // Use LinkedHashSet to keep iteration order over current users always the same
   private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
 
   public static Database getDatabase() {
     return ((TBIALApplication) get()).database;
+  }
+
+  public GameManager getGameManager() {
+    return gameManager;
   }
 
   public TBIALApplication() {
@@ -52,6 +59,10 @@ public class TBIALApplication extends WebApplication {
   @Override
   public Class<Lobby> getHomePage() {
     return Lobby.class;
+  }
+
+  public Class<GameLobby> getGameLobbyPage() {
+    return GameLobby.class;
   }
 
   /**
@@ -84,6 +95,7 @@ public class TBIALApplication extends WebApplication {
     mountPage("login", Login.class);
     mountPage("register", Register.class);
     mountPage("lobby", Lobby.class);
+    mountPage("gameLobby", GameLobby.class);
     mountPage("gameTable", GameTable.class);
   }
 
