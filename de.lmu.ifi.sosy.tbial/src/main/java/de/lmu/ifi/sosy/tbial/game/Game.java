@@ -33,7 +33,12 @@ public class Game implements Serializable {
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
-    this.setHost(userName);
+    if (maxPlayers > 7) {
+      this.maxPlayers = 7;
+    } else if (maxPlayers < 4) {
+      this.maxPlayers = 4;
+    }
+    this.setHost(requireNonNull(userName));
     this.players = new HashMap<>();
     addNewPlayer(userName);
     this.isPrivate = requireNonNull(isPrivate);
@@ -53,8 +58,8 @@ public class Game implements Serializable {
    *
    * @param userName
    */
-  private void addNewPlayer(String userName) {
-    Player newPlayer = new Player(userName);
+  public void addNewPlayer(String userName) {
+    Player newPlayer = new Player(requireNonNull(userName));
     players.put(userName, newPlayer);
   }
 
@@ -68,6 +73,10 @@ public class Game implements Serializable {
 
   public String getSalt() {
     return salt;
+  }
+
+  public Map<String, Player> getPlayers() {
+    return players;
   }
 
   public int getMaxPlayers() {
@@ -116,6 +125,6 @@ public class Game implements Serializable {
   }
 
   public void setHost(String host) {
-    this.host = host;
+    this.host = requireNonNull(host);
   }
 }
