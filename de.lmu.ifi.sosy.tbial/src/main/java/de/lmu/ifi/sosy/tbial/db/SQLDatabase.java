@@ -2,6 +2,7 @@ package de.lmu.ifi.sosy.tbial.db;
 
 import de.lmu.ifi.sosy.tbial.ConfigurationException;
 import de.lmu.ifi.sosy.tbial.DatabaseException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,7 +53,7 @@ public class SQLDatabase implements Database {
   }
 
   @Override
-  public boolean nameTaken(String name) {
+  public boolean userNameTaken(String name) {
     Objects.requireNonNull(name, "name is null");
 
     try (Connection connection = getConnection();
@@ -110,13 +111,6 @@ public class SQLDatabase implements Database {
     return connection;
   }
 
-  private PreparedStatement userByNameQuery(String name, Connection connection)
-      throws SQLException {
-    PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE NAME=?");
-    statement.setString(1, name);
-    return statement;
-  }
-
   private ResultSet executeUpdate(PreparedStatement insertUser) throws SQLException {
     try {
       insertUser.executeUpdate();
@@ -124,6 +118,13 @@ public class SQLDatabase implements Database {
     } catch (SQLIntegrityConstraintViolationException ex) {
       return null;
     }
+  }
+
+  private PreparedStatement userByNameQuery(String name, Connection connection)
+      throws SQLException {
+    PreparedStatement statement = connection.prepareStatement("SELECT * FROM USERS WHERE NAME=?");
+    statement.setString(1, name);
+    return statement;
   }
 
   private PreparedStatement insertUserStatement(String name, String password, Connection connection)
@@ -136,4 +137,5 @@ public class SQLDatabase implements Database {
     insertUser.setString(2, password);
     return insertUser;
   }
+
 }

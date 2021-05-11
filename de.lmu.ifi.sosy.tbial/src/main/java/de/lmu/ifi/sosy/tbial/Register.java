@@ -81,7 +81,7 @@ public class Register extends BasePage {
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
             String name = nameField.getModelObject();
-            if (getDatabase().nameTaken(name)) {
+            if (getDatabase().userNameTaken(name)) {
               messageLabel.setDefaultModelObject("Name already taken.");
             } else {
               messageLabel.setDefaultModelObject(" ");

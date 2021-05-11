@@ -1,0 +1,43 @@
+package de.lmu.ifi.sosy.tbial.game;
+
+/** Stumbling Block Cards are modeled with this class. */
+public class StumblingBlockCard extends Card implements StackCard {
+
+  private final StumblingBlock stumblingBlock;
+
+  public StumblingBlockCard(StumblingBlock stumblingBlock) {
+    super(CardType.STUMBLING_BLOCK);
+    this.stumblingBlock = stumblingBlock;
+  }
+
+  public StumblingBlock getStumblingBlock() {
+    return stumblingBlock;
+  }
+
+  @Override
+  public String getResourceFileName() {
+    return stumblingBlock.fileName;
+  }
+
+  /** Enum containing information about the specific stumbling block cards. */
+  public enum StumblingBlock {
+    MAINTENANCE("Fortran Maintenance", 1, "card19.pdf"),
+    TRAINING("Off-The-Job Training", 3, "card46.pdf");
+
+    public final String label;
+    public final int count;
+    public final String fileName;
+
+    private StumblingBlock(String label, int count, String fileName) {
+      this.label = label;
+      this.count = count;
+      this.fileName = fileName;
+    }
+
+    @Override
+    public String toString() {
+      return this.label;
+    }
+  }
+
+}

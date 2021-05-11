@@ -2,10 +2,16 @@ package de.lmu.ifi.sosy.tbial.db;
 
 import static java.util.Collections.synchronizedList;
 import static java.util.Objects.requireNonNull;
+import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
+import de.lmu.ifi.sosy.tbial.game.Game;
+
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 
 import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple in-memory database using a list for managing users.
@@ -15,9 +21,11 @@ import java.util.List;
 public class InMemoryDatabase implements Database {
 
   private final List<User> users;
+  private final List<Game> games;
 
   public InMemoryDatabase() {
     users = synchronizedList(new ArrayList<User>());
+    games = synchronizedList(new ArrayList<Game>());
   }
 
   @VisibleForTesting
@@ -39,14 +47,14 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public boolean nameTaken(String name) {
+  public boolean userNameTaken(String name) {
     return getUser(name) != null;
   }
 
   @Override
   public User register(String name, String password) {
     synchronized (users) {
-      if (nameTaken(name)) {
+      if (userNameTaken(name)) {
         return null;
       }
 
@@ -57,4 +65,10 @@ public class InMemoryDatabase implements Database {
       return user;
     }
   }
+
+  @VisibleForTesting
+  protected List<Game> getGames() {
+    return games;
+  }
+
 }
