@@ -40,3 +40,10 @@
 	margin: 10px;
 	border: 1px solid black;
 }
+
+.userName {
+	position: absolute;
+	display: inline-block;
+	top: 95%;
+	left: 10%;
+}

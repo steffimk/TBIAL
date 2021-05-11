@@ -20,10 +20,9 @@ public class Player implements Serializable {
   private int bug;
   private String role;
   private String character;
-  // update all to StackCard when branch is merged into master
-  private List<String> handCards;
-  private List<String> playedCards;
-  private List<String> stumblingBlockCards;
+  private List<StackCard> handCards;
+  private List<StackCard> playedCards;
+  private List<StackCard> stumblingBlockCards;
 
   public Player(String userName) {
     this.userName = userName;
@@ -32,9 +31,9 @@ public class Player implements Serializable {
     this.bug = 0;
     this.role = "";
     this.character = "";
-    this.handCards = new ArrayList<String>();
-    this.playedCards = new ArrayList<String>();
-    this.stumblingBlockCards = new ArrayList<String>();
+    this.handCards = new ArrayList<StackCard>();
+    this.playedCards = new ArrayList<StackCard>();
+    this.stumblingBlockCards = new ArrayList<StackCard>();
   }
 
   public String getUserName() {
@@ -61,15 +60,15 @@ public class Player implements Serializable {
     return character;
   }
 
-  public List<String> getHandCards() {
+  public List<StackCard> getHandCards() {
     return handCards;
   }
 
-  public List<String> getPlayedCards() {
+  public List<StackCard> getPlayedCards() {
     return playedCards;
   }
 
-  public List<String> getStumblingBlockCards() {
+  public List<StackCard> getStumblingBlockCards() {
     return stumblingBlockCards;
   }
   

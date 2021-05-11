@@ -53,7 +53,7 @@ public class Game implements Serializable {
    *
    * @param userName
    */
-  private void addNewPlayer(String userName) {
+  public void addNewPlayer(String userName) {
     Player newPlayer = new Player(userName);
     players.put(userName, newPlayer);
   }
@@ -72,6 +72,10 @@ public class Game implements Serializable {
 
   public int getMaxPlayers() {
     return maxPlayers;
+  }
+
+  public Map<String, Player> getPlayers() {
+    return players;
   }
 
   public boolean isPrivate() {

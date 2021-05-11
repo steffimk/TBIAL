@@ -64,6 +64,10 @@
 	display: inline-block;
 }
 
+.container4-3 .userName {
+	transform: rotate(180deg);
+}
+
 .container4-3 .points {
 	transform: rotate(180deg);
 	top: 90%;
@@ -94,6 +98,10 @@
 	display: inline-block;
 }
 
+.container5-2 .userName {
+	left: 30%;
+}
+
 .container5-2 .points {
 	transform: rotate(-90deg);
 	top: 85%;
@@ -105,6 +113,11 @@
 	transform: rotate(180deg);
 	display: inline-block;
 	
+}
+
+.container5-3 .userName {
+	left: 83%;
+	transform: rotate(180deg);
 }
 
 .container5-3 .profile {
@@ -129,6 +142,11 @@
 	float: right;
 	width: 100%;
 	height: 900px;
+	transform: rotate(180deg);
+}
+
+.container5-4 .userName {
+	left: 18%;
 	transform: rotate(180deg);
 }
 
@@ -158,6 +176,10 @@
 	overflow: hidden;
 }
 
+.container5-5 .userName {
+	left: 65%;
+}
+
 .container5-5 .profile {
 	left: 10%;
 }
@@ -179,6 +201,11 @@
 	display: inline-block;
 }
 
+.container6-2 .userName {
+	left: 40%;
+	transform: rotate(-90deg);
+}
+
 .container6-2 .points {
 	transform: rotate(-90deg);
 	top: 87%;
@@ -194,6 +221,11 @@
 	height: 900px;
 	transform: rotate(180deg);
 	display: inline-block;
+}
+
+.container6-3 .userName {
+	left: 85%;
+	transform: rotate(180deg);
 }
 
 .container6-3 .profile {
@@ -222,6 +254,11 @@
 	float: right;
 	width: 100%;
 	height: 900px;
+	transform: rotate(180deg);
+}
+
+.container6-4 .userName {
+	left: 28%;
 	transform: rotate(180deg);
 }
 
@@ -255,6 +292,11 @@
 	overflow: hidden;
 }
 
+.container6-5 .userName {
+	left: 60%;
+	transform: rotate(90deg);
+}
+
 .container6-5 .profile {
 	left: 90%;
 }
@@ -285,6 +327,11 @@
 	overflow: hidden;
 }
 
+.container6-6 .userName {
+	left: 55%;
+	transform: rotate(90deg);
+}
+
 .container6-6 .profile {
 	left: 10%;
 }
@@ -304,6 +351,11 @@
 	width: 900px;
 	transform: rotate(90deg);
 	display: inline-block;
+}
+
+.container7-2 .userName {
+	left: 90%;
+	transform: rotate(-130deg);
 }
 
 .container7-2 .points {
@@ -327,6 +379,12 @@
 	height: 900px;
 	transform: rotate(180deg);
 	display: inline-block;
+}
+
+.container7-3 .userName {
+	left: 95%;
+	top: 50%;
+	transform: rotate(180deg);
 }
 
 .container7-3 .profile {
@@ -359,13 +417,19 @@
 	transform: rotate(180deg);
 }
 
+.container7-4 .userName {
+	left: 75%;
+	top: 96%;
+	transform: rotate(180deg);
+}
+
 .container7-4 .profile {
 	left: 80%;
 }
 
 .container7-4 .points {
 	transform: rotate(150deg);
-	left: 75%;
+	left: 73%;
 	top: 84%;
 }
 
@@ -387,6 +451,12 @@
 	width: 900px;
 	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 	overflow: hidden;
+}
+
+.container7-5 .userName {
+	left: 95%;
+	top: 47%;
+	transform: rotate(90deg);
 }
 
 .container7-5 .profile {
@@ -420,6 +490,11 @@
 	overflow: hidden;
 }
 
+.container7-6 .userName {
+	left: 50%;
+	transform: rotate(90deg);
+}
+
 .container7-6 .profile {
 	left: 85%;
 }
@@ -449,13 +524,19 @@
 	overflow: hidden;
 }
 
+.container7-7 .userName {
+	left: 10%;
+	top: 88%;
+	transform: rotate(135deg);
+}
+
 .container7-7 .profile {
 	left: 12%;
 }
 
 .container7-7 .points {
 	transform: rotate(90deg);
-	left: 19%;
+	left: 17%;
 	top: 88%;
 }
 
