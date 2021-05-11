@@ -53,6 +53,8 @@ public class Game implements Serializable {
    *
    * @param userName
    */
+
+  // made public for testing
   public void addNewPlayer(String userName) {
     Player newPlayer = new Player(userName);
     players.put(userName, newPlayer);
