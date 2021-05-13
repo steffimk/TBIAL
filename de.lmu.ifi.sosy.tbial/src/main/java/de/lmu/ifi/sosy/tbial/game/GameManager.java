@@ -1,7 +1,9 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Manages the current games. */
@@ -30,5 +32,15 @@ public class GameManager {
       }
     }
     return false;
+  }
+
+  public List<Game> getCurrentGamesAsList() {
+    List<Game> currentGamesList = new ArrayList<Game>();
+
+    for (Map.Entry<String, Game> entry : currentGames.entrySet()) {
+      currentGamesList.add(entry.getValue());
+    }
+
+    return currentGamesList;
   }
 }

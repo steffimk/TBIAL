@@ -1,11 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
 
-import de.lmu.ifi.sosy.tbial.db.Database;
-import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
-import de.lmu.ifi.sosy.tbial.db.User;
-import de.lmu.ifi.sosy.tbial.game.GameManager;
-import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -26,9 +21,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
-import de.lmu.ifi.sosy.tbial.db.Game;
 import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
 import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 
 /**
@@ -42,8 +37,6 @@ public class TBIALApplication extends WebApplication {
 
 	// Use LinkedHashSet to keep iteration order over current users always the same
 	private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
-
-	private final Set<Game> openGames = Collections.synchronizedSet(new LinkedHashSet<>());
 
 	public static Database getDatabase() {
 		return ((TBIALApplication) get()).database;
@@ -111,42 +104,39 @@ public class TBIALApplication extends WebApplication {
 	 * {@link AuthenticationRequired} require a valid, signed-in user.
 	 */
 	private void initAuthorization() {
-		getSecuritySettings().setAuthorizationStrategy(new IAuthorizationStrategy() {
+    getSecuritySettings()
+        .setAuthorizationStrategy(
+            new IAuthorizationStrategy() {
 
-			@Override
-			public <T extends IRequestableComponent> boolean isInstantiationAuthorized(Class<T> componentClass) {
-				boolean requiresAuthentication = componentClass.isAnnotationPresent(AuthenticationRequired.class);
-				boolean isSignedIn = ((TBIALSession) Session.get()).isSignedIn();
+              @Override
+              public <T extends IRequestableComponent> boolean isInstantiationAuthorized(
+                  Class<T> componentClass) {
+                boolean requiresAuthentication =
+                    componentClass.isAnnotationPresent(AuthenticationRequired.class);
+                boolean isSignedIn = ((TBIALSession) Session.get()).isSignedIn();
 
-				if (requiresAuthentication && !isSignedIn) {
-					// redirect the user to the login page.
-					throw new RestartResponseAtInterceptPageException(Login.class);
-				}
-  private void initPageMounts() {
-    mountPage("home", getHomePage());
-    mountPage("login", Login.class);
-    mountPage("register", Register.class);
-    mountPage("lobby", Lobby.class);
-    mountPage("gameLobby", GameLobby.class);
+                if (requiresAuthentication && !isSignedIn) {
+                  // redirect the user to the login page.
+                  throw new RestartResponseAtInterceptPageException(Login.class);
+                }
+
+                // continue.
+                return true;
+              }
+
+              @Override
+              public boolean isActionAuthorized(Component component, Action action) {
+                // all actions are authorized.
+                return true;
+              }
+
+              @Override
+              public boolean isResourceAuthorized(IResource arg0, PageParameters arg1) {
+                // all resources are authorized
+                return true;
+              }
+            });
   }
-
-				// continue.
-				return true;
-			}
-
-			@Override
-			public boolean isActionAuthorized(Component component, Action action) {
-				// all actions are authorized.
-				return true;
-			}
-
-			@Override
-			public boolean isResourceAuthorized(IResource arg0, PageParameters arg1) {
-				// all resources are authorized
-				return true;
-			}
-		});
-	}
 
 	public int getUsersLoggedInCount() {
 		return loggedInUsers.size();
@@ -162,17 +152,5 @@ public class TBIALApplication extends WebApplication {
 
 	public void userLoggedOut(final User pUser) {
 		loggedInUsers.remove(pUser);
-	}
-
-	public List<Game> getOpenGames() {
-		return new ArrayList<>(openGames);
-	}
-
-	public void gameCreated(final Game pGame) {
-		openGames.add(pGame);
-	}
-
-	public void gameDeleted(final Game pGame) {
-		openGames.remove(pGame);
 	}
 }

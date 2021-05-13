@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.lmu.ifi.sosy.tbial.game.Player;
+
 /** A game. */
 public class Game implements Serializable {
 
