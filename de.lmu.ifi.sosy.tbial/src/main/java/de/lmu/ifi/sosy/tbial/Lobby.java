@@ -63,7 +63,7 @@ public class Lobby extends BasePage {
         };
 
     IModel<List<Game>> gameModel =
-        (IModel<List<Game>>) () -> getTbialApplication().getGameManager().getCurrentGamesAsList();
+        (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();
 
     ListView<Game> gameList =
         new PropertyListView<>("openGames", gameModel) {
@@ -194,7 +194,7 @@ public class Lobby extends BasePage {
       Game game = new Game(name, maxPlayers, isPrivate, password, hostName);
       getGameManager().addGame(game);
       getSession().setCurrentGame(game);
-      // setResponsePage(getTbialApplication().getGameLobbyPage());
+      setResponsePage(getTbialApplication().getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");
     } else {

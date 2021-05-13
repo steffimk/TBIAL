@@ -1,6 +1,5 @@
 package de.lmu.ifi.sosy.tbial;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -29,81 +28,79 @@ import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 /**
  * The web application "The Bug Is A Lie".
  *
- * @author Andreas Schroeder, Christian Kroiß SWEP 2013 Team.
+ * @author Andreas Schroeder, Christian Kroi├ƒ SWEP 2013 Team.
  */
 public class TBIALApplication extends WebApplication {
 
-	private final Database database;
+  private final Database database;
 
-	// Use LinkedHashSet to keep iteration order over current users always the same
-	private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
+  // Use LinkedHashSet to keep iteration order over current users always the same
+  private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
 
-	public static Database getDatabase() {
-		return ((TBIALApplication) get()).database;
-	}
+  public static Database getDatabase() {
+    return ((TBIALApplication) get()).database;
+  }
 
-	public TBIALApplication() {
-		this(new SQLDatabase());
-	}
+  public TBIALApplication() {
+    this(new SQLDatabase());
+  }
 
   private final GameManager gameManager = new GameManager();
 
-	@VisibleForTesting
-	TBIALApplication(Database database) {
-		super();
-		this.database = database;
-	}
+  @VisibleForTesting
+  TBIALApplication(Database database) {
+    super();
+    this.database = database;
+  }
 
-	@Override
-	public Class<Lobby> getHomePage() {
-		return Lobby.class;
-	}
+  @Override
+  public Class<Lobby> getHomePage() {
+    return Lobby.class;
+  }
 
   public GameManager getGameManager() {
     return gameManager;
   }
 
-	public Class<GameLobby> getGameLobbyPage() {
-		return GameLobby.class;
-	}
+  public Class<GameLobby> getGameLobbyPage() {
+    return GameLobby.class;
+  }
 
-	/**
-	 * Returns a new {@link TBIALSession} instead of a default Wicket
-	 * {@link Session}.
-	 */
-	@Override
-	public TBIALSession newSession(Request request, Response response) {
-		return new TBIALSession(request);
-	}
+  /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
+  @Override
+  public TBIALSession newSession(Request request, Response response) {
+    return new TBIALSession(request);
+  }
 
-	@Override
-	protected void init() {
-		initMarkupSettings();
-		initPageMounts();
-		initAuthorization();
-		// initExceptionHandling();
-	}
+  @Override
+  protected void init() {
+    initMarkupSettings();
+    initPageMounts();
+    initAuthorization();
+    // initExceptionHandling();
+  }
 
-	private void initMarkupSettings() {
-		if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
-			getMarkupSettings().setStripWicketTags(true);
-			getMarkupSettings().setStripComments(true);
-			getMarkupSettings().setCompressWhitespace(true);
-		}
-	}
+  private void initMarkupSettings() {
+    if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
+      getMarkupSettings().setStripWicketTags(true);
+      getMarkupSettings().setStripComments(true);
+      getMarkupSettings().setCompressWhitespace(true);
+    }
+  }
 
-	private void initPageMounts() {
-		mountPage("home", getHomePage());
-		mountPage("login", Login.class);
-		mountPage("register", Register.class);
-		mountPage("lobby", Lobby.class);
-	}
+  private void initPageMounts() {
+    mountPage("home", getHomePage());
+    mountPage("login", Login.class);
+    mountPage("register", Register.class);
+    mountPage("lobby", Lobby.class);
+    mountPage("gameLobby", GameLobby.class);
+  }
 
-	/**
-	 * Initializes authorization so that pages annotated with
-	 * {@link AuthenticationRequired} require a valid, signed-in user.
-	 */
-	private void initAuthorization() {
+  /**
+   * Initializes authorization so that pages annotated with {@link AuthenticationRequired} require a
+   * valid, signed-in user.
+   */
+  private void initAuthorization() {
     getSecuritySettings()
         .setAuthorizationStrategy(
             new IAuthorizationStrategy() {
@@ -138,19 +135,19 @@ public class TBIALApplication extends WebApplication {
             });
   }
 
-	public int getUsersLoggedInCount() {
-		return loggedInUsers.size();
-	}
+  public int getUsersLoggedInCount() {
+    return loggedInUsers.size();
+  }
 
-	public List<User> getLoggedInUsers() {
-		return new ArrayList<>(loggedInUsers);
-	}
+  public List<User> getLoggedInUsers() {
+    return new ArrayList<>(loggedInUsers);
+  }
 
-	public void userLoggedIn(final User pUser) {
-		loggedInUsers.add(pUser);
-	}
+  public void userLoggedIn(final User pUser) {
+    loggedInUsers.add(pUser);
+  }
 
-	public void userLoggedOut(final User pUser) {
-		loggedInUsers.remove(pUser);
-	}
+  public void userLoggedOut(final User pUser) {
+    loggedInUsers.remove(pUser);
+  }
 }

@@ -35,12 +35,6 @@ public class GameManager {
   }
 
   public List<Game> getCurrentGamesAsList() {
-    List<Game> currentGamesList = new ArrayList<Game>();
-
-    for (Map.Entry<String, Game> entry : currentGames.entrySet()) {
-      currentGamesList.add(entry.getValue());
-    }
-
-    return currentGamesList;
+    return new ArrayList<Game>(currentGames.values());
   }
 }
