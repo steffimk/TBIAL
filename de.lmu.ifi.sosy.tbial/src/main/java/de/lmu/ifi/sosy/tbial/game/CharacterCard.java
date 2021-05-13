@@ -1,5 +1,11 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+
 /** Character Cards are modeled with this class. */
 public class CharacterCard extends Card {
 
@@ -21,6 +27,21 @@ public class CharacterCard extends Card {
   @Override
   public String getResourceFileName() {
     return character.fileName;
+  }
+
+  /**
+   * Returns a list of count random character cards
+   *
+   * @param count - the amount of character cards to be returned
+   * @return A list containing count random character cards
+   */
+  public static List<CharacterCard> getCharacterCards(int count) {
+    ArrayList<CharacterCard> cards = new ArrayList<>();
+    for (Character characater : Character.values()) {
+      cards.add(new CharacterCard(characater));
+    }
+    Collections.shuffle(cards);
+    return cards.subList(0, count);
   }
 
   /** Enum containing information about the specific character cards. */

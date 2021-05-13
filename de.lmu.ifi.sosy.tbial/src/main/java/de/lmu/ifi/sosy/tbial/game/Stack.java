@@ -1,7 +1,7 @@
 package de.lmu.ifi.sosy.tbial.game;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
@@ -16,7 +16,7 @@ public class Stack {
   List<StackCard> cards;
   
   public Stack() {
-    this.cards = new ArrayList<StackCard>();
+    this.cards = Collections.synchronizedList(new LinkedList<StackCard>());
 
     addAllCards();
     Collections.shuffle(cards);
@@ -44,8 +44,12 @@ public class Stack {
     }
   }
 
-  private StackCard drawCard() {
-    // TODO
-    return null;
+  /**
+   * Returns the first card in the stack and removes it from the stack.
+   *
+   * @return the first card on the stack
+   */
+  public StackCard drawCard() {
+    return cards.remove(0);
   }
 }
