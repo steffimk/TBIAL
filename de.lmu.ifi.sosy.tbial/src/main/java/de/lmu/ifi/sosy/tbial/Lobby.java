@@ -45,7 +45,6 @@ public class Lobby extends BasePage {
   private final NumberTextField<Integer> maxPlayersField;
   private final AjaxCheckBox isPrivateCheckBox;
   private final PasswordTextField newGamePwField;
-  private final Label newGamePwLabel;
   private final Label nameFeedbackLabel;
 
 	public Lobby() {
@@ -129,10 +128,16 @@ public class Lobby extends BasePage {
     maxPlayersField.setMinimum(4);
     maxPlayersField.setMaximum(7);
 
-    newGamePwLabel = new Label("newGamePwLabel", new Model<>("Game password"));
-    newGamePwLabel.setOutputMarkupPlaceholderTag(true);
+    WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
+    passwordContainer.setOutputMarkupPlaceholderTag(true);
+
+
     newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
+
+    passwordContainer.add(newGamePwField);
+
     newGamePwField.setOutputMarkupPlaceholderTag(true);
+
     isPrivateCheckBox =
         new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
           /** UID for serialization. */
@@ -140,10 +145,11 @@ public class Lobby extends BasePage {
 
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
-            newGamePwField.setVisible(isPrivateCheckBox.getModelObject());
-            newGamePwLabel.setVisible(isPrivateCheckBox.getModelObject());
-            target.add(newGamePwField);
-            target.add(newGamePwLabel);
+            // Change visibility
+            passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
+
+            target.add(passwordContainer);
+
           }
         };
 
@@ -167,8 +173,7 @@ public class Lobby extends BasePage {
         .add(nameFeedbackLabel)
         .add(maxPlayersField)
         .add(isPrivateCheckBox)
-        .add(newGamePwLabel)
-        .add(newGamePwField)
+        .add(passwordContainer)
         .add(newGameButton);
     add(newGameForm);
   }
