@@ -3,6 +3,8 @@ package de.lmu.ifi.sosy.tbial.db;
 import static java.util.Collections.synchronizedList;
 import static java.util.Objects.requireNonNull;
 import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
+import de.lmu.ifi.sosy.tbial.game.Game;
+
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
@@ -69,46 +71,4 @@ public class InMemoryDatabase implements Database {
     return games;
   }
 
-  @Override
-  public Game newGame(String name, int maxPlayers, boolean isPrivate, String password) {
-    synchronized (games) {
-      //      if (nameTaken(name)) { TODO SK
-      //        return null;
-      //      }
-      String hash = "", salt = "";
-      if (isPrivate) {
-        Objects.requireNonNull(password, "password is null");
-        SecureRandom random = new SecureRandom();
-        byte[] saltByteArray = new byte[16];
-        random.nextBytes(saltByteArray);
-        hash = SQLDatabase.getHashedPassword(password, saltByteArray);
-        salt = new String(saltByteArray, StandardCharsets.UTF_8);
-      }
-
-      int id = games.size();
-      Game game = new Game(id, name, maxPlayers, isPrivate, hash, salt);
-      games.add(game);
-
-      return game;
-    }
-  }
-
-  @Override
-  public Player createPlayer(int userId, int gameId, boolean isHost) {
-    // TODO SK: Implement
-    return null;
-  }
-
-  @Override
-  public boolean gameNameTaken(String name) {
-    requireNonNull(name);
-    synchronized (games) {
-      for (Game game : games) {
-        if (name.equals(game.getName())) {
-          return true;
-        }
-      }
-      return false;
-    }
-  }
 }

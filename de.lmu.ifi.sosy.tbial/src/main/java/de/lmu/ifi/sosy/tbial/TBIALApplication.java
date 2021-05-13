@@ -1,5 +1,11 @@
 package de.lmu.ifi.sosy.tbial;
 
+
+import de.lmu.ifi.sosy.tbial.db.Database;
+import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
+import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
+import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -47,6 +53,8 @@ public class TBIALApplication extends WebApplication {
 		this(new SQLDatabase());
 	}
 
+  private final GameManager gameManager = new GameManager();
+
 	@VisibleForTesting
 	TBIALApplication(Database database) {
 		super();
@@ -57,6 +65,10 @@ public class TBIALApplication extends WebApplication {
 	public Class<Lobby> getHomePage() {
 		return Lobby.class;
 	}
+
+  public GameManager getGameManager() {
+    return gameManager;
+  }
 
 	public Class<GameLobby> getGameLobbyPage() {
 		return GameLobby.class;
@@ -110,6 +122,13 @@ public class TBIALApplication extends WebApplication {
 					// redirect the user to the login page.
 					throw new RestartResponseAtInterceptPageException(Login.class);
 				}
+  private void initPageMounts() {
+    mountPage("home", getHomePage());
+    mountPage("login", Login.class);
+    mountPage("register", Register.class);
+    mountPage("lobby", Lobby.class);
+    mountPage("gameLobby", GameLobby.class);
+  }
 
 				// continue.
 				return true;

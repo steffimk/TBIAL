@@ -1,6 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
+
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
@@ -9,6 +11,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
+
+import de.lmu.ifi.sosy.tbial.db.Database;
 
 /**
  * Basic page with style template as well as access to {@link TBIALSession} and {@link Database}.
@@ -23,9 +27,14 @@ public abstract class BasePage extends WebPage {
   private Link<Void> link;
 
   private Label users;
+  private Label loggedInUsername;
 
   protected Database getDatabase() {
     return TBIALApplication.getDatabase();
+  }
+
+  protected GameManager getGameManager() {
+    return getTbialApplication().getGameManager();
   }
 
   protected TBIALApplication getTbialApplication() {
@@ -50,6 +59,7 @@ public abstract class BasePage extends WebPage {
             if (session instanceof AuthenticatedWebSession) {
               ((AuthenticatedWebSession) session).signOut();
             }
+            
             session.invalidate();
           }
         };
@@ -60,9 +70,21 @@ public abstract class BasePage extends WebPage {
     add(link);
     add(users);
 
+    // Show user name in navigaton bar next to Logout
+    loggedInUsername = new Label("loggedInUsername", "");
+	loggedInUsername.setOutputMarkupId(true);
+    add(loggedInUsername);
+    
+    Session currentSession = super.getSession();
+    if (currentSession instanceof TBIALSession && ((TBIALSession)currentSession).getUser() != null) {
+    	loggedInUsername.setDefaultModelObject(((TBIALSession)currentSession).getUser().getName());
+    	add(loggedInUsername);
+    }
+    
     if (!getSession().isSignedIn()) {
       link.setVisible(false);
       link.setEnabled(false);
+      loggedInUsername.setVisible(false);
     }
   }
 

@@ -1,5 +1,11 @@
 package de.lmu.ifi.sosy.tbial;
 
+<<<<<<< HEAD
+=======
+import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
+
+import de.lmu.ifi.sosy.tbial.db.User;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,18 +41,20 @@ import de.lmu.ifi.sosy.tbial.db.User;
 @AuthenticationRequired
 public class Lobby extends BasePage {
 
-	/** UID for serialization. */
-	private static final long serialVersionUID = 1L;
+  /** UID for serialization. */
+  private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LogManager.getLogger(Lobby.class);
+		newGameButton = new Button("newGameButton") {
 
-	private final Button newGameButton;
-	private final TextField<String> newGameNameField;
-	private final NumberTextField<Integer> maxPlayersField;
-	private final AjaxCheckBox isPrivateCheckBox;
-	private final PasswordTextField newGamePwField;
-	private final Label newGamePwLabel;
-	private final Label nameFeedbackLabel;
+			/** UID for serialization. */
+			private static final long serialVersionUID = 1;
+  private final Button newGameButton;
+  private final TextField<String> newGameNameField;
+  private final NumberTextField<Integer> maxPlayersField;
+  private final AjaxCheckBox isPrivateCheckBox;
+  private final PasswordTextField newGamePwField;
+  private final Label nameFeedbackLabel;
+>>>>>>> refs/heads/master
 
 	public Lobby() {
 		IModel<List<User>> playerModel = (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
@@ -80,20 +88,64 @@ public class Lobby extends BasePage {
 
 		newGameButton = new Button("newGameButton") {
 
+<<<<<<< HEAD
 			/** UID for serialization. */
 			private static final long serialVersionUID = 1;
+=======
+          @Override
+          protected void onUpdate(AjaxRequestTarget target) {
+            String name = newGameNameField.getModelObject();
+            if (getGameManager().gameNameTaken(name)) {
+              nameFeedbackLabel.setDefaultModelObject("Name already taken.");
+            } else {
+              nameFeedbackLabel.setDefaultModelObject(" ");
+            }
+            target.add(nameFeedbackLabel);
+          }
+        };
+>>>>>>> refs/heads/master
 
 			@Override
 			public void onSubmit() {
 
+<<<<<<< HEAD
 				String gameName = newGameNameField.getModelObject();
 				int maxPlayers = maxPlayersField.getModelObject();
 				boolean isPrivate = isPrivateCheckBox.getModelObject();
 				String password = newGamePwField.getModelObject();
 				createNewGame(gameName, maxPlayers, isPrivate, password);
+=======
+    maxPlayersField = new NumberTextField<Integer>("maxPlayers", new Model<>(4));
+    maxPlayersField.setRequired(true);
+    maxPlayersField.setMinimum(4);
+    maxPlayersField.setMaximum(7);
 
+    WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
+    passwordContainer.setOutputMarkupPlaceholderTag(true);
+
+    newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
+
+    passwordContainer.add(newGamePwField);
+
+    isPrivateCheckBox =
+        new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
+          /** UID for serialization. */
+          private static final long serialVersionUID = 2;
+>>>>>>> refs/heads/master
+
+<<<<<<< HEAD
 			}
 		};
+=======
+          @Override
+          protected void onUpdate(AjaxRequestTarget target) {
+            // Change visibility
+            passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
+
+            target.add(passwordContainer);
+          }
+        };
+>>>>>>> refs/heads/master
 
 		newGameNameField = new TextField<String>("newGameName", new Model<>("My New Game"));
 		newGameNameField.setRequired(true);
@@ -101,11 +153,37 @@ public class Lobby extends BasePage {
 		nameFeedbackLabel = new Label("nameFeedback", new Model<>(""));
 		nameFeedbackLabel.setOutputMarkupId(true);
 
+<<<<<<< HEAD
 		OnChangeAjaxBehavior onNameChange = new OnChangeAjaxBehavior() {
+=======
+    Form<?> newGameForm = new Form<>("newGameForm");
+    newGameForm
+        .add(newGameNameField)
+        .add(nameFeedbackLabel)
+        .add(maxPlayersField)
+        .add(isPrivateCheckBox)
+        .add(passwordContainer)
+        .add(newGameButton);
+    add(newGameForm);
+  }
+>>>>>>> refs/heads/master
 
+<<<<<<< HEAD
 			/** UID for serialization. */
 			private static final long serialVersionUID = 1L;
+=======
+  /**
+   * Creates a new game and saves it in the database if all requirements are fulfilled.
+   *
+   * @param name of the new game (unique)
+   * @param maxPlayers of the new game
+   * @param isPrivate specifies whether the game is password protected
+   * @param password can be null if the game is not private
+   */
+  private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
+>>>>>>> refs/heads/master
 
+<<<<<<< HEAD
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 				String name = newGameNameField.getModelObject();
@@ -140,6 +218,17 @@ public class Lobby extends BasePage {
 				target.add(newGamePwLabel);
 			}
 		};
+          @Override
+          protected void onUpdate(AjaxRequestTarget target) {
+            String name = newGameNameField.getModelObject();
+            if (getGameManager().gameNameTaken(name)) {
+              nameFeedbackLabel.setDefaultModelObject("Name already taken.");
+            } else {
+              nameFeedbackLabel.setDefaultModelObject(" ");
+            }
+            target.add(nameFeedbackLabel);
+          }
+        };
 
 		WebMarkupContainer playerListContainer = new WebMarkupContainer("playerlistContainer");
 		playerListContainer.add(playerList);
@@ -147,11 +236,35 @@ public class Lobby extends BasePage {
 		playerListContainer.setOutputMarkupId(true);
 
 		add(playerListContainer);
+    maxPlayersField = new NumberTextField<Integer>("maxPlayers", new Model<>(4));
+    maxPlayersField.setRequired(true);
+    maxPlayersField.setMinimum(4);
+    maxPlayersField.setMaximum(7);
+
+    WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
+    passwordContainer.setOutputMarkupPlaceholderTag(true);
+
+    newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
+
+    passwordContainer.add(newGamePwField);
+
+    isPrivateCheckBox =
+        new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
+          /** UID for serialization. */
+          private static final long serialVersionUID = 2;
 
 		WebMarkupContainer gameListContainer = new WebMarkupContainer("gameListContainer");
 		gameListContainer.add(gameList);
 		gameListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 		gameListContainer.setOutputMarkupId(true);
+          @Override
+          protected void onUpdate(AjaxRequestTarget target) {
+            // Change visibility
+            passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
+
+            target.add(passwordContainer);
+          }
+        };
 
 		add(gameListContainer);
 
@@ -172,6 +285,16 @@ public class Lobby extends BasePage {
 	 */
 	private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
 		System.out.printf("Trying to create new game called %s and a max count of %d players \n", name, maxPlayers);
+    Form<?> newGameForm = new Form<>("newGameForm");
+    newGameForm
+        .add(newGameNameField)
+        .add(nameFeedbackLabel)
+        .add(maxPlayersField)
+        .add(isPrivateCheckBox)
+        .add(passwordContainer)
+        .add(newGameButton);
+    add(newGameForm);
+  }
 
 		Game game = getDatabase().newGame(name, maxPlayers, isPrivate, password);
 		if (game != null) {
@@ -193,5 +316,31 @@ public class Lobby extends BasePage {
 			System.out.println("Could not create new game " + name);
 		}
 	}
+  /**
+   * Creates a new game and saves it in the database if all requirements are fulfilled.
+   *
+   * @param name of the new game (unique)
+   * @param maxPlayers of the new game
+   * @param isPrivate specifies whether the game is password protected
+   * @param password can be null if the game is not private
+   */
+  private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
 
+
+    String hostName = getSession().getUser().getName();
+    // if game name not taken
+    if (!getGameManager().gameNameTaken(name)) {
+      Game game = new Game(name, maxPlayers, isPrivate, password, hostName);
+      getGameManager().addGame(game);
+      getSession().setCurrentGame(game);
+      setResponsePage(getTbialApplication().getGameLobbyPage());
+      info("Game creation successful! You are host of a new game");
+      LOGGER.info("New game '" + name + "' game creation successful");
+    } else {
+      error("The name is already taken or the password is empty.");
+      LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
+    }
+  }
+  
+>>>>>>> refs/heads/master
 }
