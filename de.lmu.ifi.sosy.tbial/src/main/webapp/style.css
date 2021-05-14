@@ -314,6 +314,22 @@ div.footer p a {
 	clear: both;
 }
 
+.linkstyle {
+	display: block;
+	margin-top: 14px;
+	padding-top: 4px;
+	border-radius: 20px;
+	border: 2px solid #F4731D;
+	text-decoration: none;
+	width: 100px;
+	height: 31px;
+	text-align: center;
+	line-height: 25px;
+	color:#F4731D;
+	font-size: 1em;
+	font-weight: bold;
+}
+
 /* ----------- Boxed Form ----------- */
 /* inspired by http://woork.blogspot.de/2008/06/clean-and-pure-css-form-design.html */
 .spacer {
