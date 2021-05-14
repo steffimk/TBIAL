@@ -21,16 +21,15 @@ public class GameTable extends BasePage {
   public GameTable() {
 
     // for testing until start game and join game isn't done
-    Game test = getGameManager().getCurrentGames().get("test");
-    test.addNewPlayer("sophia");
-    test.addNewPlayer("teresa");
-    test.addNewPlayer("david");
-    test.addNewPlayer("ulla");
-    
-    int NumberOfPlayers = 4;
-    //    		test.getMaxPlayers();
+    Game current = getSession().getCurrentGame();
+    current.addNewPlayer("sophia");
+    current.addNewPlayer("teresa");
+    current.addNewPlayer("david");
+    current.addNewPlayer("ulla");
 
-    add(new Label("gameName", test.getName()));
+    int NumberOfPlayers = current.getMaxPlayers();
+
+    add(new Label("gameName", current.getName()));
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
     WebMarkupContainer container4 = new WebMarkupContainer("myContainer4");
     WebMarkupContainer container5 = new WebMarkupContainer("myContainer5");
@@ -43,7 +42,7 @@ public class GameTable extends BasePage {
     add(container7);
 
     // for testing purposes
-    Map<String, Player> currentPlayers = test.getPlayers();
+    Map<String, Player> currentPlayers = current.getPlayers();
     // always add current player here
     player1.add(
         new PlayerAreaPanel("panel1", currentPlayers.get(getSession().getUser().getName())));
