@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.Model;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
@@ -45,7 +46,8 @@ public class GameTable extends BasePage {
     Map<String, Player> currentPlayers = current.getPlayers();
     // always add current player here
     player1.add(
-        new PlayerAreaPanel("panel1", currentPlayers.get(getSession().getUser().getName())));
+        new PlayerAreaPanel(
+            "panel1", Model.of(currentPlayers.get(getSession().getUser().getName()))));
     currentPlayers.remove(getSession().getUser().getName());
     // get the rest of the players
     ArrayList<Player> otherPlayers = new ArrayList<Player>(currentPlayers.values());
@@ -57,36 +59,36 @@ public class GameTable extends BasePage {
     container7.setVisible(false);
     if (NumberOfPlayers == 4) {
       // to do add other players of current game
-      container4.add(new PlayerAreaPanel("panel4-2", otherPlayers.get(0)));
-      container4.add(new PlayerAreaPanel("panel4-3", otherPlayers.get(1)));
-      container4.add(new PlayerAreaPanel("panel4-4", otherPlayers.get(2)));
+      container4.add(new PlayerAreaPanel("panel4-2", Model.of(otherPlayers.get(0))));
+      container4.add(new PlayerAreaPanel("panel4-3", Model.of(otherPlayers.get(1))));
+      container4.add(new PlayerAreaPanel("panel4-4", Model.of(otherPlayers.get(2))));
       container4.setVisible(true);
     }
     if (NumberOfPlayers == 5) {
       // to do add other players of current game
-      container5.add(new PlayerAreaPanel("panel5-2", new Player("test1")));
-      container5.add(new PlayerAreaPanel("panel5-3", new Player("test2")));
-      container5.add(new PlayerAreaPanel("panel5-4", new Player("test3")));
-      container5.add(new PlayerAreaPanel("panel5-5", new Player("test4")));
+      container5.add(new PlayerAreaPanel("panel5-2", Model.of(new Player("test1"))));
+      container5.add(new PlayerAreaPanel("panel5-3", Model.of(new Player("test2"))));
+      container5.add(new PlayerAreaPanel("panel5-4", Model.of(new Player("test3"))));
+      container5.add(new PlayerAreaPanel("panel5-5", Model.of(new Player("test4"))));
       container5.setVisible(true);
     }
     if (NumberOfPlayers == 6) {
       // to do add other players of current game
-      container6.add(new PlayerAreaPanel("panel6-2", new Player("test1")));
-      container6.add(new PlayerAreaPanel("panel6-3", new Player("test2")));
-      container6.add(new PlayerAreaPanel("panel6-4", new Player("test3")));
-      container6.add(new PlayerAreaPanel("panel6-5", new Player("test4")));
-      container6.add(new PlayerAreaPanel("panel6-6", new Player("test5")));
+      container6.add(new PlayerAreaPanel("panel6-2", Model.of(new Player("test1"))));
+      container6.add(new PlayerAreaPanel("panel6-3", Model.of(new Player("test2"))));
+      container6.add(new PlayerAreaPanel("panel6-4", Model.of(new Player("test3"))));
+      container6.add(new PlayerAreaPanel("panel6-5", Model.of(new Player("test4"))));
+      container6.add(new PlayerAreaPanel("panel6-6", Model.of(new Player("test5"))));
       container6.setVisible(true);
     }
     if (NumberOfPlayers == 7) {
       // to do add other players of current game
-      container7.add(new PlayerAreaPanel("panel7-2", new Player("test1")));
-      container7.add(new PlayerAreaPanel("panel7-3", new Player("test2")));
-      container7.add(new PlayerAreaPanel("panel7-4", new Player("test3")));
-      container7.add(new PlayerAreaPanel("panel7-5", new Player("test4")));
-      container7.add(new PlayerAreaPanel("panel7-6", new Player("test5")));
-      container7.add(new PlayerAreaPanel("panel7-7", new Player("test6")));
+      container7.add(new PlayerAreaPanel("panel7-2", Model.of(new Player("test1"))));
+      container7.add(new PlayerAreaPanel("panel7-3", Model.of(new Player("test2"))));
+      container7.add(new PlayerAreaPanel("panel7-4", Model.of(new Player("test3"))));
+      container7.add(new PlayerAreaPanel("panel7-5", Model.of(new Player("test4"))));
+      container7.add(new PlayerAreaPanel("panel7-6", Model.of(new Player("test5"))));
+      container7.add(new PlayerAreaPanel("panel7-7", Model.of(new Player("test6"))));
       container7.setVisible(true);
     }    
     add(container4);
