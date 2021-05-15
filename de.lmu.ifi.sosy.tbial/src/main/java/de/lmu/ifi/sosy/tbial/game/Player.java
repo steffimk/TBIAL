@@ -11,15 +11,15 @@ import java.util.List;
  */
 public class Player implements Serializable {
 
-	  /** UID for serialization. */
-	  private static final long serialVersionUID = 1L;
+  /** UID for serialization. */
+  private static final long serialVersionUID = 1L;
 
   private final String userName;
   private int mentalHealth;
   private int prestige;
   private int bug;
-  private String role;
-  private String character;
+  private RoleCard role;
+  private CharacterCard character;
   private List<StackCard> handCards;
   private List<StackCard> playedCards;
   private List<StackCard> stumblingBlockCards;
@@ -29,8 +29,8 @@ public class Player implements Serializable {
     this.mentalHealth = 0;
     this.prestige = 0;
     this.bug = 0;
-    this.role = "";
-    this.character = "";
+    this.role = null;
+    this.character = null;
     this.handCards = new ArrayList<StackCard>();
     this.playedCards = new ArrayList<StackCard>();
     this.stumblingBlockCards = new ArrayList<StackCard>();
@@ -52,11 +52,11 @@ public class Player implements Serializable {
     return "Bug: " + bug;
   }
 
-  public String getRole() {
+  public RoleCard getRole() {
     return role;
   }
 
-  public String getCharacter() {
+  public CharacterCard getCharacter() {
     return character;
   }
 
@@ -71,9 +71,4 @@ public class Player implements Serializable {
   public List<StackCard> getStumblingBlockCards() {
     return stumblingBlockCards;
   }
-  
-  public void setMentalHealth(int m) {
-	  this.mentalHealth=m;
-  }
-  
 }

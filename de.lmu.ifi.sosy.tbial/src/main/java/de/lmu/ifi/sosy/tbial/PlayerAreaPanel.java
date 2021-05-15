@@ -15,8 +15,6 @@ public class PlayerAreaPanel extends Panel {
   public PlayerAreaPanel(String id, IModel<Player> player) {
     super(id, new CompoundPropertyModel<Player>(player));
     add(new Label("userName"));
-    // no character yet!!
-    add(new Label("character"));
     add(new Label("mentalHealth"));
     add(new Label("prestige"));
     add(new Label("bug"));
