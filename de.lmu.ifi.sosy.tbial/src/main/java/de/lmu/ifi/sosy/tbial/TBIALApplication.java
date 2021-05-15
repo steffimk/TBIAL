@@ -1,15 +1,11 @@
 package de.lmu.ifi.sosy.tbial;
 
-import de.lmu.ifi.sosy.tbial.db.Database;
-import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
-import de.lmu.ifi.sosy.tbial.db.User;
-import de.lmu.ifi.sosy.tbial.game.GameManager;
-import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.RuntimeConfigurationType;
@@ -23,6 +19,11 @@ import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
 
+import de.lmu.ifi.sosy.tbial.db.Database;
+import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
+import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
+import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 
 /**
  * The web application "The Bug Is A Lie".
@@ -33,8 +34,6 @@ public class TBIALApplication extends WebApplication {
 
   private final Database database;
 
-  private final GameManager gameManager = new GameManager();
-
   // Use LinkedHashSet to keep iteration order over current users always the same
   private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
 
@@ -42,13 +41,11 @@ public class TBIALApplication extends WebApplication {
     return ((TBIALApplication) get()).database;
   }
 
-  public GameManager getGameManager() {
-    return gameManager;
-  }
-
   public TBIALApplication() {
     this(new SQLDatabase());
   }
+
+  private final GameManager gameManager = new GameManager();
 
   @VisibleForTesting
   TBIALApplication(Database database) {
@@ -61,14 +58,15 @@ public class TBIALApplication extends WebApplication {
     return Lobby.class;
   }
 
+  public GameManager getGameManager() {
+    return gameManager;
+  }
+
   public Class<GameLobby> getGameLobbyPage() {
     return GameLobby.class;
   }
 
-  /**
-   * Returns a new {@link TBIALSession} instead of a default Wicket
-   * {@link Session}.
-   */
+  /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
   @Override
   public TBIALSession newSession(Request request, Response response) {
     return new TBIALSession(request);
