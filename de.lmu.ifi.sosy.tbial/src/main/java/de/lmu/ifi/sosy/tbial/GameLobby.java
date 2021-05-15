@@ -5,12 +5,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -30,13 +32,7 @@ public class GameLobby extends BasePage {
 
   public GameLobby() {
 
-    TBIALSession session = getSession();
-    String hostName = session.getCurrentGame().getHost();
-    Model<String> isHostModel =
-        session.getUser().getName().equals(hostName)
-            ? new Model<String>("You are the host of this game.")
-            : new Model<String>(hostName + " is the host of this game.");
-    isHostLabel = new Label("isHostLabel", isHostModel);
+    isHostLabel = new Label("isHostLabel", () -> currentHostMessage());
 
     startGameLink =
         new Link<Void>("startGameLink") {
@@ -46,9 +42,14 @@ public class GameLobby extends BasePage {
           public void onClick() {
             startGame();
           }
+
+          @Override
+          public boolean isVisible() {
+            return isHost();
+          }
         };
+
     startGameLink.setOutputMarkupId(true);
-    startGameLink.setVisible(session.getUser().getName().equals(hostName));
 
     add(isHostLabel);
     add(startGameLink);
@@ -61,6 +62,7 @@ public class GameLobby extends BasePage {
   private void startGame() {
     TBIALSession session = getSession();
     Game game = session.getCurrentGame();
+    game.setHost("Test new host");
     User user = session.getUser();
     if (game == null || user == null) {
       LOGGER.info(
@@ -74,5 +76,26 @@ public class GameLobby extends BasePage {
     LOGGER.info("Starting the game.");
     game.startGame();
     //    setResponsePage(getTbialApplication().getGameTablePage()); TODO: Open actual game table.
+  }
+
+  /**
+   * Returns the message about the current host
+   *
+   * @return String to be displayed in the isHostLabel
+   */
+  private String currentHostMessage() {
+    String hostName = getSession().getCurrentGame().getHost();
+    return isHost() ? "You are the host of this game." : hostName + " is the host of this game.";
+  }
+
+  /**
+   * Returns whether the current user is the host of this game.
+   *
+   * @return whether user is host of the game
+   */
+  private boolean isHost() {
+    TBIALSession session = getSession();
+    String hostName = session.getCurrentGame().getHost();
+    return session.getUser().getName().equals(hostName);
   }
 }
