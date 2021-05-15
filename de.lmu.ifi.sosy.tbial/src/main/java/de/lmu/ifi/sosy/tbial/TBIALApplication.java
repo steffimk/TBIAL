@@ -28,7 +28,7 @@ import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 /**
  * The web application "The Bug Is A Lie".
  *
- * @author Andreas Schroeder, Christian Kroiß SWEP 2013 Team.
+ * @author Andreas Schroeder, Christian Kroi├ƒ SWEP 2013 Team.
  */
 public class TBIALApplication extends WebApplication {
 

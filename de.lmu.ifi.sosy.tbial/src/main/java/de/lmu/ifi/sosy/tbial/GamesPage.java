@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -111,10 +112,11 @@ public class GamesPage extends BasePage {
 
     add(new FeedbackPanel("feedback"));
 
-    List<String> goList = Arrays.asList();
-    goList.add(getGameManager().getCurrentGamesAsList().get(0).getName());
-    for (int i = 1; i < getGameManager().getCurrentGamesAsList().size(); i++) {
+    ArrayList<String> goList = new ArrayList<>();
+    for (int i = 0; i < getGameManager().getCurrentGamesAsList().size(); i++) {
       String currentGame = getGameManager().getCurrentGamesAsList().get(i).getName();
+      System.out.println("Current game: ");
+      System.out.println(currentGame);
       goList.add(currentGame);
     }
 

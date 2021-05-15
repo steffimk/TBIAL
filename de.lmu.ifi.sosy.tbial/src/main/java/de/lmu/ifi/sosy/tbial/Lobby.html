@@ -7,17 +7,16 @@
 
 <body>
   <wicket:extend>
-  
     <h3>The Lobby.</h3>
-    
-    
+
+
     <form wicket:id="MenuForm">
 		<input type="submit" value="Create a new game" />
 		<input wicket:id="showGamesButton" type="submit" value="Games" />
 		<input wicket:id="showPlayersButton" type="submit" value="Players" />
 	</form>
-    
-    
+
+
     <form wicket:id="newGameForm" class="boxedform">
     	<label for="name">Name of new game
     		<span class="small" wicket:id="nameFeedback">Whether the name is valid</span>
@@ -27,13 +26,13 @@
       	<input wicket:id="maxPlayers" type="number" name="maxPlayers" onKeyDown="return false"/>
 	    <label for="privateCheckbox">Private game</label>
 	    <input wicket:id="isPrivate" type="checkbox" name="privateCheckbox"/>
-	  	<div wicket:id="passwordContainer">
-	  		<label for="newGamePw">Game password
-		    	<span class="small">Password cannot be empty</span>
-		    </label>
-		 	<input wicket:id="newGamePw" type="password" name="newGamePw"/>
-		 </div>
-    	<input type=submit value="New Game" wicket:id="newGameButton"/>
+			<div wicket:id="passwordContainer">
+	  			<label for="newGamePw">Game password
+		    		<span class="small">Password cannot be empty</span>
+		    	</label>
+		 		<input wicket:id="newGamePw" type="password" name="newGamePw"/>
+		 	</div>
+	    <input type=submit value="New Game" wicket:id="newGameButton"/>
     	<div class="spacer"></div>
     </form>
 </wicket:extend>
