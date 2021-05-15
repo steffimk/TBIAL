@@ -26,14 +26,19 @@ public class Game implements Serializable {
   private boolean isPrivate;
 
   private String hash;
-  private String salt;
+  private byte[] salt;
 
   private boolean hasStarted;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
-    this.setHost(userName);
+    if (maxPlayers > 7) {
+      this.maxPlayers = 7;
+    } else if (maxPlayers < 4) {
+      this.maxPlayers = 4;
+    }
+    this.setHost(requireNonNull(userName));
     this.players = new HashMap<>();
     addNewPlayer(userName);
     this.isPrivate = requireNonNull(isPrivate);
@@ -42,7 +47,7 @@ public class Game implements Serializable {
       SecureRandom random = new SecureRandom();
       byte[] saltByteArray = new byte[16];
       random.nextBytes(saltByteArray);
-      this.salt = new String(saltByteArray, StandardCharsets.UTF_8);
+      this.salt = saltByteArray;
       this.hash = getHashedPassword(password, saltByteArray);
     }
     this.hasStarted = false;
@@ -53,8 +58,8 @@ public class Game implements Serializable {
    *
    * @param userName
    */
-  private void addNewPlayer(String userName) {
-    Player newPlayer = new Player(userName);
+  public void addNewPlayer(String userName) {
+    Player newPlayer = new Player(requireNonNull(userName));
     players.put(userName, newPlayer);
   }
 
@@ -66,8 +71,13 @@ public class Game implements Serializable {
     return hash;
   }
 
-  public String getSalt() {
+  public byte[] getSalt() {
     return salt;
+  }
+
+
+  public Map<String, Player> getPlayers() {
+    return players;
   }
 
   public int getCurrentNumberOfPlayers() {
@@ -120,6 +130,6 @@ public class Game implements Serializable {
   }
 
   public void setHost(String host) {
-    this.host = host;
+    this.host = requireNonNull(host);
   }
 }
