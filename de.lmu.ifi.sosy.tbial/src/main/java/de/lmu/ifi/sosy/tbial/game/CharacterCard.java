@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
-
 /** Character Cards are modeled with this class. */
 public class CharacterCard extends Card {
 

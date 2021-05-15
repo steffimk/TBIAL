@@ -35,10 +35,6 @@ public class GameLobby extends BasePage {
       throw new RestartResponseAtInterceptPageException(Lobby.class);
     }
     
-    System.out.println(
-        "Game not null: " + game.getName() + " user not null " + getSession().getUser().getName());
-    System.out.println("No need for redirect");
-    
     isHostLabel = new Label("isHostLabel", () -> currentHostMessage());
     currentStatusLabel = new Label("currentStatusLabel", () -> getCurrentStatusMessage());
 
@@ -72,7 +68,6 @@ public class GameLobby extends BasePage {
    */
   private void startGame() {
     TBIALSession session = getSession();
-    game.setHost("Test new host");
     User user = session.getUser();
     if (game == null || user == null) {
       LOGGER.info(
