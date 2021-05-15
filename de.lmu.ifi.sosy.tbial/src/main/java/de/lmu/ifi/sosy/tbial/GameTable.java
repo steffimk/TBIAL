@@ -1,14 +1,19 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.list.PropertyListView;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
-import de.lmu.ifi.sosy.tbial.game.GameManager;
 import de.lmu.ifi.sosy.tbial.game.Player;
 
 /** Game Table */
@@ -18,82 +23,63 @@ public class GameTable extends BasePage {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
- 
+
   public GameTable() {
 
-    // for testing until start game and join game isn't done
+    // get current game
     Game current = getSession().getCurrentGame();
-    current.addNewPlayer("sophia");
-    current.addNewPlayer("teresa");
-    current.addNewPlayer("david");
-    current.addNewPlayer("ulla");
-
-    int NumberOfPlayers = current.getMaxPlayers();
+    
+    // get number of players in current game
+    int NumberOfPlayers = current.getCurrentNumberOfPlayers();
 
     add(new Label("gameName", current.getName()));
-    WebMarkupContainer player1 = new WebMarkupContainer("player1");
-    WebMarkupContainer container4 = new WebMarkupContainer("myContainer4");
-    WebMarkupContainer container5 = new WebMarkupContainer("myContainer5");
-    WebMarkupContainer container6 = new WebMarkupContainer("myContainer6");
-    WebMarkupContainer container7 = new WebMarkupContainer("myContainer7");
-    add(player1);
     
-    add(container5);
-    add(container6);
-    add(container7);
-
-    // for testing purposes
+    // get all players of the game
     Map<String, Player> currentPlayers = current.getPlayers();
-    // always add current player here
+    // always add current session player here
+    WebMarkupContainer player1 = new WebMarkupContainer("player1");
+    add(player1);
     player1.add(
         new PlayerAreaPanel(
             "panel1", Model.of(currentPlayers.get(getSession().getUser().getName()))));
-    currentPlayers.remove(getSession().getUser().getName());
+
     // get the rest of the players
-    ArrayList<Player> otherPlayers = new ArrayList<Player>(currentPlayers.values());
-//    container4.setOutputMarkupId(true);
-//    container4.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
-    container4.setVisible(false);
-    container5.setVisible(false);
-    container6.setVisible(false);
-    container7.setVisible(false);
-    if (NumberOfPlayers == 4) {
-      // to do add other players of current game
-      container4.add(new PlayerAreaPanel("panel4-2", Model.of(otherPlayers.get(0))));
-      container4.add(new PlayerAreaPanel("panel4-3", Model.of(otherPlayers.get(1))));
-      container4.add(new PlayerAreaPanel("panel4-4", Model.of(otherPlayers.get(2))));
-      container4.setVisible(true);
+    ArrayList<Player> otherPlayers = new ArrayList<Player>();
+    for (Map.Entry<String, Player> entry : currentPlayers.entrySet()) {
+      if (!entry.getValue().getUserName().equals(getSession().getUser().getName())) {
+        System.out.println(entry.getValue().getUserName());
+        otherPlayers.add(entry.getValue());
+      }
     }
-    if (NumberOfPlayers == 5) {
-      // to do add other players of current game
-      container5.add(new PlayerAreaPanel("panel5-2", Model.of(new Player("test1"))));
-      container5.add(new PlayerAreaPanel("panel5-3", Model.of(new Player("test2"))));
-      container5.add(new PlayerAreaPanel("panel5-4", Model.of(new Player("test3"))));
-      container5.add(new PlayerAreaPanel("panel5-5", Model.of(new Player("test4"))));
-      container5.setVisible(true);
-    }
-    if (NumberOfPlayers == 6) {
-      // to do add other players of current game
-      container6.add(new PlayerAreaPanel("panel6-2", Model.of(new Player("test1"))));
-      container6.add(new PlayerAreaPanel("panel6-3", Model.of(new Player("test2"))));
-      container6.add(new PlayerAreaPanel("panel6-4", Model.of(new Player("test3"))));
-      container6.add(new PlayerAreaPanel("panel6-5", Model.of(new Player("test4"))));
-      container6.add(new PlayerAreaPanel("panel6-6", Model.of(new Player("test5"))));
-      container6.setVisible(true);
-    }
-    if (NumberOfPlayers == 7) {
-      // to do add other players of current game
-      container7.add(new PlayerAreaPanel("panel7-2", Model.of(new Player("test1"))));
-      container7.add(new PlayerAreaPanel("panel7-3", Model.of(new Player("test2"))));
-      container7.add(new PlayerAreaPanel("panel7-4", Model.of(new Player("test3"))));
-      container7.add(new PlayerAreaPanel("panel7-5", Model.of(new Player("test4"))));
-      container7.add(new PlayerAreaPanel("panel7-6", Model.of(new Player("test5"))));
-      container7.add(new PlayerAreaPanel("panel7-7", Model.of(new Player("test6"))));
-      container7.setVisible(true);
-    }    
-    add(container4);
+    
+    // add player areas of other players to game table
+    IModel<List<Player>> playerModel = (IModel<List<Player>>) () -> otherPlayers;
+
+    ListView<Player> playerList =
+        new PropertyListView<>("container", playerModel) {
+          private static final long serialVersionUID = 1L;
+
+          int i = 2;
+
+          @Override
+          protected void populateItem(final ListItem<Player> listItem) {
+            final Player player = listItem.getModelObject();
+            PlayerAreaPanel panel = new PlayerAreaPanel("panel", Model.of(player));
+            // add css classes
+            listItem.add(
+                new AttributeModifier("class", "player-" + "" + NumberOfPlayers + "-" + "" + (i)));
+            panel.add(
+                new AttributeModifier(
+                    "class", "container" + "" + NumberOfPlayers + "-" + "" + (i)));
+            listItem.add(panel);
+            i++;
+            if (i > NumberOfPlayers) {
+              i = 2;
+            }
+          }
+        };
+
+    add(playerList);
     
   }
-  
-  
 }
