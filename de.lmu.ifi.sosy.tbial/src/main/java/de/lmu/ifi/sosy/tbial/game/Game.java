@@ -1,13 +1,13 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.util.Objects.requireNonNull;
 
 /** A game. Contains all information about a game. */
 public class Game implements Serializable {
@@ -19,14 +19,14 @@ public class Game implements Serializable {
 
   private int maxPlayers;
 
-  private Map<String,Player> players;
-  
+  private Map<String, Player> players;
+
   private String host;
 
   private boolean isPrivate;
 
   private String hash;
-  private String salt;
+  private byte[] salt;
 
   private boolean hasStarted;
 
@@ -42,7 +42,7 @@ public class Game implements Serializable {
       SecureRandom random = new SecureRandom();
       byte[] saltByteArray = new byte[16];
       random.nextBytes(saltByteArray);
-      this.salt = new String(saltByteArray, StandardCharsets.UTF_8);
+      this.salt = saltByteArray; // ursprünglich new String, Standard Charset
       this.hash = getHashedPassword(password, saltByteArray);
     }
     this.hasStarted = false;
@@ -54,8 +54,28 @@ public class Game implements Serializable {
    * @param userName
    */
   private void addNewPlayer(String userName) {
-    Player newPlayer = new Player(userName);
-    players.put(userName, newPlayer);
+    if (this.players.size() < this.maxPlayers) {
+      Player newPlayer = new Player(userName);
+      players.put(userName, newPlayer);
+    } else {
+      // error: Fehlermeldung "Max Spielerzahl bereits erreicht."
+    }
+  }
+
+  public void joinGame(Game game) {
+    if (!game.hasStarted()) {
+      //
+    } else {
+      //
+    }
+  }
+
+  public Map<String, Player> getInGamePlayers() {
+    return players;
+  }
+
+  public int getCurrentNumberOfPlayers() {
+    return players.size();
   }
 
   public String getName() {
@@ -66,7 +86,7 @@ public class Game implements Serializable {
     return hash;
   }
 
-  public String getSalt() {
+  public byte[] getSalt() {
     return salt;
   }
 

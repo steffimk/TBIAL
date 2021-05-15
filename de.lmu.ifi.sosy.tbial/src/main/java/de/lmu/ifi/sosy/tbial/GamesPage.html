@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta charset="utf-8" />
+<title>GamesPage</title>
+</head>
+
+<body>
+  <wicket:extend>
+  
+  <h3>The Games.</h3>
+
+    <form wicket:id="MenuForm">
+		<input type="submit" value="Create a new game" />
+		<input wicket:id="showGamesButton" type="submit" value="Games" />
+		<input wicket:id="showPlayersButton" type="submit" value="Players" />
+	</form>
+	
+	
+	<form wicket:id="JoinForm">
+	<section class="content">
+	    <table style="width:100%">
+	    <thead>
+		  <tr>
+		    <th> </th>
+		    <th>Game Name</th>
+		    <th>Players</th>
+		    <th>Password needed</th>
+		    <th>Choose Game</th>
+		  </tr>
+		 </thead>
+		 <tbody wicket:id="gameListContainer">
+			  <tr wicket:id="openGames">
+			    <td></td>
+			    <td><span wicket:id="name">gamename</span></td>
+			    <td><span wicket:id="numberOfPlayers">players</span></td>
+			    <td><span wicket:id="access">private</span></td>	    
+			  </tr>
+		  </tbody>
+		</table>
+		<br>
+	</section>
+	
+	</form>
+	
+	<div wicket:id="feedback"></div>
+    <form wicket:id="form">
+        <p>
+            <br />
+            <span wicket:id="hosting"></span>
+        </p>
+        <input type="submit" value="Join Game" />
+    </form>
+
+</wicket:extend>
+</body>
+
+</html>

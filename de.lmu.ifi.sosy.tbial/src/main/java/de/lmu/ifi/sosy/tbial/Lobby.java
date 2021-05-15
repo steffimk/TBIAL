@@ -1,12 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
-import de.lmu.ifi.sosy.tbial.db.User;
-import de.lmu.ifi.sosy.tbial.game.Game;
-
-import java.util.List;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -16,14 +12,9 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.list.PropertyListView;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import de.lmu.ifi.sosy.tbial.game.Game;
 
 /**
  * Basic lobby page. It <b>should</b> show the list of currently available games. Needs to be
@@ -47,17 +38,40 @@ public class Lobby extends BasePage {
   private final Label nameFeedbackLabel;
 
   public Lobby() {
-    IModel<List<User>> playerModel = (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
 
-    ListView<User> playerList = new PropertyListView<>("loggedInUsers", playerModel) {
- 
-      private static final long serialVersionUID = 1L;
+    Form MenuForm =
+        new Form("MenuForm") {
 
-      @Override
-      protected void populateItem(final ListItem<User> listItem) {
-        listItem.add(new Label("name"));
-      }
-    };
+          private static final long serialVersionUID = 1L;
+
+          protected void onSubmit() {
+            info("Already in Lobby!");
+          }
+        };
+
+    Button showGamesButton =
+        new Button("showGamesButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getGamesPage());
+          }
+        };
+
+    MenuForm.add(showGamesButton);
+
+    Button showPlayersButton =
+        new Button("showPlayersButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getPlayersPage());
+          }
+        };
+    MenuForm.add(showPlayersButton);
+    add(MenuForm);
 
     newGameButton =
         new Button("newGameButton") {
@@ -127,13 +141,6 @@ public class Lobby extends BasePage {
           }
         };
 
-    WebMarkupContainer playerListContainer = new WebMarkupContainer("playerlistContainer");
-    playerListContainer.add(playerList);
-    playerListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
-    playerListContainer.setOutputMarkupId(true);
-
-    add(playerListContainer);
-
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
         .add(newGameNameField)
@@ -169,5 +176,4 @@ public class Lobby extends BasePage {
       LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
     }
   }
-  
 }
