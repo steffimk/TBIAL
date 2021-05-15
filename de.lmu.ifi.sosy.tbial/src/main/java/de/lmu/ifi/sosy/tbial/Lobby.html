@@ -14,7 +14,30 @@
             <li wicket:id="name">Player</li>
        </ul>
     </div>
-    <form wicket:id="newGameForm" class="boxedform">
+    
+    <section class="content">
+	    <table style="width:100%">
+	    <thead>
+		  <tr>
+		    <th> </th>
+		    <th>Game Name</th>
+		    <th>Players</th>
+		    <th>Password needed</th>
+		  </tr>
+		 </thead>
+		 <tbody wicket:id="gameListContainer">
+			  <tr wicket:id="openGames">
+			  	<td> </td>
+			    <td wicket:id="name">gamename</td>
+			    <td wicket:id="numberOfPlayers">players</td>
+			    <td wicket:id="access">private</td>
+			  </tr>
+		  </tbody>
+		</table>
+		<br>
+	</section>
+    
+     <form wicket:id="newGameForm" class="boxedform">
     	<label for="name">Name of new game
     		<span class="small" wicket:id="nameFeedback">Whether the name is valid</span>
     	</label>
@@ -23,13 +46,13 @@
       	<input wicket:id="maxPlayers" type="number" name="maxPlayers" onKeyDown="return false"/>
 	    <label for="privateCheckbox">Private game</label>
 	    <input wicket:id="isPrivate" type="checkbox" name="privateCheckbox"/>
-	  	<div wicket:id="passwordContainer">
-	  		<label for="newGamePw">Game password
-		    	<span class="small">Password cannot be empty</span>
-		    </label>
-		 	<input wicket:id="newGamePw" type="password" name="newGamePw"/>
-		 </div>
-    	<input type=submit value="New Game" wicket:id="newGameButton"/>
+			<div wicket:id="passwordContainer">
+	  			<label for="newGamePw">Game password
+		    		<span class="small">Password cannot be empty</span>
+		    	</label>
+		 		<input wicket:id="newGamePw" type="password" name="newGamePw"/>
+		 	</div>
+	    <input type=submit value="New Game" wicket:id="newGameButton"/>
     	<div class="spacer"></div>
     </form>
 </wicket:extend>

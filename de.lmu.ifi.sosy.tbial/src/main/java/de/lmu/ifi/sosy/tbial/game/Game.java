@@ -1,13 +1,13 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.util.Objects.requireNonNull;
 
 /** A game. Contains all information about a game. */
 public class Game implements Serializable {
@@ -75,8 +75,13 @@ public class Game implements Serializable {
     return salt;
   }
 
+
   public Map<String, Player> getPlayers() {
     return players;
+  }
+
+  public int getCurrentNumberOfPlayers() {
+    return players.size();
   }
 
   public int getMaxPlayers() {

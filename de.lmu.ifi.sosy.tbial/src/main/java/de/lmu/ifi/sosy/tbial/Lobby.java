@@ -1,10 +1,9 @@
 package de.lmu.ifi.sosy.tbial;
 
-import de.lmu.ifi.sosy.tbial.db.User;
-import de.lmu.ifi.sosy.tbial.game.Game;
-
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -22,12 +21,14 @@ import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
+
 
 /**
- * Basic lobby page. It <b>should</b> show the list of currently available games. Needs to be
- * extended.
+ * Basic lobby page. It <b>should</b> show the list of currently available
+ * games. Needs to be extended.
  *
  * @author Andreas Schroeder, SWEP 2013 Team.
  */
@@ -46,18 +47,39 @@ public class Lobby extends BasePage {
   private final PasswordTextField newGamePwField;
   private final Label nameFeedbackLabel;
 
-  public Lobby() {
-    IModel<List<User>> playerModel = (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
+	public Lobby() {
+    IModel<List<User>> playerModel =
+        (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
 
-    ListView<User> playerList = new PropertyListView<>("loggedInUsers", playerModel) {
- 
-      private static final long serialVersionUID = 1L;
+    ListView<User> playerList =
+        new PropertyListView<>("loggedInUsers", playerModel) {
 
-      @Override
-      protected void populateItem(final ListItem<User> listItem) {
-        listItem.add(new Label("name"));
-      }
-    };
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void populateItem(final ListItem<User> listItem) {
+            listItem.add(new Label("name"));
+          }
+        };
+
+    IModel<List<Game>> gameModel =
+        (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();
+
+    ListView<Game> gameList =
+        new PropertyListView<>("openGames", gameModel) {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void populateItem(final ListItem<Game> listItem) {
+            final Game game = listItem.getModelObject();
+            listItem.add(new Label("name", game.getName()));
+            listItem.add(
+                new Label(
+                    "numberOfPlayers",
+                    game.getCurrentNumberOfPlayers() + "/" + game.getMaxPlayers()));
+            listItem.add(new Label("access", game.isPrivate()));
+          }
+        };
 
     newGameButton =
         new Button("newGameButton") {
@@ -109,9 +131,12 @@ public class Lobby extends BasePage {
     WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
     passwordContainer.setOutputMarkupPlaceholderTag(true);
 
+
     newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
 
     passwordContainer.add(newGamePwField);
+
+    newGamePwField.setOutputMarkupPlaceholderTag(true);
 
     isPrivateCheckBox =
         new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
@@ -124,6 +149,7 @@ public class Lobby extends BasePage {
             passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
 
             target.add(passwordContainer);
+
           }
         };
 
@@ -133,6 +159,13 @@ public class Lobby extends BasePage {
     playerListContainer.setOutputMarkupId(true);
 
     add(playerListContainer);
+
+    WebMarkupContainer gameListContainer = new WebMarkupContainer("gameListContainer");
+    gameListContainer.add(gameList);
+    gameListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
+    gameListContainer.setOutputMarkupId(true);
+
+    add(gameListContainer);
 
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
@@ -144,7 +177,7 @@ public class Lobby extends BasePage {
         .add(newGameButton);
     add(newGameForm);
   }
-
+	
   /**
    * Creates a new game and saves it in the database if all requirements are fulfilled.
    *
@@ -169,5 +202,4 @@ public class Lobby extends BasePage {
       LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
     }
   }
-  
 }
