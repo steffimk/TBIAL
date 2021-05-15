@@ -1,7 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -24,14 +23,7 @@ public class GamesPage extends BasePage {
 
   private static final long serialVersionUID = 1L;
 
-  private static final List<String> TYPES =
-      Arrays.asList(new String[] {"Shared Host", "VPS", "Dedicated Server"});
-
-  //variable to hold radio button values
-  private String selected = "VPS";
-  //private final PasswordTextField passwordField;
-
-  //private final Button pwJoinButton;
+  private String currentRadioValue;
 
   public GamesPage() {
 
@@ -80,18 +72,8 @@ public class GamesPage extends BasePage {
 
           @Override
           protected void populateItem(final ListItem<Game> listItem) {
-            //List SITES = null;
-            //List<String> myRadioButtonList = new ArrayList<String>();
-
-            /*for (int i = 0; i < getGameManager().getCurrentGamesAsList().size(); i++) {
-              Game currentGame = getGameManager().getCurrentGamesAsList().get(i);
-              SITES = Arrays.asList(new String[] {currentGame.getName()});
-            }*/
 
             final Game game = listItem.getModelObject();
-            /*listItem.add(
-            new RadioChoice<String>(
-                "radioValue", new PropertyModel<String>(this, "selected"), SITES));*/
             listItem.add(new Label("name", game.getName()));
             listItem.add(
                 new Label(
@@ -112,56 +94,46 @@ public class GamesPage extends BasePage {
 
     add(new FeedbackPanel("feedback"));
 
-    ArrayList<String> goList = new ArrayList<>();
+    ArrayList<String> gameChoiceOptions = new ArrayList<>();
     for (int i = 0; i < getGameManager().getCurrentGamesAsList().size(); i++) {
       String currentGame = getGameManager().getCurrentGamesAsList().get(i).getName();
-      System.out.println("Current game: ");
-      System.out.println(currentGame);
-      goList.add(currentGame);
+      gameChoiceOptions.add(currentGame);
     }
 
-    RadioChoice<String> hostingType =
-        new RadioChoice<String>("hosting", new PropertyModel<String>(this, "selected"), goList);
+    RadioChoice<String> gameChoice =
+        new RadioChoice<String>(
+            "hosting", new PropertyModel<String>(this, "selected"), gameChoiceOptions);
 
-    Form<?> form =
+    Form<?> JoinForm =
         new Form<Void>("form") {
 
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onSubmit() {
-            joinGame(selected);
-            info("Selected Type : " + selected);
+            joinGame(currentRadioValue);
           }
         };
 
-    add(form);
-    form.add(hostingType);
+    add(JoinForm);
+    JoinForm.add(gameChoice);
   }
 
   public void joinGame(String selected) {
-    if (true) { //if isPrivate = false --> terminate
-      //getSession.setCurrentGame("current Game");
-      //TODO: get the current game to navigate to the right GameLobby
-      //setResponsePage(getTbialApplication().getGameLobbyPage());
-    } /*else {					//else
-      passwordField = new PasswordTextField("password", new Model<>(""));
-         pwJoinButton =
-             new Button("pwjoinbutton") {
+    List<Game> games = getGameManager().getCurrentGamesAsList();
+    Game selectedGame = null;
+    for (int i = 0; i < games.size(); i++) {
+      if (games.get(i).getName() == selected) {
+        selectedGame = games.get(i);
+      }
+    }
 
-               /** UID for serialization. */
-    /*private static final long serialVersionUID = 1;
-
-            public void onSubmit() {
-              String password = passwordField.getModelObject();
-              //TODO: performLogin for Game
-            }
-          };
-
-      Form<?> form = new Form<>("login");
-      form.add(passwordField).add(pwJoinButton);
-
-      add(form);
-    }*/
+    if (selectedGame.isPrivate()) {
+      //TODO: Modal öffnen
+    }
+    if (selectedGame != null && !selectedGame.hasStarted()) {
+      getSession().setCurrentGame(selectedGame);
+      setResponsePage(getTbialApplication().getGameLobbyPage());
+    }
   }
 }
