@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial.game;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,10 @@ import java.util.Set;
  *
  * <p>Contains all information of the player (cards, mental health,...)
  */
-public class Player {
+public class Player implements Serializable {
+
+  /** UID for serialization. */
+  private static final long serialVersionUID = 1L;
 
   private final String userName;
 
