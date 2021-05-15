@@ -53,6 +53,13 @@ public class GameLobby extends BasePage {
             // visibility differently.
             return isHost();
           }
+
+          @Override
+          public boolean isEnabled() {
+            // TODO: When implementing join game: Check if this works or if we have to set
+            // isEnabled differently.
+            return game.getPlayers().size() > 3;
+          }
         };
 
     startGameLink.setOutputMarkupId(true);

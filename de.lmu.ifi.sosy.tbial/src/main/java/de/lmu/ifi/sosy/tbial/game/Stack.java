@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,10 +12,12 @@ import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 /**
  * The Stack of the game. Contains all action, ability and stumbling block cards when initializing.
  */
-public class Stack {
+public class Stack implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   List<StackCard> cards;
-  
+
   public Stack() {
     this.cards = Collections.synchronizedList(new LinkedList<StackCard>());
 
