@@ -63,10 +63,6 @@ public class Player implements Serializable {
     return roleCard.getRole();
   }
 
-  public int getPrestige() {
-    return prestige;
-  }
-
   public Set<StackCard> getHandCards() {
     return handCards;
   }
@@ -87,12 +83,16 @@ public class Player implements Serializable {
     requireNonNull(roleCard);
     mentalHealth = characterCard.getMaxHealthPoints();
     if (roleCard.getRole() == Role.MANAGER) {
-      mentalHealth = getMentalHealthInt() + 1;
+      mentalHealth += 1;
     }
   }
 
   public int getMentalHealthInt() {
     return mentalHealth;
+  }
+
+  public int getPrestigeInt() {
+    return prestige;
   }
 
   /**

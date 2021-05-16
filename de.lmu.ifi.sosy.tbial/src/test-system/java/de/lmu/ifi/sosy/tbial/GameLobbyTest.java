@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 public class GameLobbyTest extends PageTestBase {
 
@@ -49,12 +50,16 @@ public class GameLobbyTest extends PageTestBase {
             v -> {
               assertNotNull(v.getRoleCard());
               assertNotNull(v.getCharacterCard());
-              assertTrue(v.getMentalHealth() > 0);
-              assertEquals(v.getPrestige(), 0);
-              assertTrue(v.getHandCards().size() == v.getMentalHealth());
+              assertEquals(v.getPrestigeInt(), 0);
+              assertEquals(v.getHandCards().size(), v.getMentalHealthInt());
+              if (v.getRole() == Role.MANAGER) {
+                assertEquals(v.getMentalHealthInt(), v.getCharacterCard().getMaxHealthPoints() + 1);
+              } else {
+                assertEquals(v.getMentalHealthInt(), v.getCharacterCard().getMaxHealthPoints());
+              }
             });
 
-    //    tester.assertRenderedPage(GameTable.class); TODO
+    tester.assertRenderedPage(GameTable.class);
   }
 
   private void attemptStartGame() {
