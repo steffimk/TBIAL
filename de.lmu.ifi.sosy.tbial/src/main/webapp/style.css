@@ -239,7 +239,7 @@ div.page-wrap {
 
 div.content {
 	float: left;
-	width: 70%;
+	width: 80%;
 	padding-right: 20px;
 	border-right: 1px dashed #e0e0e0;
 }
@@ -257,7 +257,7 @@ div.content ul li {
 div.sidebar {
 	padding-left: 20px;
 	float: left;
-	width: 25%;
+	width: 15%;
 }
 
 div.sidebar p {
