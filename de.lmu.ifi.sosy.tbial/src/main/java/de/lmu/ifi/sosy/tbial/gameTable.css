@@ -7,8 +7,9 @@
 #table {
 	position: relative;
 	width: 100%;
-	height: 900px;
+	height: 0;
 	margin-left: 1%;
+	padding-bottom: 80%;
 }
 
 .circleBase {
@@ -43,9 +44,9 @@
 
 .container4-2 {
 	height: 100%;
-	width: 900px;
-	transform: rotate(90deg);
+	padding-left: 80%; transform : rotate( 90deg);
 	display: inline-block;
+	transform: rotate(90deg);
 }
 
 .container4-2 .points {
@@ -55,9 +56,9 @@
 
 .container4-3 {
 	width: 100%;
-	height: 900px;
-	transform: rotate(180deg);
+	padding-bottom: 80%; transform : rotate( 180deg);
 	display: inline-block;
+	transform: rotate(180deg);
 }
 
 .container4-3 .userName {
@@ -76,9 +77,9 @@
 .container4-4 {
 	float: right;
 	height: 100%;
-	width: 900px;
-	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	padding-left: 80%; transform : rotate( 90deg) scaleX( -1) scaleY( -1);
 	overflow: hidden;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 }
 
 .container4-4 .points {
@@ -88,9 +89,9 @@
 
 .container5-2 {
 	height: 100%;
-	width: 900px;
-	transform: rotate(90deg);
+	padding-left: 80%; transform : rotate( 90deg);
 	display: inline-block;
+	transform: rotate(90deg);
 }
 
 .container5-2 .userName {
@@ -104,9 +105,9 @@
 
 .container5-3 {
 	width: 100%;
-	height: 900px;
-	transform: rotate(180deg);
+	padding-bottom: 80%; transform : rotate( 180deg);
 	display: inline-block;
+	transform: rotate(180deg);
 }
 
 .container5-3 .userName {
@@ -135,7 +136,7 @@
 .container5-4 {
 	float: right;
 	width: 100%;
-	height: 900px;
+	padding-bottom: 80%;
 	transform: rotate(180deg);
 }
 
@@ -165,7 +166,7 @@
 .container5-5 {
 	float: right;
 	height: 100%;
-	width: 900px;
+	padding-left: 80%;
 	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 	overflow: hidden;
 }
@@ -190,9 +191,9 @@
 
 .container6-2 {
 	height: 100%;
-	width: 900px;
-	transform: rotate(90deg);
+	padding-left: 80%; transform : rotate( 90deg);
 	display: inline-block;
+	transform: rotate(90deg);
 }
 
 .container6-2 .userName {
@@ -212,7 +213,7 @@
 
 .container6-3 {
 	width: 100%;
-	height: 900px;
+	padding-bottom: 80%;
 	transform: rotate(180deg);
 	display: inline-block;
 }
@@ -233,7 +234,7 @@
 }
 
 .container6-3 .cards {
-	left: 65%;
+	left: 67%;
 	top: 54%;
 	transform: rotate(-45deg);
 }
@@ -247,7 +248,7 @@
 .container6-4 {
 	float: right;
 	width: 100%;
-	height: 900px;
+	padding-bottom: 80%;
 	transform: rotate(180deg);
 }
 
@@ -268,7 +269,7 @@
 
 .container6-4 .cards {
 	left: 37%;
-	top: 64%;
+	top: 60%;
 	transform: rotate(20deg);
 }
 
@@ -281,9 +282,9 @@
 .container6-5 {
 	float: right;
 	height: 100%;
-	width: 900px;
-	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	padding-left: 80%; transform : rotate( 90deg) scaleX( -1) scaleY( -1);
 	overflow: hidden;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 }
 
 .container6-5 .userName {
@@ -303,7 +304,7 @@
 
 .container6-5 .cards {
 	left: 59%;
-	top: 58%;
+	top: 51%;
 	transform: rotate(-45deg);
 }
 
@@ -316,9 +317,9 @@
 .container6-6 {
 	float: right;
 	height: 100%;
-	width: 900px;
-	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	padding-left: 80%; transform : rotate( 90deg) scaleX( -1) scaleY( -1);
 	overflow: hidden;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 }
 
 .container6-6 .userName {
@@ -342,7 +343,7 @@
 
 .container7-2 {
 	height: 100%;
-	width: 900px;
+	padding-left: 80%;
 	transform: rotate(90deg);
 	display: inline-block;
 }
@@ -355,12 +356,17 @@
 .container7-2 .points {
 	transform: rotate(-90deg);
 	top: 87%;
-	left: 71%;
+	left: 73%;
+}
+
+.container7-2 .profile {
+	top: 86%;
+	left: 83%;
 }
 
 .container7-2 .cards {
 	left: 50%;
-	top: 65%;
+	top: 62%;
 }
 
 .container7-2 .handcard {
@@ -370,7 +376,7 @@
 
 .container7-3 {
 	width: 100%;
-	height: 900px;
+	padding-bottom: 80%;
 	transform: rotate(180deg);
 	display: inline-block;
 }
@@ -407,7 +413,7 @@
 .container7-4 {
 	float: right;
 	width: 100%;
-	height: 900px;
+	padding-bottom: 80%;
 	transform: rotate(180deg);
 }
 
@@ -442,14 +448,14 @@
 .container7-5 {
 	float: right;
 	height: 100%;
-	width: 900px;
+	padding-left: 80%;
 	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 	overflow: hidden;
 }
 
 .container7-5 .userName {
 	left: 95%;
-	top: 47%;
+	top: 40%;
 	transform: rotate(90deg);
 }
 
@@ -461,12 +467,12 @@
 .container7-5 .points {
 	transform: rotate(90deg);
 	left: 90%;
-	top: 73%;
+	top: 71%;
 }
 
 .container7-5 .cards {
 	left: 66%;
-	top: 40%;
+	top: 33%;
 	transform: rotate(-65deg);
 }
 
@@ -479,7 +485,7 @@
 .container7-6 {
 	float: right;
 	height: 100%;
-	width: 900px;
+	padding-left: 80%;
 	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 	overflow: hidden;
 }
@@ -500,7 +506,8 @@
 }
 
 .container7-6 .cards {
-	left: 50%;
+	left: 48%;
+	top: 52%;
 	transform: rotate(-20deg);
 }
 
@@ -513,7 +520,7 @@
 .container7-7 {
 	float: right;
 	height: 100%;
-	width: 900px;
+	padding-left: 80%;
 	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 	overflow: hidden;
 }
@@ -525,18 +532,18 @@
 }
 
 .container7-7 .profile {
-	left: 12%;
+	left: 11%;
 }
 
 .container7-7 .points {
 	transform: rotate(90deg);
-	left: 17%;
+	left: 15%;
 	top: 88%;
 }
 
 .container7-7 .cards {
-	left: 27%;
-	top: 65%;
+	left: 25%;
+	top: 60%;
 }
 
 .container7-7 .handcard {
