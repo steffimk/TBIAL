@@ -50,6 +50,14 @@ public class Player implements Serializable {
     return roleCard.getRole();
   }
 
+  public int getPrestige() {
+    return prestige;
+  }
+
+  public Set<StackCard> getHandCards() {
+    return handCards;
+  }
+
   public CharacterCard getCharacterCard() {
     return characterCard;
   }

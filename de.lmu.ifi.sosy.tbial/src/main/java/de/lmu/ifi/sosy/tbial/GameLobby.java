@@ -127,4 +127,8 @@ public class GameLobby extends BasePage {
     if (currentPlayers > 4) return message + " The host can start the game.";
     else return message + " Waiting for more players to join.";
   }
+
+  public Game getGame() {
+    return game;
+  }
 }
