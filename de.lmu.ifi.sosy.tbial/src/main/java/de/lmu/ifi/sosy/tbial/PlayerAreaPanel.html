@@ -17,20 +17,22 @@
 			<li wicket:id="prestige"></li>
 			<li wicket:id="bug"></li>
 		</ul>
-		<div class="cards">
-			<div class="blocked">
-				<div class="handcard">Block Card 1</div>
-				<div class="handcard">Block Card 2</div>
-			</div>
-			<div class="played">
-				<div class="handcard">Played Card 1</div>
-				<div class="handcard">Played Card 2</div>
-				<div class="handcard">Played Card 3</div>
-			</div>
-			<div class="handcards">
-				<div class="handcard">Hand Card 1</div>
-				<div class="handcard">Hand Card 2</div>
-				<div class="handcard">Hand Card 3</div>
+		<div class="wrapper">
+			<div class="cards">
+				<div class="blocked">
+					<div class="handcard">Block Card 1</div>
+					<div class="handcard">Block Card 2</div>
+				</div>
+				<div class="played">
+					<div class="handcard">Played Card 1</div>
+					<div class="handcard">Played Card 2</div>
+					<div class="handcard">Played Card 3</div>
+				</div>
+				<div class="handcards">
+					<div wicket:id="handcards">
+						<img wicket:id="handCard" class="handcard" />
+					</div>
+				</div>
 			</div>
 		</div>
 	</wicket:panel>
