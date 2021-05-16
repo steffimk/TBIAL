@@ -6,55 +6,49 @@
 </head>
 
 <body>
-  <wicket:extend>
-  
-  <h3>The Games.</h3>
+	<wicket:extend>
 
-    <form wicket:id="MenuForm">
-		<input wicket:id="createGameButton" type="submit" value="Create a new Game" />
-		<input wicket:id="showGamesButton" type="submit" value="Games" />
-		<input wicket:id="showPlayersButton" type="submit" value="Players" />
-	</form>
-	
-	
-	<form wicket:id="joinForm">
-	<section class="content">
-	    <table style="width:100%">
-	    <thead>
-		  <tr>
-		    <th> </th>
-		    <th>Game Name</th>
-		    <th>Players</th>
-		    <th>Password needed</th>
-		  </tr>
-		 </thead>
-		 <tbody wicket:id="gameListContainer">
-			  <tr wicket:id="openGames">
-			    <td></td>
-			    <td><span wicket:id="name">gamename</span></td>
-			    <td><span wicket:id="numberOfPlayers">players</span></td>
-			    <td><span wicket:id="access">private</span></td>	    
-			  </tr>
-		  </tbody>
-		</table>
-		<br>
-	</section>
-	
-	</form>
-	
-	<div wicket:id="feedback"></div>
-    <form wicket:id="chooseForm">
-        <p>
-            <br />
-            <span wicket:id="choice"></span>
-        </p>
-        <input type="submit" value="Join Game" />
-    </form>
-    
-    
-    
+		<h3>The Games.</h3>
 
-</wicket:extend>
+		<form wicket:id="MenuForm">
+			<input wicket:id="createGameButton" type="submit"
+				value="Create a new Game" /> <input wicket:id="showGamesButton"
+				type="submit" value="Games" /> <input wicket:id="showPlayersButton"
+				type="submit" value="Players" />
+		</form>
+
+
+		<form wicket:id="joinForm">
+			<section class="content">
+				<table style="width: 100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Game Name</th>
+							<th>Players</th>
+							<th>Password needed</th>
+						</tr>
+					</thead>
+					<tbody wicket:id="gameListContainer">
+						<tr wicket:id="openGames">
+							<td></td>
+							<td><span wicket:id="name">gamename</span></td>
+<!--  							<td><p>
+									<br /> <span wicket:id="choice"></span>
+								</p></td> -->
+							<td><span wicket:id="numberOfPlayers">players</span></td>
+							<td><span wicket:id="access">private</span></td>
+						</tr>
+					</tbody>
+				</table>
+				<br>
+			</section>
+<!--  		<input wicket:id="joinGameButton"
+				type="submit" value="Join" /> -->
+		</form>
+
+
+	</wicket:extend>
 </body>
 
 </html>

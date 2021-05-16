@@ -8,13 +8,10 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -24,6 +21,8 @@ public class GamesPage extends BasePage {
   private static final long serialVersionUID = 1L;
 
   private String currentRadioValue;
+
+  ArrayList<String> gameChoiceOptions = new ArrayList<>();
 
   public GamesPage() {
 
@@ -77,6 +76,11 @@ public class GamesPage extends BasePage {
 
             final Game game = listItem.getModelObject();
             listItem.add(new Label("name", game.getName()));
+            /*listItem.add(
+            new RadioChoice<String>(
+                "choice",
+                new PropertyModel<String>(this, currentRadioValue),
+                gameChoiceOptions));*/
             listItem.add(
                 new Label(
                     "numberOfPlayers",
@@ -85,40 +89,29 @@ public class GamesPage extends BasePage {
           }
         };
 
+    /*Button joinGameButton =
+    new Button("joinGameButton") {
+
+      private static final long serialVersionUID = 1L;
+
+      public void onSubmit() {
+        joinGame(currentRadioValue);
+      }
+    };*/
+    //joinForm.add(joinGameButton);
     WebMarkupContainer gameListContainer = new WebMarkupContainer("gameListContainer");
     gameListContainer.add(gameList);
     gameListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
     gameListContainer.setOutputMarkupId(true);
 
-    add(gameListContainer);
-    joinForm.add(gameListContainer);
-    add(joinForm);
-
-    add(new FeedbackPanel("feedback"));
-
-    ArrayList<String> gameChoiceOptions = new ArrayList<>();
     for (int i = 0; i < getGameManager().getCurrentGamesAsList().size(); i++) {
       String currentGame = getGameManager().getCurrentGamesAsList().get(i).getName();
       gameChoiceOptions.add(currentGame);
     }
 
-    RadioChoice<String> gameChoice =
-        new RadioChoice<String>(
-            "choice", new PropertyModel<String>(this, "currentRadioValue"), gameChoiceOptions);
-
-    Form<?> chooseForm =
-        new Form<Void>("chooseForm") {
-
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          protected void onSubmit() {
-            joinGame(currentRadioValue);
-          }
-        };
-
-    add(chooseForm);
-    chooseForm.add(gameChoice);
+    add(gameListContainer);
+    joinForm.add(gameListContainer);
+    add(joinForm);
   }
 
   public void joinGame(String selected) {
