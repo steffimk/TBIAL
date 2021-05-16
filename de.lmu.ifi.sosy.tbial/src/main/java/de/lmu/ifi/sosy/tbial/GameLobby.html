@@ -8,15 +8,12 @@
 <body>
   <wicket:extend>
     <h3>The Game Lobby.</h3>
-    <fieldset>
+    <fieldset class="chat"
+     style="height: 500px; width: 30%; border: 1px solid; overflow: auto; padding: 5%;">
 	    <div wicket:id="chatMessages">
 	    	<p wicket:id="messages"> 
-	    		<span wicket:id="sender">
-	    		Username
-	    		</span>
-	    		<span wicket:id="textMessage">
-	    		Chatmessage
-	    		</span>
+	    		<span wicket:id="sender">Username</span>
+	    		<span wicket:id="textMessage">Chatmessage</span>
 	    	</p>
 	    </div>
     </fieldset> 
@@ -24,8 +21,6 @@
     	<input type="text" wicket:id="message">
     	<input type="submit" value="Send" wicket:id="send">
     </form>  
-    
 </wicket:extend>
 </body>
-
 </html>

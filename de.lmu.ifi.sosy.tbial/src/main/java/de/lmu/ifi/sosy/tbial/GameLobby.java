@@ -1,10 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -26,12 +24,11 @@ public class GameLobby extends BasePage {
   private static final int maxMessages = 80;
   private static final LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
   private MarkupContainer chatMessagesContainer;
-  
-  public GameLobby() {
-	  final TextField<String> textField = new TextField<String>("message", new Model<String>());
-	  textField.setOutputMarkupId(true);
 
-    //
+  public GameLobby() {
+    final TextField<String> textField = new TextField<String>("message", new Model<String>());
+    textField.setOutputMarkupId(true);
+
     chatMessagesContainer = new WebMarkupContainer("chatMessages");
 
     final ListView<ChatMessage> listView =
@@ -61,7 +58,6 @@ public class GameLobby extends BasePage {
     chatMessagesContainer.add(ajaxBehavior);
     add(chatMessagesContainer);
 
-    //
     Component send =
         new AjaxSubmitLink("send") {
           private static final long serialVersionUID = 1L;
@@ -75,10 +71,10 @@ public class GameLobby extends BasePage {
 
             synchronized (chatMessages) {
               if (chatMessages.size() >= maxMessages) {
-                chatMessages.removeLast();
+                chatMessages.removeFirst();
               }
 
-              chatMessages.addFirst(chatMessage);
+              chatMessages.addLast(chatMessage);
             }
 
             textField.setModelObject("");
