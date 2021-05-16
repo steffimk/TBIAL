@@ -66,6 +66,10 @@ public class TBIALApplication extends WebApplication {
     return GameLobby.class;
   }
 
+  public Class<GameTable> getGameTablePage() {
+    return GameTable.class;
+  }
+
   /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
   @Override
   public TBIALSession newSession(Request request, Response response) {

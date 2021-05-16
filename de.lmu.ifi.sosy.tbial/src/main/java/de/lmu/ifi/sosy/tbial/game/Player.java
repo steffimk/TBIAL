@@ -40,7 +40,7 @@ public class Player implements Serializable {
     return userName;
   }
 
-  public String getMentalHealthAsString() {
+  public String getMentalHealth() {
     return "Mental Health: " + mentalHealth;
   }
 
@@ -79,11 +79,11 @@ public class Player implements Serializable {
     requireNonNull(roleCard);
     mentalHealth = characterCard.getMaxHealthPoints();
     if (roleCard.getRole() == Role.MANAGER) {
-      mentalHealth = getMentalHealth() + 1;
+      mentalHealth = getMentalHealthInt() + 1;
     }
   }
 
-  public int getMentalHealth() {
+  public int getMentalHealthInt() {
     return mentalHealth;
   }
 
