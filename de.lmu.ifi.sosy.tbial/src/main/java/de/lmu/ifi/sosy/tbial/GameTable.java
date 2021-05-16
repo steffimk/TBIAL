@@ -28,9 +28,12 @@ public class GameTable extends BasePage {
 
     // get current game
     Game current = getSession().getCurrentGame();
-    
+
     // get number of players in current game
-    int NumberOfPlayers = current.getCurrentNumberOfPlayers();
+    int numberOfPlayers = current.getCurrentNumberOfPlayers();
+
+    // get username of current session player
+    String currentPlayerUsername = getSession().getUser().getName();
 
     add(new Label("gameName", current.getName()));
     
@@ -39,15 +42,12 @@ public class GameTable extends BasePage {
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
     add(player1);
-    player1.add(
-        new PlayerAreaPanel(
-            "panel1", Model.of(currentPlayers.get(getSession().getUser().getName()))));
+    player1.add(new PlayerAreaPanel("panel1", Model.of(currentPlayers.get(currentPlayerUsername))));
 
     // get the rest of the players
     ArrayList<Player> otherPlayers = new ArrayList<Player>();
     for (Map.Entry<String, Player> entry : currentPlayers.entrySet()) {
-      if (!entry.getValue().getUserName().equals(getSession().getUser().getName())) {
-        System.out.println(entry.getValue().getUserName());
+      if (!entry.getKey().equals(currentPlayerUsername)) {
         otherPlayers.add(entry.getValue());
       }
     }
@@ -67,13 +67,13 @@ public class GameTable extends BasePage {
             PlayerAreaPanel panel = new PlayerAreaPanel("panel", Model.of(player));
             // add css classes
             listItem.add(
-                new AttributeModifier("class", "player-" + "" + NumberOfPlayers + "-" + "" + (i)));
+                new AttributeModifier("class", "player-" + "" + numberOfPlayers + "-" + "" + (i)));
             panel.add(
                 new AttributeModifier(
-                    "class", "container" + "" + NumberOfPlayers + "-" + "" + (i)));
+                    "class", "container" + "" + numberOfPlayers + "-" + "" + (i)));
             listItem.add(panel);
             i++;
-            if (i > NumberOfPlayers) {
+            if (i > numberOfPlayers) {
               i = 2;
             }
           }
