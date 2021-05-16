@@ -1,8 +1,11 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A player of a game.
@@ -15,32 +18,29 @@ public class Player implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private final String userName;
+
+  private RoleCard roleCard;
+  private CharacterCard characterCard;
+
   private int mentalHealth;
   private int prestige;
   private int bug;
-  private RoleCard role;
-  private CharacterCard character;
-  private List<StackCard> handCards;
-  private List<StackCard> playedCards;
-  private List<StackCard> stumblingBlockCards;
+
+  private Set<StackCard> handCards;
 
   public Player(String userName) {
     this.userName = userName;
-    this.mentalHealth = 0;
     this.prestige = 0;
+    this.mentalHealth = 0;
     this.bug = 0;
-    this.role = null;
-    this.character = null;
-    this.handCards = new ArrayList<StackCard>();
-    this.playedCards = new ArrayList<StackCard>();
-    this.stumblingBlockCards = new ArrayList<StackCard>();
+    this.handCards = new HashSet<>();
   }
 
   public String getUserName() {
     return userName;
   }
 
-  public String getMentalHealth() {
+  public String getMentalHealthAsString() {
     return "Mental Health: " + mentalHealth;
   }
 
@@ -51,24 +51,58 @@ public class Player implements Serializable {
   public String getBug() {
     return "Bug: " + bug;
   }
-
-  public RoleCard getRole() {
-    return role;
+  public RoleCard getRoleCard() {
+    return roleCard;
   }
 
-  public CharacterCard getCharacter() {
-    return character;
+  public void setRoleCard(RoleCard roleCard) {
+    this.roleCard = roleCard;
   }
 
-  public List<StackCard> getHandCards() {
-    return handCards;
+  public Role getRole() {
+    return roleCard.getRole();
   }
 
-  public List<StackCard> getPlayedCards() {
-    return playedCards;
+  public CharacterCard getCharacterCard() {
+    return characterCard;
   }
 
-  public List<StackCard> getStumblingBlockCards() {
-    return stumblingBlockCards;
+  public void setCharacterCard(CharacterCard characterCard) {
+    this.characterCard = characterCard;
+  }
+
+  /**
+   * Sets the initial number of mental health points based on the player's character and role card.
+   */
+  public void initialMentalHealth() {
+    requireNonNull(characterCard);
+    requireNonNull(roleCard);
+    mentalHealth = characterCard.getMaxHealthPoints();
+    if (roleCard.getRole() == Role.MANAGER) {
+      mentalHealth = getMentalHealth() + 1;
+    }
+  }
+
+  public int getMentalHealth() {
+    return mentalHealth;
+  }
+
+  /**
+   * Adds the value to the mental health points of the player. Use a negative value to decrement the
+   * mental health.
+   *
+   * @param value that gets added to the mental health
+   */
+  public synchronized void addToMentalHealth(int value) {
+    mentalHealth += value;
+  }
+
+  /**
+   * Adds all cards to the player's hand cards
+   *
+   * @param cards - the cards to be added
+   */
+  public void addToHandCards(Set<StackCard> cards) {
+    handCards.addAll(cards);
   }
 }
