@@ -24,6 +24,7 @@ public class Player implements Serializable {
 
   private int mentalHealth;
   private int prestige;
+  private int bug;
 
   private Set<StackCard> handCards;
 
@@ -31,6 +32,7 @@ public class Player implements Serializable {
     this.userName = userName;
     this.prestige = 0;
     this.mentalHealth = 0;
+    this.bug = 0;
     this.handCards = new HashSet<>();
   }
 
@@ -38,6 +40,17 @@ public class Player implements Serializable {
     return userName;
   }
 
+  public String getMentalHealth() {
+    return "Mental Health: " + mentalHealth;
+  }
+
+  public String getPrestige() {
+    return "Prestige: " + prestige;
+  }
+
+  public String getBug() {
+    return "Bug: " + bug;
+  }
   public RoleCard getRoleCard() {
     return roleCard;
   }
@@ -74,11 +87,11 @@ public class Player implements Serializable {
     requireNonNull(roleCard);
     mentalHealth = characterCard.getMaxHealthPoints();
     if (roleCard.getRole() == Role.MANAGER) {
-      mentalHealth = getMentalHealth() + 1;
+      mentalHealth = getMentalHealthInt() + 1;
     }
   }
 
-  public int getMentalHealth() {
+  public int getMentalHealthInt() {
     return mentalHealth;
   }
 

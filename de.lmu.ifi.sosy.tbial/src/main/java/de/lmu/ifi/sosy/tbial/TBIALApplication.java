@@ -28,7 +28,7 @@ import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 /**
  * The web application "The Bug Is A Lie".
  *
- * @author Andreas Schroeder, Christian Kroi├ƒ SWEP 2013 Team.
+ * @author Andreas Schroeder, Christian Kroiß SWEP 2013 Team.
  */
 public class TBIALApplication extends WebApplication {
 
@@ -66,6 +66,10 @@ public class TBIALApplication extends WebApplication {
     return GameLobby.class;
   }
 
+  public Class<GameTable> getGameTablePage() {
+    return GameTable.class;
+  }
+
   /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
   @Override
   public TBIALSession newSession(Request request, Response response) {
@@ -94,6 +98,7 @@ public class TBIALApplication extends WebApplication {
     mountPage("register", Register.class);
     mountPage("lobby", Lobby.class);
     mountPage("gameLobby", GameLobby.class);
+    mountPage("gameTable", GameTable.class);
   }
 
   /**

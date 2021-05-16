@@ -87,7 +87,7 @@ public class GameLobby extends BasePage {
     // Permission checked. Start new game!
     LOGGER.info("Starting the game.");
     game.startGame();
-    //    setResponsePage(getTbialApplication().getGameTablePage()); TODO: Open actual game table.
+    setResponsePage(getTbialApplication().getGameTablePage()); // TODO: Open actual game table.
   }
 
   /**

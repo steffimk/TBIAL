@@ -135,7 +135,7 @@ public class Game implements Serializable {
   private void distributeInitialHandCards() {
     for (Player player : players.values()) {
       Set<StackCard> handCards = new HashSet<>();
-      for (int i = 0; i < player.getMentalHealth(); i++) {
+      for (int i = 0; i < player.getMentalHealthInt(); i++) {
         handCards.add(stack.drawCard());
       }
       player.addToHandCards(handCards);
