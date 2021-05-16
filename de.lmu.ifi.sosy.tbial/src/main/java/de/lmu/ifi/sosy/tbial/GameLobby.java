@@ -31,7 +31,7 @@ public class GameLobby extends BasePage {
 
     Map<String, Game> currentGames = getGameManager().getCurrentGames();
     String currentGameName = getSession().getCurrentGame().getName();
-    if (!CheckIfLastPlayer()) {
+    if (!checkIfLastPlayer()) {
       checkHostChange();
     }
     getSession().setCurrentGameNull();
@@ -52,7 +52,7 @@ public class GameLobby extends BasePage {
     }
   }
 
-  public boolean CheckIfLastPlayer() {
+  public boolean checkIfLastPlayer() {
     int currentPlayersInGame = getSession().getCurrentGame().getCurrentNumberOfPlayers();
     if (currentPlayersInGame == 1) {
       return true;

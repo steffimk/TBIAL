@@ -130,24 +130,24 @@ public class GamesPage extends BasePage {
       }
     }
 
-    if (selectedGame.isPrivate()) {
+    if (selectedGame != null) {
+      if (selectedGame.isPrivate()) {
 
-      //TODO: Modal öffnen
-      // 1. Modal Klasse erstellen mit Titel und Beschreibung
-      // 2. Modal anzeigen: modal.show(target);
-      // 3. Falls kein Close --> Hinzufügen
-      // 4. Falls kein Submit --> Hinzufügen
-    }
-    if (CheckIfYouCanJoin(selectedGame)) {
-      getSession().setCurrentGame(selectedGame);
-      setResponsePage(getTbialApplication().getGameLobbyPage());
+        //TODO: Modal öffnen
+        // 1. Modal Klasse erstellen mit Titel und Beschreibung
+        // 2. Modal anzeigen: modal.show(target);
+        // 3. Falls kein Close --> Hinzufügen
+        // 4. Falls kein Submit --> Hinzufügen
+      }
+
+      if (CheckIfYouCanJoin(selectedGame)) {
+        getSession().setCurrentGame(selectedGame);
+        setResponsePage(getTbialApplication().getGameLobbyPage());
+      }
     }
   }
 
   public boolean CheckIfYouCanJoin(Game game) {
-    if (game == null) {
-      return false;
-    }
     if (game.hasStarted()) {
       return false;
     }
