@@ -53,7 +53,7 @@ public class Game implements Serializable {
    *
    * @param userName
    */
-  private void addNewPlayer(String userName) {
+  public void addNewPlayer(String userName) {
     if (this.players.size() < this.maxPlayers) {
       Player newPlayer = new Player(userName);
       players.put(userName, newPlayer);
