@@ -8,6 +8,23 @@
 <body>
   <wicket:extend>
     <h3>The Game Lobby.</h3>
+    <fieldset>
+	    <div wicket:id="chatMessages">
+	    	<p wicket:id="messages"> 
+	    		<span wicket:id="sender">
+	    		Username
+	    		</span>
+	    		<span wicket:id="textMessage">
+	    		Chatmessage
+	    		</span>
+	    	</p>
+	    </div>
+    </fieldset> 
+    <form wicket:id="form">
+    	<input type="text" wicket:id="message">
+    	<input type="submit" value="Send" wicket:id="send">
+    </form>  
+    
 </wicket:extend>
 </body>
 
