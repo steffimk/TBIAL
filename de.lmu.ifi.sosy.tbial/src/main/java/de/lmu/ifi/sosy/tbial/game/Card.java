@@ -1,7 +1,11 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import java.io.Serializable;
+
 /** Every card in the game inherits from this class. Includes the CardType. */
-public abstract class Card {
+public abstract class Card implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private final CardType cardType;
 
