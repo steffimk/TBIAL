@@ -140,14 +140,14 @@ public class GamesPage extends BasePage {
         // 4. Falls kein Submit --> Hinzufügen
       }
 
-      if (CheckIfYouCanJoin(selectedGame)) {
+      if (checkIfYouCanJoin(selectedGame)) {
         getSession().setCurrentGame(selectedGame);
         setResponsePage(getTbialApplication().getGameLobbyPage());
       }
     }
   }
 
-  public boolean CheckIfYouCanJoin(Game game) {
+  public boolean checkIfYouCanJoin(Game game) {
     if (game.hasStarted()) {
       return false;
     }
