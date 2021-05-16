@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -20,15 +19,12 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 
-import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
-
 /**
- * Basic lobby page. It <b>should</b> show the list of currently available
- * games. Needs to be extended.
+ * Basic lobby page. It <b>should</b> show the list of currently available games. Needs to be
+ * extended.
  *
  * @author Andreas Schroeder, SWEP 2013 Team.
  */
@@ -49,15 +45,19 @@ public class Lobby extends BasePage {
 
   public Lobby() {
 
-    Form MenuForm =
-        new Form("MenuForm") {
+    Form MenuForm = new Form("MenuForm");
+
+    Button createGameButton =
+        new Button("createGameButton") {
 
           private static final long serialVersionUID = 1L;
 
-          protected void onSubmit() {
-            info("Already in Lobby!");
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getHomePage());
           }
         };
+
+    MenuForm.add(createGameButton);
 
     Button showGamesButton =
         new Button("showGamesButton") {
@@ -152,7 +152,6 @@ public class Lobby extends BasePage {
     WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
     passwordContainer.setOutputMarkupPlaceholderTag(true);
 
-
     newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
 
     passwordContainer.add(newGamePwField);
@@ -170,7 +169,6 @@ public class Lobby extends BasePage {
             passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
 
             target.add(passwordContainer);
-
           }
         };
 
@@ -209,5 +207,4 @@ public class Lobby extends BasePage {
       LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
     }
   }
-  
 }

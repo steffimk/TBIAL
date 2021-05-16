@@ -27,16 +27,18 @@ public class GamesPage extends BasePage {
 
   public GamesPage() {
 
-    Form MenuForm =
-        new Form("MenuForm") {
+    Form MenuForm = new Form("MenuForm");
+
+    Button createGameButton =
+        new Button("createGameButton") {
 
           private static final long serialVersionUID = 1L;
 
-          protected void onSubmit() {
-            //info("Created Game");
+          public void onSubmit() {
             setResponsePage(getTbialApplication().getHomePage());
           }
         };
+    MenuForm.add(createGameButton);
 
     Button showGamesButton =
         new Button("showGamesButton") {
@@ -44,7 +46,7 @@ public class GamesPage extends BasePage {
           private static final long serialVersionUID = 1L;
 
           public void onSubmit() {
-            info("Already in Game View!");
+            setResponsePage(getTbialApplication().getGamesPage());
           }
         };
     MenuForm.add(showGamesButton);
@@ -64,7 +66,7 @@ public class GamesPage extends BasePage {
     IModel<List<Game>> gameModel =
         (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();
 
-    Form joinForm = new Form("JoinForm");
+    Form joinForm = new Form("joinForm");
 
     ListView<Game> gameList =
         new PropertyListView<>("openGames", gameModel) {
@@ -102,10 +104,10 @@ public class GamesPage extends BasePage {
 
     RadioChoice<String> gameChoice =
         new RadioChoice<String>(
-            "hosting", new PropertyModel<String>(this, "selected"), gameChoiceOptions);
+            "choice", new PropertyModel<String>(this, "currentRadioValue"), gameChoiceOptions);
 
-    Form<?> JoinForm =
-        new Form<Void>("form") {
+    Form<?> chooseForm =
+        new Form<Void>("chooseForm") {
 
           private static final long serialVersionUID = 1L;
 
@@ -115,8 +117,8 @@ public class GamesPage extends BasePage {
           }
         };
 
-    add(JoinForm);
-    JoinForm.add(gameChoice);
+    add(chooseForm);
+    chooseForm.add(gameChoice);
   }
 
   public void joinGame(String selected) {
@@ -129,11 +131,29 @@ public class GamesPage extends BasePage {
     }
 
     if (selectedGame.isPrivate()) {
+
       //TODO: Modal öffnen
+      // 1. Modal Klasse erstellen mit Titel und Beschreibung
+      // 2. Modal anzeigen: modal.show(target);
+      // 3. Falls kein Close --> Hinzufügen
+      // 4. Falls kein Submit --> Hinzufügen
     }
-    if (selectedGame != null && !selectedGame.hasStarted()) {
+    if (CheckIfYouCanJoin(selectedGame)) {
       getSession().setCurrentGame(selectedGame);
       setResponsePage(getTbialApplication().getGameLobbyPage());
     }
+  }
+
+  public boolean CheckIfYouCanJoin(Game game) {
+    if (game == null) {
+      return false;
+    }
+    if (game.hasStarted()) {
+      return false;
+    }
+    if (game.getCurrentNumberOfPlayers() >= game.getMaxPlayers()) {
+      return false;
+    }
+    return true;
   }
 }

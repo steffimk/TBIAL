@@ -57,8 +57,6 @@ public class Game implements Serializable {
     if (this.players.size() < this.maxPlayers) {
       Player newPlayer = new Player(userName);
       players.put(userName, newPlayer);
-    } else {
-      // error: Fehlermeldung "Max Spielerzahl bereits erreicht."
     }
   }
 

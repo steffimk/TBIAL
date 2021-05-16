@@ -21,16 +21,18 @@ public class PlayersPage extends BasePage {
 
   public PlayersPage() {
 
-    Form MenuForm =
-        new Form("MenuForm") {
+    Form MenuForm = new Form("MenuForm");
+
+    Button createGameButton =
+        new Button("createGameButton") {
 
           private static final long serialVersionUID = 1L;
 
-          protected void onSubmit() {
-            //info("Create New Game");
+          public void onSubmit() {
             setResponsePage(getTbialApplication().getHomePage());
           }
         };
+    MenuForm.add(createGameButton);
 
     //Button to direct to List of Games
     Button showGamesButton =
@@ -52,7 +54,7 @@ public class PlayersPage extends BasePage {
           private static final long serialVersionUID = 1L;
 
           public void onSubmit() {
-            info("Already in Player View!");
+            setResponsePage(getTbialApplication().getPlayersPage());
           }
         };
 

@@ -2,16 +2,17 @@ package de.lmu.ifi.sosy.tbial;
 
 import static java.util.Objects.requireNonNull;
 
-import de.lmu.ifi.sosy.tbial.db.Database;
-import de.lmu.ifi.sosy.tbial.db.User;
-import de.lmu.ifi.sosy.tbial.game.Game;
-
 import java.util.Objects;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.request.Request;
+
+import de.lmu.ifi.sosy.tbial.db.Database;
+import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
 
 /**
  * An authenticated TBIAL session.
@@ -105,4 +106,7 @@ public class TBIALSession extends AuthenticatedWebSession {
     this.currentGame = game;
   }
 
+  public void setCurrentGameNull() {
+    this.currentGame = null;
+  }
 }
