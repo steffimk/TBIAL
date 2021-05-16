@@ -15,6 +15,14 @@ public class PlayerAreaPanel extends Panel {
   public PlayerAreaPanel(String id, IModel<Player> player) {
     super(id, new CompoundPropertyModel<Player>(player));
     add(new Label("userName"));
+    Label role = new Label("roleName");
+    role.setVisible(false);
+    if (player.getObject().getRoleName() == "Manager"
+        || player.getObject().isFired()
+        || player.getObject().isBasePlayer()) {
+      role.setVisible(true);
+    }
+    add(role);
     add(new Label("mentalHealth"));
     add(new Label("prestige"));
     add(new Label("bug"));

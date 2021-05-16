@@ -48,3 +48,12 @@
 	top: 95%;
 	left: 10%;
 }
+
+.role {
+	position: absolute;
+	display: inline-block;
+	font-size: x-large;
+	transform: rotate(42deg);
+	top: 77%;
+	left: 67%;
+}

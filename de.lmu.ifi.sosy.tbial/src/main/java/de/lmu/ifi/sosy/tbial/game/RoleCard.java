@@ -7,6 +7,9 @@ import java.util.List;
 /** Role Cards are modeled with this class. */
 public class RoleCard extends Card {
 
+  /** */
+  private static final long serialVersionUID = 1L;
+
   private final Role role;
 
   public RoleCard(Role role) {
@@ -16,6 +19,10 @@ public class RoleCard extends Card {
 
   public Role getRole() {
     return role;
+  }
+
+  public String getLabel() {
+    return role.label;
   }
 
   @Override
