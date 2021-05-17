@@ -39,6 +39,10 @@ public class GameTable extends BasePage {
     
     // get all players of the game
     Map<String, Player> currentPlayers = current.getPlayers();
+
+    // set current session player as base player
+    currentPlayers.get(currentPlayerUsername).setBasePlayer(true);
+
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
     add(player1);
