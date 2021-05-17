@@ -53,6 +53,9 @@ public class TBIALApplication extends WebApplication {
     this.database = database;
   }
 
+
+ 
+
   /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
   @Override
   public TBIALSession newSession(Request request, Response response) {
@@ -122,7 +125,7 @@ public class TBIALApplication extends WebApplication {
               }
             });
   }
-  
+
     @Override
   public Class<Lobby> getHomePage() {
     return Lobby.class;

@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.util.Map;
+
+import java.util.LinkedList;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -21,6 +24,14 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.Link;
+
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -177,7 +188,7 @@ public class GameLobby extends BasePage {
     // Permission checked. Start new game!
     LOGGER.info("Starting the game.");
     game.startGame();
-    setResponsePage(getTbialApplication().getGameTablePage()); // TODO: Open actual game table.
+    setResponsePage(getTbialApplication().getGameTablePage());
   }
 
   /**
