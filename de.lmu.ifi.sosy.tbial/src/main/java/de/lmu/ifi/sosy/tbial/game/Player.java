@@ -24,13 +24,19 @@ public class Player implements Serializable {
 
   private int mentalHealth;
   private int prestige;
+  private int bug;
 
   private Set<StackCard> handCards;
+
+  private boolean fired;
+
+  private boolean basePlayer;
 
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
     this.mentalHealth = 0;
+    this.bug = 0;
     this.handCards = new HashSet<>();
   }
 
@@ -38,6 +44,17 @@ public class Player implements Serializable {
     return userName;
   }
 
+  public String getMentalHealth() {
+    return "Mental Health: " + mentalHealth;
+  }
+
+  public String getPrestige() {
+    return "Prestige: " + prestige;
+  }
+
+  public String getBug() {
+    return "Bug: " + bug;
+  }
   public RoleCard getRoleCard() {
     return roleCard;
   }
@@ -50,12 +67,36 @@ public class Player implements Serializable {
     return roleCard.getRole();
   }
 
+  public String getRoleName() {
+    return roleCard.getLabel();
+  }
+
   public CharacterCard getCharacterCard() {
     return characterCard;
   }
 
+  public Set<StackCard> getHandCards() {
+    return handCards;
+  }
+
+  public boolean isFired() {
+    return fired;
+  }
+
+  public boolean isBasePlayer() {
+    return basePlayer;
+  }
+
   public void setCharacterCard(CharacterCard characterCard) {
     this.characterCard = characterCard;
+  }
+
+  public void fire(boolean fired) {
+    this.fired = fired;
+  }
+
+  public void setBasePlayer(boolean basePlayer) {
+    this.basePlayer = basePlayer;
   }
 
   /**
@@ -66,11 +107,11 @@ public class Player implements Serializable {
     requireNonNull(roleCard);
     mentalHealth = characterCard.getMaxHealthPoints();
     if (roleCard.getRole() == Role.MANAGER) {
-      mentalHealth = getMentalHealth() + 1;
+      mentalHealth = getMentalHealthInt() + 1;
     }
   }
 
-  public int getMentalHealth() {
+  public int getMentalHealthInt() {
     return mentalHealth;
   }
 

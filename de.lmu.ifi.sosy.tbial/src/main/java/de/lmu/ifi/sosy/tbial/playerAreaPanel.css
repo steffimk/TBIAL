@@ -1,0 +1,59 @@
+.profile {
+	position: absolute;
+	top: 90%;
+	display: inline-block;
+	left: 80%;
+	height: 70px;
+	width: 70px;
+	background: transparent;
+}
+
+.points {
+	list-style: none !important;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	top: 90%;
+	left: 67%;
+}
+
+.wrapper {
+	display: flex;
+	justify-content: center;
+}
+
+.cards {
+	display: flex;
+	position: absolute;
+	top: 63%;
+	flex-direction: column;
+	align-items: center;
+}
+
+.handcards, .played .blocked {
+	display: flex;
+}
+
+.handcard {
+	float: left;
+	width: 60px;
+	height: 100px;
+	margin: 5px;
+	border: 1px solid black;
+}
+
+.userName {
+	position: absolute;
+	display: inline-block;
+	top: 95%;
+	left: 10%;
+}
+
+.role {
+	position: absolute;
+	display: inline-block;
+	font-size: x-large;
+	transform: rotate(42deg);
+	top: 77%;
+	left: 67%;
+}

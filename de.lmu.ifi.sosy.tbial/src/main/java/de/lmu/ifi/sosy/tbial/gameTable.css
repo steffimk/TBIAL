@@ -1,0 +1,1114 @@
+#wrapper {
+	display: flex;
+	margin-top: 1%;
+	margin-bottom: 1%;
+}
+
+#table {
+	position: relative;
+	width: 100%;
+	height: 0;
+	margin-left: 1%;
+	padding-bottom: 80%;
+}
+
+.circleBase {
+	border-radius: 50%;
+	border: 1px solid black;
+}
+
+.center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 200px;
+	width: 200px;
+	background-image: url("table.png");
+}
+
+.profile {
+	position: relative;
+	top: 90%;
+	left: 80%;
+	display: inline-block;
+	height: 70px;
+	width: 70px;
+	background: transparent;
+}
+
+.container1 {
+	height: 100%;
+	width: 100%;
+}
+
+.container4-2 {
+	height: 100%;
+	padding-left: 80%;
+	display: inline-block;
+	transform: rotate(90deg);
+}
+
+.container4-2 .role {
+	transform: rotate(-130deg);
+	top: 79%;
+	left: 73%;
+}
+
+.container4-2 .points {
+	transform: rotate(-90deg);
+	top: 85%;
+}
+
+.container4-2 .cards {
+	left: 40%;
+}
+
+.container4-3 {
+	width: 100%;
+	padding-bottom: 80%;
+	display: inline-block;
+	transform: rotate(180deg);
+}
+
+.container4-3 .userName {
+	transform: rotate(180deg);
+}
+
+.container4-3 .role {
+	transform: rotate(222deg);
+	top: 80%;
+	left: 69%;
+}
+
+.container4-3 .points {
+	transform: rotate(180deg);
+	top: 90%;
+}
+
+.container4-3 .handcard {
+	transform: rotate(180deg);
+}
+
+.container4-4 {
+	float: right;
+	height: 100%;
+	padding-left: 80%;
+	overflow: hidden;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+}
+
+.container4-4 .role {
+	transform: rotate(47deg);
+	top: 74%;
+	left: 65%;
+}
+
+.container4-4 .points {
+	transform: rotate(90deg);
+	top: 85%;
+}
+
+.container4-4 .cards {
+	left: 40%;
+}
+
+.container5-2 {
+	height: 100%;
+	padding-left: 80%;
+	display: inline-block;
+	transform: rotate(90deg);
+}
+
+.container5-2 .userName {
+	left: 30%;
+}
+
+.container5-2 .role {
+	transform: rotate(-132deg);
+	top: 74%;
+	left: 65%;
+}
+
+.container5-2 .points {
+	transform: rotate(-90deg);
+	top: 85%;
+}
+
+.container5-2 .cards {
+	left: 43%;
+}
+
+.container5-3 {
+	width: 100%;
+	padding-bottom: 80%;
+	display: inline-block;
+	transform: rotate(180deg);
+}
+
+.container5-3 .userName {
+	left: 83%;
+	transform: rotate(180deg);
+}
+
+.container5-3 .role {
+	transform: rotate(208deg);
+	top: 67%;
+	left: 72%;
+}
+
+.container5-3 .profile {
+	left: 90%;
+}
+
+.container5-3 .points {
+	transform: rotate(180deg);
+	left: 85%;
+	top: 80%;
+}
+
+.container5-3 .cards {
+	left: 53%;
+}
+
+.container5-3 .handcard {
+	transform: rotate(180deg);
+}
+
+.container5-4 {
+	float: right;
+	width: 100%;
+	padding-bottom: 80%;
+	transform: rotate(180deg);
+}
+
+.container5-4 .userName {
+	left: 18%;
+	transform: rotate(180deg);
+}
+
+.container5-4 .role {
+	transform: rotate(-207deg);
+	top: 66%;
+	left: 16%;
+}
+
+.container5-4 .profile {
+	left: 5%;
+}
+
+.container5-4 .points {
+	transform: rotate(180deg);
+	left: 10%;
+	top: 80%;
+}
+
+.container5-4 .cards {
+	left: 25%;
+}
+
+.container5-4 .handcard {
+	transform: rotate(180deg);
+}
+
+.container5-5 {
+	float: right;
+	height: 100%;
+	padding-left: 80%;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container5-5 .userName {
+	left: 65%;
+}
+
+.container5-5 .role {
+	transform: rotate(132deg);	
+	top: 72%;
+	left: 20%;
+}
+
+.container5-5 .profile {
+	left: 10%;
+}
+
+.container5-5 .points {
+	transform: rotate(90deg);
+	left: 20%;
+	top: 85%;
+}
+
+.container5-5 .cards {
+	left: 35%;
+}
+
+.container6-2 {
+	height: 100%;
+	padding-left: 80%;
+	display: inline-block;
+	transform: rotate(90deg);
+}
+
+.container6-2 .userName {
+	left: 40%;
+	transform: rotate(-90deg);
+}
+
+.container6-2 .role {
+	transform: rotate(-130deg);	
+	top: 80%;
+	left: 70%;
+}
+
+.container6-2 .points {
+	transform: rotate(-90deg);
+	top: 87%;
+	left: 70%;
+}
+
+.container6-2 .cards {
+	left: 44%;
+}
+
+.container6-3 {
+	width: 100%;
+	padding-bottom: 80%;
+	transform: rotate(180deg);
+	display: inline-block;
+}
+
+.container6-3 .userName {
+	left: 85%;
+	transform: rotate(180deg);
+}
+
+.container6-3 .role {
+	transform: rotate(-170deg);
+    top: 58%;
+    left: 77%;
+}
+
+.container6-3 .profile {
+	left: 90%;
+}
+
+.container6-3 .points {
+	transform: rotate(180deg);
+	left: 88%;
+	top: 80%;
+}
+
+.container6-3 .cards {
+	left: 67%;
+	top: 54%;
+	transform: rotate(-45deg);
+}
+
+.container6-3 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container6-4 {
+	float: right;
+	width: 100%;
+	padding-bottom: 80%;
+	transform: rotate(180deg);
+}
+
+.container6-4 .userName {
+	left: 28%;
+	transform: rotate(180deg);
+}
+
+.container6-4 .role {
+	transform: rotate(-124deg);
+    left: 52%;
+    top: 70%;
+}
+
+.container6-4 .profile {
+	left: 65%;
+}
+
+.container6-4 .points {
+	transform: rotate(150deg);
+	left: 59%;
+	top: 84%;
+}
+
+.container6-4 .cards {
+	left: 40%;
+	top: 64%;
+	transform: rotate(20deg);
+}
+
+.container6-4 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container6-5 {
+	float: right;
+	height: 100%;
+	padding-left: 80%;
+	overflow: hidden;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+}
+
+.container6-5 .userName {
+	left: 60%;
+	transform: rotate(90deg);
+}
+
+.container6-5 .role {
+	transform: rotate(38deg);
+    left: 65%;
+    top: 60%;
+}
+
+.container6-5 .profile {
+	left: 90%;
+}
+
+.container6-5 .points {
+	transform: rotate(90deg);
+	left: 88%;
+	top: 78%;
+}
+
+.container6-5 .cards {
+	left: 59%;
+	top: 51%;
+	transform: rotate(-45deg);
+}
+
+.container6-5 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container6-6 {
+	float: right;
+	height: 100%;
+	padding-left: 80%;
+	overflow: hidden;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+}
+
+.container6-6 .userName {
+	left: 55%;
+	transform: rotate(90deg);
+}
+
+.container6-6 .role {
+	transform: rotate(132deg);	
+	top: 72%;
+	left: 19%;
+}
+
+.container6-6 .profile {
+	left: 10%;
+}
+
+.container6-6 .points {
+	transform: rotate(90deg);
+	left: 18%;
+	top: 85%;
+}
+
+.container6-6 .cards {
+	left: 29%;
+}
+
+.container7-2 {
+	height: 100%;
+	padding-left: 80%;
+	transform: rotate(90deg);
+	display: inline-block;
+}
+
+.container7-2 .userName {
+	left: 90%;
+	transform: rotate(-130deg);
+}
+
+.container7-2 .role {
+	transform: rotate(-130deg);	
+	top: 80%;
+	left: 70%;
+}
+
+.container7-2 .points {
+	transform: rotate(-90deg);
+	top: 87%;
+	left: 73%;
+}
+
+.container7-2 .profile {
+	top: 86%;
+	left: 83%;
+}
+
+.container7-2 .cards {
+	left: 50%;
+	top: 62%;
+}
+
+.container7-2 .handcard {
+	height: 80px;
+	width: 48px;
+}
+
+.container7-3 {
+	width: 100%;
+	padding-bottom: 80%;
+	transform: rotate(180deg);
+	display: inline-block;
+}
+
+.container7-3 .userName {
+	left: 95%;
+	top: 50%;
+	transform: rotate(180deg);
+}
+
+.container7-3 .role {
+	transform: rotate(-246deg);
+    top: 67%;
+    left: 90%;
+}
+
+.container7-3 .profile {
+	left: 92%;
+	top: 85%;
+}
+
+.container7-3 .points {
+	transform: rotate(180deg);
+	left: 88%;
+	top: 77%;
+}
+
+.container7-3 .cards {
+	left: 69%;
+	top: 45%;
+	transform: rotate(-75deg);
+}
+
+.container7-3 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-4 {
+	float: right;
+	width: 100%;
+	padding-bottom: 80%;
+	transform: rotate(180deg);
+}
+
+.container7-4 .userName {
+	left: 75%;
+	top: 96%;
+	transform: rotate(180deg);
+}
+
+.container7-4 .role {
+	transform: rotate(220deg);
+    left: 64%;
+    top: 73%;
+}
+
+.container7-4 .profile {
+	left: 80%;
+}
+
+.container7-4 .points {
+	transform: rotate(150deg);
+	left: 73%;
+	top: 84%;
+}
+
+.container7-4 .cards {
+	left: 51%;
+	top: 62%;
+	transform: rotate(-25deg);
+}
+
+.container7-4 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-5 {
+	float: right;
+	height: 100%;
+	padding-left: 80%;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container7-5 .userName {
+	left: 95%;
+	top: 40%;
+	transform: rotate(90deg);
+}
+
+.container7-5 .role {
+    transform: rotate(1deg);
+    left: 70%;
+    top: 40%;
+}
+
+.container7-5 .profile {
+	left: 91%;
+	top: 81%;
+}
+
+.container7-5 .points {
+	transform: rotate(90deg);
+	left: 90%;
+	top: 71%;
+}
+
+.container7-5 .cards {
+	left: 66%;
+	top: 36%;
+	transform: rotate(-65deg);
+}
+
+.container7-5 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-6 {
+	float: right;
+	height: 100%;
+	padding-left: 80%;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container7-6 .userName {
+	left: 50%;
+	transform: rotate(90deg);
+}
+
+.container7-6 .role {
+    transform: rotate(165deg);
+    left: 58%;
+    top: 94%;
+}
+
+
+.container7-6 .profile {
+	left: 85%;
+}
+
+.container7-6 .points {
+	transform: rotate(90deg);
+	left: 75%;
+	top: 85%;
+}
+
+.container7-6 .cards {
+	left: 51%;
+	top: 52%;
+	transform: rotate(-20deg);
+}
+
+.container7-6 .handcard {
+	height: 80px;
+	width: 48px;
+	transform: rotate(180deg);
+}
+
+.container7-7 {
+	float: right;
+	height: 100%;
+	padding-left: 80%;
+	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
+}
+
+.container7-7 .userName {
+	left: 10%;
+	top: 88%;
+	transform: rotate(135deg);
+}
+
+.container7-7 .role {
+    transform: rotate(129deg);
+    left: 21%;
+    top: 69%;
+}
+
+.container7-7 .profile {
+	left: 11%;
+}
+
+.container7-7 .points {
+	transform: rotate(90deg);
+	left: 15%;
+	top: 88%;
+}
+
+.container7-7 .cards {
+	left: 30%;
+	top: 60%;
+}
+
+.container7-7 .handcard {
+	height: 80px;
+	width: 48px;
+}
+
+/* polygons start in the middle and then go clockwise */
+.player-1 {
+	width: 100%;
+	height: 100%;
+	clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-1:before {
+	content: '';
+	clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
+	background-image: url("table.png");
+	opacity: 0.5;
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-4-2 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	clip-path: polygon(50% 50%, 0% 100%, 0% 0%);
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-4-2:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0% 100%, 0% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-4-3 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	clip-path: polygon(50% 50%, 100% 0%, 0% 0%);
+	border: 1px solid black;
+}
+
+.player-4-3:before {
+	content: '';
+	clip-path: polygon(50% 50%, 100% 0%, 0% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-4-4 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	clip-path: polygon(50% 50%, 100% 0%, 100% 100%);
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-4-4:before {
+	content: '';
+	clip-path: polygon(50% 50%, 100% 0%, 100% 100%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-5-2 {
+	clip-path: polygon(50% 50%, 0 100%, 0% 25%);
+	width: 100%;
+	height: 100%;
+	background: black;
+	background-image: url("table.png");
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-5-2:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0 100%, 0% 25%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-5-3 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	float: left;
+	position: absolute;
+	clip-path: polygon(50% 50%, 0% 25%, 0% 0%, 50% 0%);
+	border: 1px solid black;
+}
+
+.player-5-3:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0% 25%, 0% 0%, 50% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-5-4 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 25%);
+	border: 1px solid black;
+}
+
+.player-5-4:before {
+	content: '';
+	clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 25%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-5-5 {
+	clip-path: polygon(50% 50%, 100% 25%, 100% 100%);
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-5-5:before {
+	content: '';
+	clip-path: polygon(50% 50%, 100% 25%, 100% 100%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-6-2 {
+	clip-path: polygon(50% 50%, 0% 100%, 0% 40%);
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-6-2:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0% 100%, 0% 40%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-6-3 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	float: left;
+	position: absolute;
+	clip-path: polygon(50% 50%, 0% 40%, 0% 0%, 20% 0%);
+	border: 1px solid black;
+}
+
+.player-6-3:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0% 40%, 0% 0%, 20% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-6-4 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	clip-path: polygon(50% 50%, 20% 0%, 80% 0%);
+	border: 1px solid black;
+}
+
+.player-6-4:before {
+	content: '';
+	clip-path: polygon(50% 50%, 20% 0%, 80% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-6-5 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	clip-path: polygon(50% 50%, 80% 0%, 100% 0%, 100% 40%);
+	border: 1px solid black;
+}
+
+.player-6-5:before {
+	content: '';
+	clip-path: polygon(50% 50%, 80% 0%, 100% 0%, 100% 40%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-6-6 {
+	clip-path: polygon(50% 50%, 100% 40%, 100% 100%);
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-6-6:before {
+	content: '';
+	clip-path: polygon(50% 50%, 100% 40%, 100% 100%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-7-2 {
+	clip-path: polygon(50% 50%, 0% 100%, 0% 50%);
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-7-2:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0% 100%, 0% 50%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-7-3 {
+	clip-path: polygon(50% 50%, 0% 50%, 0% 0%);
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-7-3:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0% 50%, 0% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-7-4 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	float: left;
+	position: absolute;
+	clip-path: polygon(50% 50%, 0% 0%, 50% 0%);
+	border: 1px solid black;
+}
+
+.player-7-4:before {
+	content: '';
+	clip-path: polygon(50% 50%, 0% 0%, 50% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-7-5 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	float: left;
+	position: absolute;
+	clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
+	border: 1px solid black;
+}
+
+.player-7-5:before {
+	content: '';
+	clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-7-6 {
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	clip-path: polygon(50% 50%, 100% 0%, 100% 50%);
+	border: 1px solid black;
+}
+
+.player-7-6:before {
+	content: '';
+	clip-path: polygon(50% 50%, 100% 0%, 100% 50%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.player-7-7 {
+	clip-path: polygon(50% 50%, 100% 50%, 100% 100%);
+	width: 100%;
+	height: 100%;
+	background: black;
+	position: absolute;
+	border: 1px solid black;
+}
+
+.player-7-7:before {
+	content: '';
+	clip-path: polygon(50% 50%, 100% 50%, 100% 100%);
+	background-image: url("table.png");
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border: 1px solid black;
+}
+
+.stack {
+	height: 50%;
+	width: 30%;
+	border: 1px solid black;
+	display: inline-block;
+	margin-left: 17%;
+	margin-top: 25%;
+}
+
+.heap {
+	height: 50%;
+	width: 30%;
+	border: 1px solid black;
+	display: inline-block;
+	margin-left: 5%;
+}

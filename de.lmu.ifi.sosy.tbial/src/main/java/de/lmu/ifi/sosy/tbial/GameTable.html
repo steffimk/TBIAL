@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta charset="utf-8" />
+<title>Game Table</title>
+<wicket:head>
+	<wicket:link>
+		<link rel="stylesheet" href="gameTable.css" type="text/css" />
+	</wicket:link>
+</wicket:head>
+</head>
+
+<body>
+	<wicket:extend>
+		<div>
+			<h3 wicket:id="gameName" align="center" style="margin-top: 1%;">Game
+				Name</h3>
+		</div>
+		<div id=wrapper>
+			<div id=table>
+				<div wicket:id="player1" class="player-1">
+					<div wicket:id="panel1" class="container1"></div>
+				</div>
+				<div wicket:id="container">
+					<div wicket:id="panel"></div>
+				</div>
+				<div class="circleBase center">
+					<div class="stack">Stack</div>
+					<div class="heap">Heap</div>
+				</div>
+			</div>
+		</div>
+	</wicket:extend>
+</body>
+</html>
