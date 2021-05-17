@@ -70,11 +70,6 @@ public class Game implements Serializable {
    *
    * @param userName
    */
-
-  public Map<String, Player> getPlayers() {
-    return players;
-  }
-
   public void addNewPlayer(String userName) {
     Player newPlayer = new Player(requireNonNull(userName));
     players.put(userName, newPlayer);

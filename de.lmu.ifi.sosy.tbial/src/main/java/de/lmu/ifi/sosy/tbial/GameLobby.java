@@ -158,7 +158,7 @@ public class GameLobby extends BasePage {
     String currentHost = getSession().getCurrentGame().getHost();
     String currentPlayer = getSession().getUser().getName();
     Game currentGame = getSession().getCurrentGame();
-    Map<String, Player> inGamePlayers = getSession().getCurrentGame().getInGamePlayers();
+    Map<String, Player> inGamePlayers = getSession().getCurrentGame().getPlayers();
 
     if (currentHost == currentPlayer) {
       if (inGamePlayers.get(0).getUserName() != currentHost)

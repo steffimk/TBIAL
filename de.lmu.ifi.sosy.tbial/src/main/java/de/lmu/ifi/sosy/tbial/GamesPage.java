@@ -108,8 +108,8 @@ public class GamesPage extends BasePage {
     if (checkIfYouCanJoin(game, username, password)) {
       game.addNewPlayer(getSession().getUser().getName());
       getSession().setCurrentGame(game);
-        setResponsePage(getTbialApplication().getGameLobbyPage());
-      }
+      setResponsePage(getTbialApplication().getGameLobbyPage());
+    }
   }
 
   public boolean checkIfYouCanJoin(Game game, String username, String password) {
@@ -119,8 +119,8 @@ public class GamesPage extends BasePage {
     if (game.getCurrentNumberOfPlayers() >= game.getMaxPlayers()) {
       return false;
     }
-    if (game.getInGamePlayers().containsKey(username)) {
-    	return false;
+    if (game.getPlayers().containsKey(username)) {
+      return false;
     }
     if (game.isPrivate()
         && !game.getHash().equals(Game.getHashedPassword(password, game.getSalt()))) {
