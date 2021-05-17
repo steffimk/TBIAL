@@ -54,6 +54,10 @@
 	top: 85%;
 }
 
+.container4-2 .cards {
+	left: 40%;
+}
+
 .container4-3 {
 	width: 100%;
 	padding-bottom: 80%;
@@ -87,6 +91,10 @@
 	top: 85%;
 }
 
+.container4-4 .cards {
+	left: 40%;
+}
+
 .container5-2 {
 	height: 100%;
 	padding-left: 80%;
@@ -101,6 +109,10 @@
 .container5-2 .points {
 	transform: rotate(-90deg);
 	top: 85%;
+}
+
+.container5-2 .cards {
+	left: 43%;
 }
 
 .container5-3 {
@@ -268,8 +280,8 @@
 }
 
 .container6-4 .cards {
-	left: 37%;
-	top: 60%;
+	left: 40%;
+	top: 64%;
 	transform: rotate(20deg);
 }
 
@@ -472,7 +484,7 @@
 
 .container7-5 .cards {
 	left: 66%;
-	top: 33%;
+	top: 36%;
 	transform: rotate(-65deg);
 }
 
@@ -506,7 +518,7 @@
 }
 
 .container7-6 .cards {
-	left: 48%;
+	left: 51%;
 	top: 52%;
 	transform: rotate(-20deg);
 }
@@ -542,7 +554,7 @@
 }
 
 .container7-7 .cards {
-	left: 25%;
+	left: 30%;
 	top: 60%;
 }
 
