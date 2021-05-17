@@ -51,8 +51,6 @@ public class TBIALApplication extends WebApplication {
     this(new SQLDatabase());
   }
 
-  private final GameManager gameManager = new GameManager();
-
   @VisibleForTesting
   TBIALApplication(Database database) {
     super();
@@ -62,10 +60,6 @@ public class TBIALApplication extends WebApplication {
   @Override
   public Class<Lobby> getHomePage() {
     return Lobby.class;
-  }
-
-  public GameManager getGameManager() {
-    return gameManager;
   }
 
   public Class<GameLobby> getGameLobbyPage() {
