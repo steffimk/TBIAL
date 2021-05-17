@@ -24,7 +24,7 @@ public class ActionCard extends Card implements StackCard {
     RED_BULL("Red Bull Dispenser", 1, ActionType.SPECIAL, "imgs/cards/card14.png"),
     HEISENBUG("Heisenbug", 1, ActionType.SPECIAL, "imgs/cards/card15.png"),
     LAN("LAN Party", 1, ActionType.SPECIAL, "imgs/cards/card16.png"),
-    COFFEE("Coffee", 2, ActionType.SOLUTION, "imgs/cards/card22.pdf"),
+    COFFEE("Coffee", 2, ActionType.SOLUTION, "imgs/cards/card22.png"),
     CODE_FIX("Code+Fix Session", 2, ActionType.SOLUTION, "imgs/cards/card23.png"),
     REGEX("I know regular expressions", 2, ActionType.SOLUTION, "imgs/cards/card24.png"),
     STAND_UP("Standup Meeting", 2, ActionType.SPECIAL, "imgs/cards/card25.png"),
