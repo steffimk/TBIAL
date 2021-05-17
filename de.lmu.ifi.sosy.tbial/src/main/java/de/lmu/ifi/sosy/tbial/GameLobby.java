@@ -150,20 +150,24 @@ public class GameLobby extends BasePage {
     if (!checkIfLastPlayer()) {
       checkHostChange();
     }
+    if (checkIfLastPlayer()) {
+      currentGames.remove(currentGameName);
+    }
     getSession().setCurrentGameNull();
-    currentGames.remove(currentGameName);
   }
 
   public void checkHostChange() {
     String currentHost = getSession().getCurrentGame().getHost();
     Game currentGame = getSession().getCurrentGame();
     Map<String, Player> inGamePlayers = getSession().getCurrentGame().getPlayers();
-
+    System.out.println("Current Host: " + currentGame.getHost());
     for (Map.Entry<String, Player> entry : inGamePlayers.entrySet()) {
       if (!entry.getValue().getUserName().equals(currentHost)) {
         currentGame.setHost(entry.getValue().getUserName());
+        break;
       }
     }
+    System.out.println("Current Host: " + currentGame.getHost());
   }
 
   public boolean checkIfLastPlayer() {
