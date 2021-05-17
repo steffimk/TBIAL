@@ -44,19 +44,19 @@ public class CharacterCard extends Card {
 
   /** Enum containing information about the specific character cards. */
   public enum Character {
-    ZUCKERBERG("Mark Zuckerberg", 3, "card1.pdf"),
-    ANDERSON("Tom Anderson", 4, "card2.pdf"),
-    TAYLOR("Jeff Taylor", 4, "card3.pdf"),
-    PAGE("Larry Page", 4, "card4.pdf"),
-    ELLISON("Larry Ellison", 4, "card5.pdf"),
-    BECK("Kent Beck", 4, "card6.pdf"),
-    JOBS("Steve Jobs", 4, "card7.pdf"),
-    BALLMER("Steve Ballmer", 4, "card8.pdf"),
-    TORVALDS("Linus Torvalds", 4, "card9.pdf"),
-    THOU("Holier than Thou", 4, "card10.pdf"),
-    ZUSE("Konrad Zuse", 3, "card11.pdf"),
-    SCHNEIER("Bruce Schneier", 4, "card12.pdf"),
-    WEISSMAN("Terry Weissman", 4, "card13.pdf");
+    ZUCKERBERG("Mark Zuckerberg", 3, "imgs/cards/card1.png"),
+    ANDERSON("Tom Anderson", 4, "imgs/cards/card2.png"),
+    TAYLOR("Jeff Taylor", 4, "imgs/cards/card3.png"),
+    PAGE("Larry Page", 4, "imgs/cards/card4.png"),
+    ELLISON("Larry Ellison", 4, "imgs/cards/card5.png"),
+    BECK("Kent Beck", 4, "imgs/cards/card6.png"),
+    JOBS("Steve Jobs", 4, "imgs/cards/card7.png"),
+    BALLMER("Steve Ballmer", 4, "imgs/cards/card8.png"),
+    TORVALDS("Linus Torvalds", 4, "imgs/cards/card9.png"),
+    THOU("Holier than Thou", 4, "imgs/cards/card10.png"),
+    ZUSE("Konrad Zuse", 3, "imgs/cards/card11.png"),
+    SCHNEIER("Bruce Schneier", 4, "imgs/cards/card12.png"),
+    WEISSMAN("Terry Weissman", 4, "imgs/cards/card13.png");
 
     public final String name;
     public final int maxHealthPoints;

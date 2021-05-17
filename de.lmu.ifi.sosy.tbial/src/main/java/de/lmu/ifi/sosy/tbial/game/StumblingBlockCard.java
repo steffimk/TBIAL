@@ -21,8 +21,8 @@ public class StumblingBlockCard extends Card implements StackCard {
 
   /** Enum containing information about the specific stumbling block cards. */
   public enum StumblingBlock {
-    MAINTENANCE("Fortran Maintenance", 1, "card19.pdf"),
-    TRAINING("Off-The-Job Training", 3, "card46.pdf");
+    MAINTENANCE("Fortran Maintenance", 1, "imgs/cards/card19.png"),
+    TRAINING("Off-The-Job Training", 3, "imgs/cards/card46.png");
 
     public final String label;
     public final int count;

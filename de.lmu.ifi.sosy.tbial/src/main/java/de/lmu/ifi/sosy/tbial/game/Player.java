@@ -75,6 +75,10 @@ public class Player implements Serializable {
     return characterCard;
   }
 
+  public Set<StackCard> getHandCards() {
+    return handCards;
+  }
+
   public boolean isFired() {
     return fired;
   }
