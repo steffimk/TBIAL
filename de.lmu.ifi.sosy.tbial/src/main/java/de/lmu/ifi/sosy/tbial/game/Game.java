@@ -70,7 +70,8 @@ public class Game implements Serializable {
    *
    * @param userName
    */
-  public Map<String, Player> getInGamePlayers() {
+
+  public Map<String, Player> getPlayers() {
     return players;
   }
 

@@ -1,6 +1,5 @@
 package de.lmu.ifi.sosy.tbial;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -8,10 +7,12 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -19,10 +20,6 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 public class GamesPage extends BasePage {
 
   private static final long serialVersionUID = 1L;
-
-  private String currentRadioValue;
-
-  ArrayList<String> gameChoiceOptions = new ArrayList<>();
 
   public GamesPage() {
 
@@ -65,8 +62,6 @@ public class GamesPage extends BasePage {
     IModel<List<Game>> gameModel =
         (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();
 
-    Form joinForm = new Form("joinForm");
-
     ListView<Game> gameList =
         new PropertyListView<>("openGames", gameModel) {
           private static final long serialVersionUID = 1L;
@@ -75,76 +70,60 @@ public class GamesPage extends BasePage {
           protected void populateItem(final ListItem<Game> listItem) {
 
             final Game game = listItem.getModelObject();
-            listItem.add(new Label("name", game.getName()));
-            /*listItem.add(
-            new RadioChoice<String>(
-                "choice",
-                new PropertyModel<String>(this, currentRadioValue),
-                gameChoiceOptions));*/
+            Form<?> joinGameForm = new Form<>("joinGameForm");
+            PasswordTextField joinGamePw = new PasswordTextField("joinGamePw", new Model<>(""));
+            joinGamePw.setVisible(game.isPrivate());
+            Button joinGameButton =
+                new Button("joinGameButton") {
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  public void onSubmit() {
+                    joinGame(game, joinGamePw.getModelObject());
+                  }
+                };
+
+            joinGameForm.add(joinGamePw);
+            joinGameForm.add(joinGameButton);
             listItem.add(
                 new Label(
                     "numberOfPlayers",
                     game.getCurrentNumberOfPlayers() + "/" + game.getMaxPlayers()));
+            listItem.add(new Label("name", game.getName()));
             listItem.add(new Label("access", game.isPrivate()));
+            listItem.add(joinGameForm);
           }
         };
 
-    /*Button joinGameButton =
-    new Button("joinGameButton") {
-
-      private static final long serialVersionUID = 1L;
-
-      public void onSubmit() {
-        joinGame(currentRadioValue);
-      }
-    };*/
-    //joinForm.add(joinGameButton);
     WebMarkupContainer gameListContainer = new WebMarkupContainer("gameListContainer");
     gameListContainer.add(gameList);
     gameListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
     gameListContainer.setOutputMarkupId(true);
 
-    for (int i = 0; i < getGameManager().getCurrentGamesAsList().size(); i++) {
-      String currentGame = getGameManager().getCurrentGamesAsList().get(i).getName();
-      gameChoiceOptions.add(currentGame);
-    }
-
     add(gameListContainer);
-    joinForm.add(gameListContainer);
-    add(joinForm);
   }
 
-  public void joinGame(String selected) {
-    List<Game> games = getGameManager().getCurrentGamesAsList();
-    Game selectedGame = null;
-    for (int i = 0; i < games.size(); i++) {
-      if (games.get(i).getName() == selected) {
-        selectedGame = games.get(i);
-      }
-    }
-
-    if (selectedGame != null) {
-      if (selectedGame.isPrivate()) {
-
-        //TODO: Modal öffnen
-        // 1. Modal Klasse erstellen mit Titel und Beschreibung
-        // 2. Modal anzeigen: modal.show(target);
-        // 3. Falls kein Close --> Hinzufügen
-        // 4. Falls kein Submit --> Hinzufügen
-      }
-
-      if (checkIfYouCanJoin(selectedGame)) {
-        getSession().setCurrentGame(selectedGame);
+  public void joinGame(Game game, String password) {
+    String username = getSession().getUser().getName();
+    if (checkIfYouCanJoin(game, username, password)) {
+      game.addNewPlayer(getSession().getUser().getName());
+      getSession().setCurrentGame(game);
         setResponsePage(getTbialApplication().getGameLobbyPage());
       }
-    }
   }
 
-  public boolean checkIfYouCanJoin(Game game) {
+  public boolean checkIfYouCanJoin(Game game, String username, String password) {
     if (game.hasStarted()) {
       return false;
     }
     if (game.getCurrentNumberOfPlayers() >= game.getMaxPlayers()) {
+      return false;
+    }
+    if (game.getInGamePlayers().containsKey(username)) {
+    	return false;
+    }
+    if (game.isPrivate()
+        && !game.getHash().equals(Game.getHashedPassword(password, game.getSalt()))) {
       return false;
     }
     return true;
