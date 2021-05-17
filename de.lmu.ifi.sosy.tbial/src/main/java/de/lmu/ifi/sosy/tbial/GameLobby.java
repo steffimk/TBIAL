@@ -156,15 +156,13 @@ public class GameLobby extends BasePage {
 
   public void checkHostChange() {
     String currentHost = getSession().getCurrentGame().getHost();
-    String currentPlayer = getSession().getUser().getName();
     Game currentGame = getSession().getCurrentGame();
     Map<String, Player> inGamePlayers = getSession().getCurrentGame().getPlayers();
 
-    if (currentHost == currentPlayer) {
-      if (inGamePlayers.get(0).getUserName() != currentHost)
-        currentGame.setHost(inGamePlayers.get(0).getUserName());
-    } else {
-      currentGame.setHost(inGamePlayers.get(1).getUserName());
+    for (Map.Entry<String, Player> entry : inGamePlayers.entrySet()) {
+      if (!entry.getValue().getUserName().equals(currentHost)) {
+        currentGame.setHost(entry.getValue().getUserName());
+      }
     }
   }
 
