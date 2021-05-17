@@ -8,36 +8,16 @@
 <body>
   <wicket:extend>
     <h3>The Lobby.</h3>
-    <div wicket:id="playerlistContainer">
-        Players online:
-       <ul wicket:id="loggedInUsers">
-            <li wicket:id="name">Player</li>
-       </ul>
-    </div>
-    
-    <section class="content">
-	    <table style="width:100%">
-	    <thead>
-		  <tr>
-		    <th> </th>
-		    <th>Game Name</th>
-		    <th>Players</th>
-		    <th>Password needed</th>
-		  </tr>
-		 </thead>
-		 <tbody wicket:id="gameListContainer">
-			  <tr wicket:id="openGames">
-			  	<td> </td>
-			    <td wicket:id="name">gamename</td>
-			    <td wicket:id="numberOfPlayers">players</td>
-			    <td wicket:id="access">private</td>
-			  </tr>
-		  </tbody>
-		</table>
-		<br>
-	</section>
-    
-     <form wicket:id="newGameForm" class="boxedform">
+
+
+    <form wicket:id="MenuForm">
+		<input wicket:id="createGameButton" type="submit" value="Create a new Game" />
+		<input wicket:id="showGamesButton" type="submit" value="Games" />
+		<input wicket:id="showPlayersButton" type="submit" value="Players" />
+	</form>
+
+
+    <form wicket:id="newGameForm" class="boxedform">
     	<label for="name">Name of new game
     		<span class="small" wicket:id="nameFeedback">Whether the name is valid</span>
     	</label>

@@ -28,8 +28,8 @@ public class Game implements Serializable {
 
   private int maxPlayers;
 
-  private Map<String,Player> players;
-  
+  private Map<String, Player> players;
+
   private String host;
 
   private boolean isPrivate;
@@ -38,7 +38,7 @@ public class Game implements Serializable {
   private byte[] salt;
 
   private boolean hasStarted;
-  
+
   private Stack stack;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {

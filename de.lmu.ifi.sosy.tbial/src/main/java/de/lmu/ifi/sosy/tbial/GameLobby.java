@@ -1,22 +1,24 @@
 package de.lmu.ifi.sosy.tbial;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
+import de.lmu.ifi.sosy.tbial.game.Player;
 
-/**
- * The Lobby of a specific game in which the players wait for the game to start.
- */
+/** The Lobby of a specific game in which the players wait for the game to start. */
 @AuthenticationRequired
 public class GameLobby extends BasePage {
 
   private static final long serialVersionUID = 1L;
-  
+
   private static final Logger LOGGER = LogManager.getLogger(GameLobby.class);
 
   private final Link<Void> startGameLink;
@@ -34,7 +36,7 @@ public class GameLobby extends BasePage {
       LOGGER.debug("Game or User in Session null -- redirecting to Lobby");
       throw new RestartResponseAtInterceptPageException(Lobby.class);
     }
-    
+
     isHostLabel = new Label("isHostLabel", () -> currentHostMessage());
     currentStatusLabel = new Label("currentStatusLabel", () -> getCurrentStatusMessage());
 
@@ -61,6 +63,18 @@ public class GameLobby extends BasePage {
             return game.getPlayers().size() > 3;
           }
         };
+
+    Form LeaveForm =
+        new Form("LeaveForm") {
+
+          private static final long serialVersionUID = 1L;
+
+          protected void onSubmit() {
+            leaveCurrentGame();
+            setResponsePage(getTbialApplication().getHomePage());
+          }
+        };
+    add(LeaveForm);
 
     startGameLink.setOutputMarkupId(true);
 
@@ -126,5 +140,39 @@ public class GameLobby extends BasePage {
       return message + " Waiting for the host to start the game.";
     if (currentPlayers > 4) return message + " The host can start the game.";
     else return message + " Waiting for more players to join.";
+  }
+
+  //Methods for leaving game: actual leave method, Host Check/Change, and checking if player is the last one to leave
+  public void leaveCurrentGame() {
+
+    Map<String, Game> currentGames = getGameManager().getCurrentGames();
+    String currentGameName = getSession().getCurrentGame().getName();
+    if (!checkIfLastPlayer()) {
+      checkHostChange();
+    }
+    getSession().setCurrentGameNull();
+    currentGames.remove(currentGameName);
+  }
+
+  public void checkHostChange() {
+    String currentHost = getSession().getCurrentGame().getHost();
+    String currentPlayer = getSession().getUser().getName();
+    Game currentGame = getSession().getCurrentGame();
+    Map<String, Player> inGamePlayers = getSession().getCurrentGame().getPlayers();
+
+    if (currentHost == currentPlayer) {
+      if (inGamePlayers.get(0).getUserName() != currentHost)
+        currentGame.setHost(inGamePlayers.get(0).getUserName());
+    } else {
+      currentGame.setHost(inGamePlayers.get(1).getUserName());
+    }
+  }
+
+  public boolean checkIfLastPlayer() {
+    int currentPlayersInGame = getSession().getCurrentGame().getCurrentNumberOfPlayers();
+    if (currentPlayersInGame == 1) {
+      return true;
+    }
+    return false;
   }
 }

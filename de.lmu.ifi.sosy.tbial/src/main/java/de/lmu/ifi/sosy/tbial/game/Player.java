@@ -2,10 +2,10 @@ package de.lmu.ifi.sosy.tbial.game;
 
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.Serializable;
 
 /**
  * A player of a game.
@@ -16,7 +16,7 @@ public class Player implements Serializable {
 
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
-
+  
   private final String userName;
 
   private RoleCard roleCard;
