@@ -121,7 +121,7 @@ public class Lobby extends BasePage {
     newGameNameField = new TextField<String>("newGameName", new Model<>("My New Game"));
     newGameNameField.setRequired(true);
 
-    nameFeedbackLabel = new Label("nameFeedback", new Model<>(""));
+    nameFeedbackLabel = new Label("nameFeedback", () -> getNameFeedback());
     nameFeedbackLabel.setOutputMarkupId(true);
 
     OnChangeAjaxBehavior onNameChange =
@@ -206,5 +206,11 @@ public class Lobby extends BasePage {
       error("The name is already taken or the password is empty.");
       LOGGER.debug("New game '" + name + "' creation failed. Name already taken.");
     }
+  }
+
+  private String getNameFeedback() {
+    return getGameManager().gameNameTaken(newGameNameField.getModelObject())
+        ? "Name already taken."
+        : " ";
   }
 }

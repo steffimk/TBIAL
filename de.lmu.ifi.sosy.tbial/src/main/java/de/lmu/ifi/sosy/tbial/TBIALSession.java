@@ -28,7 +28,7 @@ public class TBIALSession extends AuthenticatedWebSession {
 
   private User user;
 
-  private Game currentGame = null; // TODO SK: maybe move to other class?
+  private Game currentGame = null;
 
   public TBIALSession(Request request) {
     super(request);
