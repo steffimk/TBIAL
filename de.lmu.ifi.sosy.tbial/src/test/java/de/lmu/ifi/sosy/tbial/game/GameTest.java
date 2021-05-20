@@ -4,8 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.CoreMatchers.is;
 
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -96,4 +94,63 @@ public class GameTest {
     game.setHost(null);
   }
 
+  @Test
+  public void startGame_setsHasStartedToTrue() {
+    game.startGame();
+    assertThat(game.hasStarted(), is(true));
+  }
+
+  @Test
+  public void startGame_initializesStack() {
+    game.startGame();
+    assertThat(game.getStack(), is(notNullValue(Stack.class)));
+  }
+
+  @Test
+  public void startGame_returnsIfAlreadyStarted() {
+    Stack prev = game.getStack();
+    game.setHasStarted(true);
+    game.startGame();
+    assertThat(game.getStack(), is(prev));
+  }
+
+  @Test
+  public void isAllowedToStartGame_returnsFalseIfNotHost() {
+    boolean returnValue = game.isAllowedToStartGame("notHost");
+    assertThat(returnValue, is(false));
+  }
+
+  @Test
+  public void isAllowedToStartGame_returnsFalseIfUsernameNull() {
+    boolean returnValue = game.isAllowedToStartGame(null);
+    assertThat(returnValue, is(false));
+  }
+
+  @Test
+  public void isAllowedToStartGame_returnsFalseIfLessThanFourPlayers() {
+    Game game = new Game(name, maxPlayers, isPrivate, password, "username");
+    boolean returnValue = game.isAllowedToStartGame("username");
+    assertThat(returnValue, is(false));
+  }
+
+  @Test
+  public void isAllowedToStartGame_returnsFalseIfGameHasStarted() {
+    Game game = new Game(name, maxPlayers, false, password, "username");
+    game.addNewPlayer("A");
+    game.addNewPlayer("B");
+    game.addNewPlayer("C");
+    game.setHasStarted(true);
+    boolean returnValue = game.isAllowedToStartGame("username");
+    assertThat(returnValue, is(false));
+  }
+
+  @Test
+  public void isAllowedToStartGame_returnsTrueIfConditionsFulfilled() {
+    Game game = new Game(name, maxPlayers, false, password, "username");
+    game.addNewPlayer("A");
+    game.addNewPlayer("B");
+    game.addNewPlayer("C");
+    boolean returnValue = game.isAllowedToStartGame("username");
+    assertThat(returnValue, is(true));
+  }
 }

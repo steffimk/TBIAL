@@ -162,7 +162,7 @@ public class GameLobby extends BasePage {
     // Permission checked. Start new game!
     LOGGER.info("Starting the game.");
     game.startGame();
-    setResponsePage(getTbialApplication().getGameTablePage()); // TODO: Open actual game table.
+    setResponsePage(getTbialApplication().getGameTablePage());
   }
 
   /**
@@ -200,5 +200,9 @@ public class GameLobby extends BasePage {
       return message + " Waiting for the host to start the game.";
     if (currentPlayers > 4) return message + " The host can start the game.";
     else return message + " Waiting for more players to join.";
+  }
+
+  public Game getGame() {
+    return game;
   }
 }

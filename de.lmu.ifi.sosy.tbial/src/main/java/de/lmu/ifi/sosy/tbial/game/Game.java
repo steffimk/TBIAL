@@ -210,4 +210,8 @@ public class Game implements Serializable {
   public void setHost(String host) {
     this.host = requireNonNull(host);
   }
+
+  public Stack getStack() {
+    return stack;
+  }
 }
