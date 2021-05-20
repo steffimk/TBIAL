@@ -7,6 +7,9 @@ import java.util.List;
 /** Role Cards are modeled with this class. */
 public class RoleCard extends Card {
 
+  /** */
+  private static final long serialVersionUID = 1L;
+
   private final Role role;
 
   public RoleCard(Role role) {
@@ -16,6 +19,10 @@ public class RoleCard extends Card {
 
   public Role getRole() {
     return role;
+  }
+
+  public String getLabel() {
+    return role.label;
   }
 
   @Override
@@ -41,10 +48,10 @@ public class RoleCard extends Card {
 
   /** Enum containing information about the specific role cards. */
   public enum Role {
-    MANAGER("Manager", "card20.pdf"),
-    HONEST_DEVELOPER("Honest Developer", "card33.pdf"),
-    EVIL_CODE_MONKEY("Evil Code Monkey", "card44.pdf"),
-    CONSULTANT("Consultant", "card21.pdf");
+    MANAGER("Manager", "imgs/cards/card20.png"),
+    HONEST_DEVELOPER("Honest Developer", "imgs/cards/card33.png"),
+    EVIL_CODE_MONKEY("Evil Code Monkey", "imgs/cards/card44.png"),
+    CONSULTANT("Consultant", "imgs/cards/card21.png");
 
     private final String label;
     public final String fileName;

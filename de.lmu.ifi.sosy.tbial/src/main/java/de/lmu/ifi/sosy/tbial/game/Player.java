@@ -28,6 +28,10 @@ public class Player implements Serializable {
 
   private Set<StackCard> handCards;
 
+  private boolean fired;
+
+  private boolean basePlayer;
+
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
@@ -63,16 +67,36 @@ public class Player implements Serializable {
     return roleCard.getRole();
   }
 
-  public Set<StackCard> getHandCards() {
-    return handCards;
+  public String getRoleName() {
+    return roleCard.getLabel();
   }
 
   public CharacterCard getCharacterCard() {
     return characterCard;
   }
 
+  public Set<StackCard> getHandCards() {
+    return handCards;
+  }
+
+  public boolean isFired() {
+    return fired;
+  }
+
+  public boolean isBasePlayer() {
+    return basePlayer;
+  }
+
   public void setCharacterCard(CharacterCard characterCard) {
     this.characterCard = characterCard;
+  }
+
+  public void fire(boolean fired) {
+    this.fired = fired;
+  }
+
+  public void setBasePlayer(boolean basePlayer) {
+    this.basePlayer = basePlayer;
   }
 
   /**
