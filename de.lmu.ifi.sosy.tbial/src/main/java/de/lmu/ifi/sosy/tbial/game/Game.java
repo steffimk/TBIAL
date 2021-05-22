@@ -53,6 +53,10 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    // TODO remove: Add three more players for testing
+    addNewPlayer("A");
+    addNewPlayer("B");
+    addNewPlayer("C");
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -140,6 +144,39 @@ public class Game implements Serializable {
       }
       player.addToHandCards(handCards);
     }
+  }
+
+  /**
+   * Discarding a hand card. Removes the card from the player's hand cards and moves it to the heap.
+   *
+   * @param player The player who wants to discard the card.
+   * @param card The card the player wants to discard.
+   * @return <code>true</code> if the discarding was successful, <code>false</code> otherwise
+   */
+  public boolean discardHandCard(Player player, StackCard card) {
+    // TODO: if (not turn of player) return false;
+    if (player.removeHandCard(card)) {
+      stack.addToHeap(card);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Removes the card from the player's hand cards and adds it to the receiver's received cards.
+   *
+   * @param card The card to be played
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean putCardToPlayer(StackCard card, Player player, Player receiver) {
+    // TODO: if (not turn of player) return false;
+    if (player.removeHandCard(card)) {
+      receiver.receiveCard(card);
+      return true; // TODO: maybe receiver needs to respond to this action immediately
+    }
+    return false;
   }
 
   public String getName() {

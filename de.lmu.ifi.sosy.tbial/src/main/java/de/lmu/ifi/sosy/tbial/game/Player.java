@@ -27,6 +27,7 @@ public class Player implements Serializable {
   private int bug;
 
   private Set<StackCard> handCards;
+  private Set<StackCard> receivedCards;
 
   private boolean fired;
 
@@ -35,9 +36,11 @@ public class Player implements Serializable {
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
+    this.fired = false;
     this.mentalHealth = 0;
     this.bug = 0;
     this.handCards = new HashSet<>();
+    this.receivedCards = new HashSet<>();
   }
 
   public String getUserName() {
@@ -136,5 +139,24 @@ public class Player implements Serializable {
    */
   public void addToHandCards(Set<StackCard> cards) {
     handCards.addAll(cards);
+  }
+
+  /**
+   * Removal of a hand card. Removes the card if it is contained in this player's hand cards.
+   *
+   * @param card The card to be removed from the hand cards.
+   * @return <code>true</code> if the removal was successful, <code>false</code> otherwise
+   */
+  public boolean removeHandCard(StackCard card) {
+    return handCards.remove(card);
+  }
+
+  /**
+   * Adds this card to the set of received cards.
+   *
+   * @param card The card the player is receiving.
+   */
+  public void receiveCard(StackCard card) {
+    this.receivedCards.add(card);
   }
 }

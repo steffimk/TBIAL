@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -48,11 +51,25 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected void populateItem(final ListItem<StackCard> listItem) {
             final StackCard handCard = listItem.getModelObject();
+
+            WebMarkupContainer imageContainer = new WebMarkupContainer("cardContainer");
+
             if (player.getObject().isBasePlayer()) {
-              listItem.add(new Image("handCard", handCard.getResourceFileName()));
+              imageContainer.add(
+                  new AjaxEventBehavior("click") {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                      System.out.println("Clicked on " + handCard.toString());
+                    }
+                  });
+              imageContainer.add(new Image("handCard", handCard.getResourceFileName()));
             } else {
-              listItem.add(new Image("handCard", "imgs/cards/backSide.png"));
+              imageContainer.add(new Image("handCard", "imgs/cards/backSide.png"));
             }
+
+            listItem.add(imageContainer);
           }
         };
 
