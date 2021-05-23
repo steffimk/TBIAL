@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 
@@ -41,6 +42,7 @@ public class Player implements Serializable {
     this.bug = 0;
     this.handCards = new HashSet<>();
     this.receivedCards = new HashSet<>();
+    receivedCards.add(new AbilityCard(Ability.SUNGLASSES));
   }
 
   public String getUserName() {
@@ -158,5 +160,9 @@ public class Player implements Serializable {
    */
   public void receiveCard(StackCard card) {
     this.receivedCards.add(card);
+  }
+
+  public Set<StackCard> getReceivedCards() {
+    return receivedCards;
   }
 }

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +41,9 @@ public class Game implements Serializable {
   private boolean hasStarted;
   
   private Stack stack;
+
+  // turn related
+  private Map.Entry<Player, StackCard> selectedHandCard;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -157,6 +161,7 @@ public class Game implements Serializable {
     // TODO: if (not turn of player) return false;
     if (player.removeHandCard(card)) {
       stack.addToHeap(card);
+      System.out.println("Removed card from handcards and added it to heap");
       return true;
     }
     return false;
@@ -250,5 +255,17 @@ public class Game implements Serializable {
 
   public Stack getStack() {
     return stack;
+  }
+
+  public void clickedOnHandCard(Player player, StackCard handCard) {
+    //   TODO: if(not is turn of player) do nothing
+    this.selectedHandCard = new AbstractMap.SimpleEntry<Player, StackCard>(player, handCard);
+  }
+
+  public void clickedOnHeap(Player player) {
+    //   TODO: if(not is turn of player) do nothing
+    if (selectedHandCard != null && player == selectedHandCard.getKey()) {
+      discardHandCard(player, selectedHandCard.getValue());
+    }
   }
 }
