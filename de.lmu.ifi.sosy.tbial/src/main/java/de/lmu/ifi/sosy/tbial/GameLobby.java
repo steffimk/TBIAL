@@ -218,7 +218,6 @@ public class GameLobby extends BasePage {
 
   //Leaves the current game
   public void leaveCurrentGame() {
-    Game gameToLeave = getSession().getCurrentGame();
     Map<String, Game> currentGames = getGameManager().getCurrentGames();
     String currentGameName = getSession().getCurrentGame().getName();
     if (!getGame().checkIfLastPlayer()) {
@@ -229,7 +228,6 @@ public class GameLobby extends BasePage {
     }
     getSession().setCurrentGameNull();
   }
-
 
   public Game getGame() {
     return game;
