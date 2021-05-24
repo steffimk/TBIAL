@@ -24,7 +24,6 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
-import de.lmu.ifi.sosy.tbial.game.Player;
 
 /** The Lobby of a specific game in which the players wait for the game to start. */
 @AuthenticationRequired
@@ -177,7 +176,7 @@ public class GameLobby extends BasePage {
     // Permission checked. Start new game!
     LOGGER.info("Starting the game.");
     game.startGame();
-    setResponsePage(getTbialApplication().getGameTablePage()); // TODO: Open actual game table.
+    setResponsePage(getTbialApplication().getGameTablePage());
   }
 
   /**
@@ -222,34 +221,16 @@ public class GameLobby extends BasePage {
 
     Map<String, Game> currentGames = getGameManager().getCurrentGames();
     String currentGameName = getSession().getCurrentGame().getName();
-    if (!checkIfLastPlayer()) {
-      checkHostChange();
+    if (!getGame().checkIfLastPlayer()) {
+      getGame().checkHostChange();
     }
-    if (checkIfLastPlayer()) {
+    if (getGame().checkIfLastPlayer()) {
       currentGames.remove(currentGameName);
     }
     getSession().setCurrentGameNull();
   }
 
-  public void checkHostChange() {
-    String currentHost = getSession().getCurrentGame().getHost();
-    Game currentGame = getSession().getCurrentGame();
-    Map<String, Player> inGamePlayers = getSession().getCurrentGame().getPlayers();
-    System.out.println("Current Host: " + currentGame.getHost());
-    for (Map.Entry<String, Player> entry : inGamePlayers.entrySet()) {
-      if (!entry.getValue().getUserName().equals(currentHost)) {
-        currentGame.setHost(entry.getValue().getUserName());
-        break;
-      }
-    }
-    System.out.println("Current Host: " + currentGame.getHost());
-  }
-
-  public boolean checkIfLastPlayer() {
-    int currentPlayersInGame = getSession().getCurrentGame().getCurrentNumberOfPlayers();
-    if (currentPlayersInGame == 1) {
-      return true;
-    }
-    return false;
+  public Game getGame() {
+    return game;
   }
 }
