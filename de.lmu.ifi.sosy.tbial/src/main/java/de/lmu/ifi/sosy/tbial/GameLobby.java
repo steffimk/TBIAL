@@ -221,12 +221,17 @@ public class GameLobby extends BasePage {
     Game gameToLeave = getSession().getCurrentGame();
     Map<String, Game> currentGames = getGameManager().getCurrentGames();
     String currentGameName = getSession().getCurrentGame().getName();
-    if (!gameToLeave.checkIfLastPlayer()) {
-      gameToLeave.checkHostChange();
+    if (!getGame().checkIfLastPlayer()) {
+      getGame().checkHostChange();
     }
-    if (gameToLeave.checkIfLastPlayer()) {
+    if (getGame().checkIfLastPlayer()) {
       currentGames.remove(currentGameName);
     }
     getSession().setCurrentGameNull();
+  }
+
+
+  public Game getGame() {
+    return game;
   }
 }
