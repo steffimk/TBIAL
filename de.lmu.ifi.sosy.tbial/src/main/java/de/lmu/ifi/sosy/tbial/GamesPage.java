@@ -103,29 +103,13 @@ public class GamesPage extends BasePage {
     add(gameListContainer);
   }
 
+  //Actual join method, checking restrictions and directing to Game Lobby
   public void joinGame(Game game, String password) {
     String username = getSession().getUser().getName();
-    if (checkIfYouCanJoin(game, username, password)) {
+    if (game.checkIfYouCanJoin(username, password)) {
       game.addNewPlayer(getSession().getUser().getName());
       getSession().setCurrentGame(game);
       setResponsePage(getTbialApplication().getGameLobbyPage());
     }
-  }
-
-  public boolean checkIfYouCanJoin(Game game, String username, String password) {
-    if (game.hasStarted()) {
-      return false;
-    }
-    if (game.getCurrentNumberOfPlayers() >= game.getMaxPlayers()) {
-      return false;
-    }
-    if (game.getPlayers().containsKey(username)) {
-      return false;
-    }
-    if (game.isPrivate()
-        && !game.getHash().equals(Game.getHashedPassword(password, game.getSalt()))) {
-      return false;
-    }
-    return true;
   }
 }

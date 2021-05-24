@@ -5,9 +5,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.Map;
-
-import java.util.LinkedList;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -25,17 +22,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.wicket.RestartResponseAtInterceptPageException;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.Link;
-
-
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
-import de.lmu.ifi.sosy.tbial.game.Player;
 
 /** The Lobby of a specific game in which the players wait for the game to start. */
 @AuthenticationRequired
@@ -228,39 +216,17 @@ public class GameLobby extends BasePage {
     else return message + " Waiting for more players to join.";
   }
 
-  //Methods for leaving game: actual leave method, Host Check/Change, and checking if player is the last one to leave
+  //Leaves the current game
   public void leaveCurrentGame() {
-
+    Game gameToLeave = getSession().getCurrentGame();
     Map<String, Game> currentGames = getGameManager().getCurrentGames();
     String currentGameName = getSession().getCurrentGame().getName();
-    if (!checkIfLastPlayer()) {
-      checkHostChange();
+    if (!gameToLeave.checkIfLastPlayer()) {
+      gameToLeave.checkHostChange();
     }
-    if (checkIfLastPlayer()) {
+    if (gameToLeave.checkIfLastPlayer()) {
       currentGames.remove(currentGameName);
     }
     getSession().setCurrentGameNull();
-  }
-
-  public void checkHostChange() {
-    String currentHost = getSession().getCurrentGame().getHost();
-    Game currentGame = getSession().getCurrentGame();
-    Map<String, Player> inGamePlayers = getSession().getCurrentGame().getPlayers();
-    System.out.println("Current Host: " + currentGame.getHost());
-    for (Map.Entry<String, Player> entry : inGamePlayers.entrySet()) {
-      if (!entry.getValue().getUserName().equals(currentHost)) {
-        currentGame.setHost(entry.getValue().getUserName());
-        break;
-      }
-    }
-    System.out.println("Current Host: " + currentGame.getHost());
-  }
-
-  public boolean checkIfLastPlayer() {
-    int currentPlayersInGame = getSession().getCurrentGame().getCurrentNumberOfPlayers();
-    if (currentPlayersInGame == 1) {
-      return true;
-    }
-    return false;
   }
 }

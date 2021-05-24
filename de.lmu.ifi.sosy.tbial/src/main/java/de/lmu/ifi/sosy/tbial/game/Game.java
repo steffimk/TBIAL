@@ -142,6 +142,44 @@ public class Game implements Serializable {
     }
   }
 
+  // Checking if the player is allowed to Join
+  public boolean checkIfYouCanJoin(String username, String password) {
+    if (hasStarted()) {
+      return false;
+    }
+    if (getCurrentNumberOfPlayers() >= getMaxPlayers()) {
+      return false;
+    }
+    if (getPlayers().containsKey(username)) {
+      return false;
+    }
+    if (isPrivate() && !getHash().equals(Game.getHashedPassword(password, getSalt()))) {
+      return false;
+    }
+    return true;
+  }
+
+  //If the leaving player equals host, host status switches to the next possible player
+  public void checkHostChange() {
+    String currentHost = getHost();
+    Map<String, Player> inGamePlayers = getPlayers();
+    for (Map.Entry<String, Player> entry : inGamePlayers.entrySet()) {
+      if (!entry.getValue().getUserName().equals(currentHost)) {
+        setHost(entry.getValue().getUserName());
+        break;
+      }
+    }
+  }
+
+  //Checking, if the leaving player is also the last player
+  public boolean checkIfLastPlayer() {
+    int currentPlayersInGame = getCurrentNumberOfPlayers();
+    if (currentPlayersInGame == 1) {
+      return true;
+    }
+    return false;
+  }
+
   public String getName() {
     return name;
   }
