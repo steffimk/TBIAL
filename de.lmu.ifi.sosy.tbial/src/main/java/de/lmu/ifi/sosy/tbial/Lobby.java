@@ -72,7 +72,7 @@ public class Lobby extends BasePage {
           @Override
           protected void populateItem(final ListItem<Game> listItem) {
             final Game game = listItem.getModelObject();
-            listItem.add(new Label("name", game.getName()));
+            listItem.add(new Label("gamename", game.getName()));
             listItem.add(
                 new Label(
                     "numberOfPlayers",
@@ -207,5 +207,9 @@ public class Lobby extends BasePage {
     return getGameManager().gameNameTaken(newGameNameField.getModelObject())
         ? "Name already taken."
         : " ";
+  }
+
+  public int addNumbers() {
+    return 2;
   }
 }
