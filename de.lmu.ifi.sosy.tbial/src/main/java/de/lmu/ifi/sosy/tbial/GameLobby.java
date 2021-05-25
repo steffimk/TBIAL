@@ -80,8 +80,8 @@ public class GameLobby extends BasePage {
           }
         };
 
-    Form LeaveForm =
-        new Form("LeaveForm") {
+    Form<?> LeaveForm =
+        new Form<>("LeaveForm") {
 
           private static final long serialVersionUID = 1L;
 
@@ -91,6 +91,13 @@ public class GameLobby extends BasePage {
           }
         };
     add(LeaveForm);
+
+    Form<?> gameLobbyInfoForm = new Form<>("gameLobbyInfoForm");
+    gameLobbyInfoForm.add(new Label("name", getGame().getName()));
+    gameLobbyInfoForm.add(new Label("privacy", getGame().isPrivate()));
+    gameLobbyInfoForm.add(new Label("privacyTextOne", "(Private: "));
+    gameLobbyInfoForm.add(new Label("privacyTextTwo", " )"));
+    add(gameLobbyInfoForm);
 
     startGameLink.setOutputMarkupId(true);
 
