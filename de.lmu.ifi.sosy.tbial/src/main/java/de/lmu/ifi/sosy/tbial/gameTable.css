@@ -6,7 +6,7 @@
 
 #table {
 	position: relative;
-	width: 100%;
+	width: 80%;
 	height: 0;
 	margin-left: 1%;
 	padding-bottom: 80%;
@@ -44,29 +44,26 @@
 
 .container4-2 {
 	height: 100%;
-	padding-left: 80%;
+	width: 100%;
 	display: inline-block;
 	transform: rotate(90deg);
 }
 
 .container4-2 .role {
-	transform: rotate(-130deg);
-	top: 79%;
-	left: 73%;
+	transform: rotate(-135deg);
+	top: 74%;
+	left: 47%;
 }
 
 .container4-2 .points {
 	transform: rotate(-90deg);
-	top: 85%;
-}
-
-.container4-2 .cards {
-	left: 40%;
+	top: 87%;
+	left: 68%;
 }
 
 .container4-3 {
 	width: 100%;
-	padding-bottom: 80%;
+	height: 100%;
 	display: inline-block;
 	transform: rotate(180deg);
 }
@@ -76,9 +73,9 @@
 }
 
 .container4-3 .role {
-	transform: rotate(222deg);
-	top: 80%;
-	left: 69%;
+	transform: rotate(225deg);
+	top: 75%;
+	left: 49%;
 }
 
 .container4-3 .points {
@@ -91,26 +88,21 @@
 }
 
 .container4-4 {
-	float: right;
 	height: 100%;
-	padding-left: 80%;
-	overflow: hidden;
+	width: 100%; overflow : hidden;
 	transform: rotate(90deg) scaleX(-1) scaleY(-1);
+	overflow: hidden;
 }
 
 .container4-4 .role {
-	transform: rotate(47deg);
 	top: 74%;
-	left: 65%;
+	left: 48%;
 }
 
 .container4-4 .points {
 	transform: rotate(90deg);
-	top: 85%;
-}
-
-.container4-4 .cards {
-	left: 40%;
+	top: 87%;
+	left: 66%;
 }
 
 .container5-2 {
@@ -224,7 +216,7 @@
 }
 
 .container5-5 .role {
-	transform: rotate(132deg);	
+	transform: rotate(132deg);
 	top: 72%;
 	left: 20%;
 }
@@ -256,7 +248,7 @@
 }
 
 .container6-2 .role {
-	transform: rotate(-130deg);	
+	transform: rotate(-130deg);
 	top: 80%;
 	left: 70%;
 }
@@ -406,7 +398,7 @@
 }
 
 .container6-6 .role {
-	transform: rotate(132deg);	
+	transform: rotate(132deg);
 	top: 72%;
 	left: 19%;
 }
@@ -438,7 +430,7 @@
 }
 
 .container7-2 .role {
-	transform: rotate(-130deg);	
+	transform: rotate(-130deg);
 	top: 80%;
 	left: 70%;
 }
