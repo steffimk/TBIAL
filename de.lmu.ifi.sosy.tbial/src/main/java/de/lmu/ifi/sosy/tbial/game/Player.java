@@ -42,7 +42,6 @@ public class Player implements Serializable {
     this.bug = 0;
     this.handCards = new HashSet<>();
     this.receivedCards = new HashSet<>();
-    receivedCards.add(new AbilityCard(Ability.SUNGLASSES));
   }
 
   public String getUserName() {
@@ -165,4 +164,5 @@ public class Player implements Serializable {
   public Set<StackCard> getReceivedCards() {
     return receivedCards;
   }
+
 }

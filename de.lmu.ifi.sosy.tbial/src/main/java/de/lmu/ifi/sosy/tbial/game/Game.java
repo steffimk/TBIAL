@@ -42,7 +42,9 @@ public class Game implements Serializable {
   
   private Stack stack;
 
-  // turn related
+  // ------------ turn related ------------ TODO: Ugly, change in future. Maybe move to a new class
+  // Turn?
+  /** Key: The player whose turn it is, Value: The hand card he clicked on */
   private Map.Entry<Player, StackCard> selectedHandCard;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
@@ -266,6 +268,23 @@ public class Game implements Serializable {
     //   TODO: if(not is turn of player) do nothing
     if (selectedHandCard != null && player == selectedHandCard.getKey()) {
       discardHandCard(player, selectedHandCard.getValue());
+    }
+  }
+
+  /**
+   * Called when a player clicks on the "Add Card"-Area of another player. If he has selected a hand
+   * card, it will be moved to this other player. No rules are checked yet.
+   *
+   * @param player The player whose turn it should be.
+   * @param receiverOfCard The player who should receive the previously selected card.
+   */
+  public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
+    //   TODO: if(not is turn of player) do nothing
+    if (selectedHandCard != null && player == selectedHandCard.getKey()) {
+      StackCard selectedCard = selectedHandCard.getValue();
+      if (player.removeHandCard(selectedCard)) {
+        receiverOfCard.receiveCard(selectedCard);
+      }
     }
   }
 }

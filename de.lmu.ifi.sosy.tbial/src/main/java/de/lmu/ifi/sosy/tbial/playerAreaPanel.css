@@ -30,7 +30,7 @@
 	align-items: center;
 }
 
-.handcards, .played .blocked {
+.handcards, .played, .blocked {
 	display: flex;
 }
 

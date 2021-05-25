@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -55,7 +54,7 @@ public class GameTable extends BasePage {
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
 
-    player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame));
+    player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer));
     player1.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)));
 
     // get the rest of the players
@@ -78,7 +77,9 @@ public class GameTable extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
-            PlayerAreaPanel panel = new PlayerAreaPanel("panel", Model.of(player), currentGame);
+            PlayerAreaPanel panel =
+                new PlayerAreaPanel("panel", Model.of(player), currentGame, basePlayer);
+            panel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)));
             // add css classes
             listItem.add(
                 new AttributeModifier("class", "player-" + "" + numberOfPlayers + "-" + "" + (i)));
@@ -92,8 +93,6 @@ public class GameTable extends BasePage {
             }
           }
         };
-
-    playerList.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)));
 
     WebMarkupContainer stackContainer = new WebMarkupContainer("stackContainer");
     stackContainer.add(

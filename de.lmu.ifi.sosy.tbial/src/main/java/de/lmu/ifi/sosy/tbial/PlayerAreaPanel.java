@@ -26,7 +26,7 @@ public class PlayerAreaPanel extends Panel {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
-  public PlayerAreaPanel(String id, IModel<Player> player, Game game) {
+  public PlayerAreaPanel(String id, IModel<Player> player, Game game, Player basePlayer) {
     super(id, new CompoundPropertyModel<Player>(player));
     add(new Label("userName"));
     Label role = new Label("roleName");
@@ -41,17 +41,23 @@ public class PlayerAreaPanel extends Panel {
     add(new Label("prestige"));
     add(new Label("bug"));
 
+    // Adding block cards to the panel
+    WebMarkupContainer addCardButton = new WebMarkupContainer("addCardButton");
+    addCardButton.add(
+        new AjaxEventBehavior("click") {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onEvent(AjaxRequestTarget target) {
+            System.out.println("Clicked on Add Card of " + player.getObject().getUserName());
+            game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
+          }
+        });
+    add(addCardButton);
+
     IModel<List<StackCard>> blockCardModel =
         (IModel<List<StackCard>>)
             () -> new ArrayList<StackCard>(player.getObject().getReceivedCards());
-    switch (blockCardModel.getObject().size()) {
-      case 2:
-        System.out.println("Hi");
-        blockCardModel.getObject().add(new AbilityCard(Ability.GOOGLE));
-      case 1:
-        blockCardModel.getObject().add(new AbilityCard(Ability.GOOGLE));
-        break;
-    }
     ListView<StackCard> blockCards =
         new PropertyListView<>("blockCards", blockCardModel) {
           private static final long serialVersionUID = 1L;
@@ -59,48 +65,10 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected void populateItem(ListItem<StackCard> item) {
             final StackCard blockCard = item.getModelObject();
-            if (blockCard instanceof AbilityCard
-                && ((AbilityCard) blockCard).getAbility() == Ability.GOOGLE) {
-              item.add(new Image("blockCard", "imgs/cards/backSide.png"));
-            } else {
-              item.add(new Image("blockCard", blockCard.getResourceFileName()));
-            }
+            item.add(new Image("blockCard", blockCard.getResourceFileName()));
           }
         };
     add(blockCards);
-    //
-    //    WebMarkupContainer blockCardPlaceholder1 = new WebMarkupContainer("placeholder1");
-    //    WebMarkupContainer blockCardPlaceholder2 = new WebMarkupContainer("placeholder2");
-    //    blockCardPlaceholder1.add(
-    //        new AjaxEventBehavior("click") {
-    //          private static final long serialVersionUID = 1L;
-    //
-    //          @Override
-    //          protected void onEvent(AjaxRequestTarget target) {
-    //            System.out.println("Clicked on Placeholder");
-    //            // game.clickedOnBlockedCardPlaceholder(player.getObject());
-    //          }
-    //        });
-    //    blockCardPlaceholder2.add(
-    //        new AjaxEventBehavior("click") {
-    //          private static final long serialVersionUID = 1L;
-    //
-    //          @Override
-    //          protected void onEvent(AjaxRequestTarget target) {
-    //            System.out.println("Clicked on Placeholder");
-    //            // game.clickedOnBlockedCardPlaceholder(player.getObject());
-    //          }
-    //        });
-    //    blockCardPlaceholder1.setOutputMarkupId(true);
-    //    blockCardPlaceholder2.setOutputMarkupId(true);
-    //    if (player.getObject().getReceivedCards().size() > 0) {
-    //      blockCardPlaceholder2.setVisible(false);
-    //      if (player.getObject().getReceivedCards().size() > 1) {
-    //        blockCardPlaceholder2.setVisible(false);
-    //      }
-    //    }
-    //    add(blockCardPlaceholder1);
-    //    add(blockCardPlaceholder2);
 
     /** adding hand cards to the player area panel */
     IModel<List<StackCard>> handCardModel =
@@ -115,10 +83,8 @@ public class PlayerAreaPanel extends Panel {
           protected void populateItem(final ListItem<StackCard> listItem) {
             final StackCard handCard = listItem.getModelObject();
 
-            WebMarkupContainer imageContainer = new WebMarkupContainer("cardContainer");
-
             if (player.getObject().isBasePlayer()) {
-              imageContainer.add(
+              listItem.add(
                   new AjaxEventBehavior("click") {
                     private static final long serialVersionUID = 1L;
 
@@ -128,12 +94,10 @@ public class PlayerAreaPanel extends Panel {
                       game.clickedOnHandCard(player.getObject(), handCard);
                     }
                   });
-              imageContainer.add(new Image("handCard", handCard.getResourceFileName()));
+              listItem.add(new Image("handCard", handCard.getResourceFileName()));
             } else {
-              imageContainer.add(new Image("handCard", "imgs/cards/backSide.png"));
+              listItem.add(new Image("handCard", "imgs/cards/backSide.png"));
             }
-
-            listItem.add(imageContainer);
           }
         };
 
