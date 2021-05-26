@@ -1,6 +1,10 @@
 package de.lmu.ifi.sosy.tbial;
 
 import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -10,17 +14,39 @@ import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.TagTester;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /** Simple test using the WicketTester */
 public class LobbyTest extends PageTestBase {
-	
+  List<Game> gameList;
+
   @Before
   public void setUp() {
     setupApplication();
     database.register("testuser", "testpassword");
     getSession().authenticate("testuser", "testpassword");
+    database.register("testuser2", "testpassword2");
+    getSession().authenticate("testuser2", "pw2");
+    database.register("testuser3", "testpassword3");
+    getSession().authenticate("testuser3", "pw3");
+
+    gameList =
+        new ArrayList<Game>() {
+          private static final long serialVersionUID = 1L;
+
+          {
+            add(new Game("game1", 4, true, "123456", "testuser"));
+            add(new Game("game2", 5, false, "", "testuser2"));
+            add(new Game("game3", 7, false, "", "testuser3"));
+          }
+        };
+
+    for (Game game : gameList) {
+      getSession().getTbialApplication().getGameManager().addGame(game);
+    }
   }
 
   @Test
@@ -65,5 +91,38 @@ public class LobbyTest extends PageTestBase {
     form.setValue("passwordContainer:newGamePw", password);
     form.submit("newGameButton");
   }
-  
+
+  @Test
+  public void numberOfCreatedGamesCorrect() {
+    tester.startPage(Lobby.class);
+
+    String htmlDocument = tester.getLastResponse().getDocument();
+    List<TagTester> tagTesterList =
+        TagTester.createTagsByAttribute(htmlDocument, "wicket:id", "gamename", false);
+    Assert.assertEquals(3, tagTesterList.size());
+
+    tester.assertRenderedPage(Lobby.class);
+  }
+
+  @Test
+  public void displayCreatedGamesInLobby() {
+    tester.startPage(Lobby.class);
+
+    String htmlDocument = tester.getLastResponse().getDocument();
+    List<TagTester> tagTesterList =
+        TagTester.createTagsByAttribute(htmlDocument, "wicket:id", "gamename", false);
+    List<String> gameNames = new ArrayList<String>();
+    List<String> tagTesterValues = new ArrayList<String>();
+
+    Assert.assertEquals(gameList.size(), tagTesterList.size());
+
+    for (int i = 0; i < gameList.size(); i++) {
+      gameNames.add(gameList.get(i).getName());
+      tagTesterValues.add(tagTesterList.get(i).getValue());
+    }
+
+    for (String gameName : gameNames) {
+      Assert.assertTrue(tagTesterValues.contains(gameName));
+    }
+  }
 }

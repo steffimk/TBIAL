@@ -208,8 +208,4 @@ public class Lobby extends BasePage {
         ? "Name already taken."
         : " ";
   }
-
-  public int addNumbers() {
-    return 2;
-  }
 }
