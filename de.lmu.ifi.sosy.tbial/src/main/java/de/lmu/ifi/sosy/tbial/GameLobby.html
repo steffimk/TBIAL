@@ -6,46 +6,54 @@
 </head>
 
 <body>
-  <wicket:extend>
+	<wicket:extend>
 
 
-  <h3>The Game Lobby.</h3>
+		<h3>The Game Lobby.</h3>
 
-    <form wicket:id="LeaveForm">
-		<input type="submit" value="Leave Game(-lobby)" />
-	</form>
-
-
-	<form wicket:id="gameLobbyInfoForm" class="boxedform" style="width: 100%">
-	<label> Current game: </label>
-	<label wicket:id="name"> Displaying the current games name</label>
-	<span wicket:id="privacyTextOne"> Lol </span> 
-	<span wicket:id="privacy"> If the game is private </span>
-	<span wicket:id="privacyTextTwo"> Lol2 </span>
-	</form>
+		<form wicket:id="LeaveForm">
+			<input type="submit" value="Leave Game(-lobby)" />
+		</form>
 
 
-    <br>
-    <label wicket:id="isHostLabel">Information whether the player is the host of the game.</label>
-    <br>
-    <label wicket:id="currentStatusLabel">Information about the amount of players that can still join.</label>
-    <a wicket:id="startGameLink" class="linkstyle">Start Game</a>
-    <fieldset class="chat"
-     style="height: 500px; width: 30%; border: 1px solid; overflow: auto; padding: 5%;">
-	    <div wicket:id="chatMessages">
-	    	<p wicket:id="messages">
-	    		<span wicket:id="sender">Username</span>
-	    		<span wicket:id="textMessage">Chatmessage</span>
-	    	</p>
-	    </div>
-    </fieldset>
-    <form wicket:id="form">
-    	<input type="text" wicket:id="message">
-    	<input type="submit" value="Send" wicket:id="send">
+		<form wicket:id="gameLobbyInfoForm" class="boxedform"
+			style="width: 100%">
+			<span wicket:id="gameInfo" class="mark">This text will be
+				replaced with information about the game</span>
+		<table>
+				
+				<tbody wicket:id="gameInfoContainer">
+					<tr wicket:id="gameInfos">
+						<td><span wicket:id="playerName">Names of the players</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
 
-    </form>  
-	
 
-</wicket:extend>
+		<br>
+		<label wicket:id="isHostLabel">Information whether the player
+			is the host of the game.</label>
+		<br>
+		<label wicket:id="currentStatusLabel">Information about the
+			amount of players that can still join.</label>
+		<a wicket:id="startGameLink" class="linkstyle">Start Game</a>
+		<fieldset class="chat"
+			style="height: 500px; width: 30%; border: 1px solid; overflow: auto; padding: 5%;">
+			<div wicket:id="chatMessages">
+				<p wicket:id="messages">
+					<span wicket:id="sender">Username</span> <span
+						wicket:id="textMessage">Chatmessage</span>
+				</p>
+			</div>
+		</fieldset>
+		<form wicket:id="form">
+			<input type="text" wicket:id="message"> <input type="submit"
+				value="Send" wicket:id="send">
+
+		</form>
+
+
+	</wicket:extend>
 </body>
 </html>

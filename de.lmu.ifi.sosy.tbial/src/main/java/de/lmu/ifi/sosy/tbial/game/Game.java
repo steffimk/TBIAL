@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -178,6 +179,10 @@ public class Game implements Serializable {
       return true;
     }
     return false;
+  }
+
+  public List<Player> getInGamePlayersList() {
+    return new ArrayList<Player>(getPlayers().values());
   }
 
   public String getName() {

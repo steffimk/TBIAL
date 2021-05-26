@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,17 +14,21 @@ import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.list.PropertyListView;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
+import de.lmu.ifi.sosy.tbial.game.Player;
 
 /** The Lobby of a specific game in which the players wait for the game to start. */
 @AuthenticationRequired
@@ -92,11 +97,40 @@ public class GameLobby extends BasePage {
         };
     add(LeaveForm);
 
+    IModel<List<Player>> gameInfoModel =
+        (IModel<List<Player>>) () -> getGame().getInGamePlayersList();
+
+    ListView<Player> gameInfoList =
+        new PropertyListView<>("gameInfos", gameInfoModel) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void populateItem(final ListItem<Player> listItem) {
+            final Player player = listItem.getModelObject();
+            listItem.add(new Label("playerName", player.getUserName()));
+          }
+        };
+
+    String gameInfoText =
+        "\nCurrent game: "
+            + getGame().getName()
+            + " (Private: "
+            + getGame().isPrivate()
+            + ")"
+            + "\nCurrently in the lobby: "
+            + getGame().getCurrentNumberOfPlayers()
+            + "/"
+            + getGame().getMaxPlayers()
+            + "\nCurrent Players:";
+    WebMarkupContainer gameInfoContainer = new WebMarkupContainer("gameInfoContainer");
+    gameInfoContainer.add(gameInfoList);
+    gameInfoContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
+    gameInfoContainer.setOutputMarkupId(true);
+
     Form<?> gameLobbyInfoForm = new Form<>("gameLobbyInfoForm");
-    gameLobbyInfoForm.add(new Label("name", getGame().getName()));
-    gameLobbyInfoForm.add(new Label("privacy", getGame().isPrivate()));
-    gameLobbyInfoForm.add(new Label("privacyTextOne", "(Private: "));
-    gameLobbyInfoForm.add(new Label("privacyTextTwo", " )"));
+    gameLobbyInfoForm.add(new MultiLineLabel("gameInfo", gameInfoText));
+    gameLobbyInfoForm.add(gameInfoContainer);
     add(gameLobbyInfoForm);
 
     startGameLink.setOutputMarkupId(true);
