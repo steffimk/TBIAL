@@ -3,10 +3,12 @@ package de.lmu.ifi.sosy.tbial;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -17,7 +19,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -27,6 +28,8 @@ public class PlayerAreaPanel extends Panel {
 
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
+
+  private static final Logger LOGGER = LogManager.getLogger(PlayerAreaPanel.class);
 
   private static PackageResourceReference cardBackSideImage =
       new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/backSide.png");
@@ -55,8 +58,12 @@ public class PlayerAreaPanel extends Panel {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            target.add(GameTable.getTable());
+            LOGGER.info(
+                basePlayer.getUserName()
+                    + " clicked on add card button of "
+                    + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
+            target.add(GameTable.getTable());
           }
         };
 
@@ -80,6 +87,9 @@ public class PlayerAreaPanel extends Panel {
         };
     add(blockCards);
 
+    WebMarkupContainer handCardContainer = new WebMarkupContainer("handCardContainer");
+    handCardContainer.setOutputMarkupId(true);
+
     /** adding hand cards to the player area panel */
     IModel<List<StackCard>> handCardModel =
         (IModel<List<StackCard>>) () -> new ArrayList<StackCard>(player.getObject().getHandCards());
@@ -100,15 +110,15 @@ public class PlayerAreaPanel extends Panel {
 
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {
-                      System.out.println("Clicked on " + handCard.toString());
+                      LOGGER.info(player.getObject().getUserName() + " clicked on a hand card");
                       game.clickedOnHandCard(player.getObject(), handCard);
+                      target.add(handCardContainer);
                     }
                   });
               listItem.add(
                   new Image(
                       "handCard",
-                      new PackageResourceReference(getClass(), handCard.getResourceFileName())
-                          .readBuffered(true)));
+                      new PackageResourceReference(getClass(), handCard.getResourceFileName())));
               if (player.getObject().getSelectedHandCard() == handCard) {
                 listItem.add(new AttributeModifier("class", "handcard selected"));
               }
@@ -118,9 +128,8 @@ public class PlayerAreaPanel extends Panel {
           }
         };
 
-    add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)));
-
-    add(handCardList);
+    handCardContainer.add(handCardList);
+    add(handCardContainer);
   }
 
 }

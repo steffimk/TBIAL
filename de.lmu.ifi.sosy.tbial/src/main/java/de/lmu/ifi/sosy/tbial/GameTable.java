@@ -125,8 +125,8 @@ public class GameTable extends BasePage {
     add(table);
  }
 
+  /** @return The container of the whole game table. */
   public static WebMarkupContainer getTable() {
     return table;
-  
   }
 }
