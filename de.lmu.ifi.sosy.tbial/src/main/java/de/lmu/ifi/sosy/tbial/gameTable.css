@@ -22,8 +22,8 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	height: 200px;
-	width: 200px;
+	height: 25%;
+	width: 25%;
 	background-image: url("table.png");
 }
 
@@ -259,13 +259,13 @@
 
 .container6-2 .points {
 	transform: rotate(-90deg);
-	top: 88%;
+	top: 87%;
 	left: 72%;
 }
 
 .container6-2 .cards {
 	left: 46%;
-	top: 68%;
+	top: 67%;
 	width: 22%;
 	height: 32%;
 }
@@ -295,7 +295,7 @@
 
 .container6-3 .points {
 	transform: rotate(180deg);
-	left: 86%;
+	left: 85%;
 	top: 80%;
 }
 
@@ -336,7 +336,7 @@
 .container6-4 .points {
 	transform: rotate(180deg);
 	left: 51%;
-	top: 91%;
+	top: 90%;
 }
 
 .container6-4 .cards {
@@ -360,7 +360,7 @@
 
 .container6-5 .userName {
 	left: 58%;
-	top: 94%;
+	top: 93%;
 	transform: rotate(90deg);
 }
 
@@ -424,7 +424,7 @@
 
 .container6-6 .cards {
 	left: 31%;
-	top: 68%;
+	top: 67%;
 	width: 22%;
 	height: 32%;
 }
