@@ -34,6 +34,8 @@ public class TBIALApplication extends WebApplication {
 
   private final Database database;
 
+  private final GameManager gameManager = new GameManager();
+
   // Use LinkedHashSet to keep iteration order over current users always the same
   private final Set<User> loggedInUsers = Collections.synchronizedSet(new LinkedHashSet<>());
 
@@ -45,30 +47,14 @@ public class TBIALApplication extends WebApplication {
     this(new SQLDatabase());
   }
 
-  private final GameManager gameManager = new GameManager();
-
   @VisibleForTesting
   TBIALApplication(Database database) {
     super();
     this.database = database;
   }
 
-  @Override
-  public Class<Lobby> getHomePage() {
-    return Lobby.class;
-  }
 
-  public GameManager getGameManager() {
-    return gameManager;
-  }
-
-  public Class<GameLobby> getGameLobbyPage() {
-    return GameLobby.class;
-  }
-
-  public Class<GameTable> getGameTablePage() {
-    return GameTable.class;
-  }
+ 
 
   /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
   @Override
@@ -138,6 +124,33 @@ public class TBIALApplication extends WebApplication {
                 return true;
               }
             });
+  }
+
+    @Override
+  public Class<Lobby> getHomePage() {
+    return Lobby.class;
+  }
+
+  public Class<GameLobby> getGameLobbyPage() {
+    return GameLobby.class;
+  }
+
+
+  public Class<GameTable> getGameTablePage() {
+    return GameTable.class;
+  }
+
+
+  public Class<GamesPage> getGamesPage() {
+    return GamesPage.class;
+  }
+
+  public Class<PlayersPage> getPlayersPage() {
+    return PlayersPage.class;
+  }
+
+  public GameManager getGameManager() {
+    return gameManager;
   }
 
   public int getUsersLoggedInCount() {

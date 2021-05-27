@@ -28,8 +28,8 @@ public class Game implements Serializable {
 
   private int maxPlayers;
 
-  private Map<String,Player> players;
-  
+  private Map<String, Player> players;
+
   private String host;
 
   private boolean isPrivate;
@@ -38,7 +38,7 @@ public class Game implements Serializable {
   private byte[] salt;
 
   private boolean hasStarted;
-  
+
   private Stack stack;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
@@ -178,6 +178,50 @@ public class Game implements Serializable {
       return true; // TODO: maybe receiver needs to respond to this action immediately
     }
     return false;
+  }
+
+  /**
+   * Checks whether the game already started, is already filled, the player is already inGame and
+   * the games privacy
+   *
+   * @param username
+   * @param password
+   * @return Whether the play is able/allowed to join the game
+   */
+  public boolean checkIfYouCanJoin(String username, String password) {
+    if (hasStarted()) {
+      return false;
+    }
+    if (getCurrentNumberOfPlayers() >= getMaxPlayers()) {
+      return false;
+    }
+    if (getPlayers().containsKey(username)) {
+      return false;
+    }
+    if (isPrivate() && !getHash().equals(Game.getHashedPassword(password, getSalt()))) {
+      return false;
+    }
+    return true;
+  }
+
+  /** Changes the host to the first/next player who isn't set as host */
+  public void changeHost() {
+    String currentHost = getHost();
+    for (Map.Entry<String, Player> entry : getPlayers().entrySet()) {
+      if (!entry.getValue().getUserName().equals(currentHost)) {
+        setHost(entry.getValue().getUserName());
+        break;
+      }
+    }
+  }
+
+  /**
+   * Whether the leaving player is the last player in the current game
+   *
+   * @return
+   */
+  public boolean checkIfLastPlayer() {
+    return getCurrentNumberOfPlayers() == 1;
   }
 
   public String getName() {

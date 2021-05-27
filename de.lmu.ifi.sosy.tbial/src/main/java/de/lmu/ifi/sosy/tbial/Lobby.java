@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -20,15 +19,12 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 
-import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
-
 /**
- * Basic lobby page. It <b>should</b> show the list of currently available
- * games. Needs to be extended.
+ * Basic lobby page. It <b>should</b> show the list of currently available games. Needs to be
+ * extended.
  *
  * @author Andreas Schroeder, SWEP 2013 Team.
  */
@@ -47,20 +43,45 @@ public class Lobby extends BasePage {
   private final PasswordTextField newGamePwField;
   private final Label nameFeedbackLabel;
 
-	public Lobby() {
-    IModel<List<User>> playerModel =
-        (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
+  public Lobby() {
 
-    ListView<User> playerList =
-        new PropertyListView<>("loggedInUsers", playerModel) {
+    Form menuForm = new Form("menuForm");
+
+    Button createGameButton =
+        new Button("createGameButton") {
 
           private static final long serialVersionUID = 1L;
 
-          @Override
-          protected void populateItem(final ListItem<User> listItem) {
-            listItem.add(new Label("name"));
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getHomePage());
           }
         };
+
+    menuForm.add(createGameButton);
+
+    Button showGamesButton =
+        new Button("showGamesButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getGamesPage());
+          }
+        };
+
+    menuForm.add(showGamesButton);
+
+    Button showPlayersButton =
+        new Button("showPlayersButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getPlayersPage());
+          }
+        };
+    menuForm.add(showPlayersButton);
+    add(menuForm);
 
     IModel<List<Game>> gameModel =
         (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();
@@ -131,7 +152,6 @@ public class Lobby extends BasePage {
     WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
     passwordContainer.setOutputMarkupPlaceholderTag(true);
 
-
     newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
 
     passwordContainer.add(newGamePwField);
@@ -149,23 +169,8 @@ public class Lobby extends BasePage {
             passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
 
             target.add(passwordContainer);
-
           }
         };
-
-    WebMarkupContainer playerListContainer = new WebMarkupContainer("playerlistContainer");
-    playerListContainer.add(playerList);
-    playerListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
-    playerListContainer.setOutputMarkupId(true);
-
-    add(playerListContainer);
-
-    WebMarkupContainer gameListContainer = new WebMarkupContainer("gameListContainer");
-    gameListContainer.add(gameList);
-    gameListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
-    gameListContainer.setOutputMarkupId(true);
-
-    add(gameListContainer);
 
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
@@ -177,7 +182,7 @@ public class Lobby extends BasePage {
         .add(newGameButton);
     add(newGameForm);
   }
-	
+
   /**
    * Creates a new game and saves it in the database if all requirements are fulfilled.
    *
