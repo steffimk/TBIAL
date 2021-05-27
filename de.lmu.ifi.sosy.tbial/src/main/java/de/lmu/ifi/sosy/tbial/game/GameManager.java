@@ -23,8 +23,8 @@ public class GameManager {
   public synchronized void addGame(Game game) {
     requireNonNull(game);
     if (!gameNameTaken(game.getName())) {
-	    this.currentGames.put(game.getName(), game);
-	}
+      this.currentGames.put(game.getName(), game);
+    }
   }
 
   public boolean gameNameTaken(String name) {
