@@ -2,7 +2,6 @@ package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,7 +83,6 @@ public class GameLobby extends BasePage {
             return game.getPlayers().size() > 3;
           }
         };
-
 
     Form leaveForm =
         new Form("leaveForm") {
@@ -248,7 +246,7 @@ public class GameLobby extends BasePage {
    */
   public void leaveCurrentGame() {
     String currentGameName = getSession().getCurrentGame().getName();
-    if (!getGame().checkIfLastPlayer()) {
+    if (!getGame().checkIfLastPlayer() && isHost()) {
       getGame().changeHost();
     }
     if (getGame().checkIfLastPlayer()) {
