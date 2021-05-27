@@ -17,13 +17,14 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 
+/** This page shows a list of all current games and provides the option to join one of them. */
 public class GamesPage extends BasePage {
 
   private static final long serialVersionUID = 1L;
 
   public GamesPage() {
 
-    Form MenuForm = new Form("MenuForm");
+    Form menuForm = new Form("menuForm");
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -34,7 +35,7 @@ public class GamesPage extends BasePage {
             setResponsePage(getTbialApplication().getHomePage());
           }
         };
-    MenuForm.add(createGameButton);
+    menuForm.add(createGameButton);
 
     Button showGamesButton =
         new Button("showGamesButton") {
@@ -45,7 +46,7 @@ public class GamesPage extends BasePage {
             setResponsePage(getTbialApplication().getGamesPage());
           }
         };
-    MenuForm.add(showGamesButton);
+    menuForm.add(showGamesButton);
 
     Button showPlayersButton =
         new Button("showPlayersButton") {
@@ -56,8 +57,8 @@ public class GamesPage extends BasePage {
             setResponsePage(getTbialApplication().getPlayersPage());
           }
         };
-    MenuForm.add(showPlayersButton);
-    add(MenuForm);
+    menuForm.add(showPlayersButton);
+    add(menuForm);
 
     IModel<List<Game>> gameModel =
         (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();
@@ -103,7 +104,13 @@ public class GamesPage extends BasePage {
     add(gameListContainer);
   }
 
-  //Actual join method, checking restrictions and directing to Game Lobby
+  /**
+   * Method to join a game, adding to the games player list, setting the current game and being
+   * directed to its GameLobby
+   *
+   * @param game
+   * @param password
+   */
   public void joinGame(Game game, String password) {
     String username = getSession().getUser().getName();
     if (game.checkIfYouCanJoin(username, password)) {
