@@ -142,7 +142,14 @@ public class Game implements Serializable {
     }
   }
 
-  // Checking if the player is allowed to Join
+  /**
+   * Checks whether the game already started, is already filled, the player is already inGame and
+   * the games privacy
+   *
+   * @param username
+   * @param password
+   * @return Whether the play is able/allowed to join the game
+   */
   public boolean checkIfYouCanJoin(String username, String password) {
     if (hasStarted()) {
       return false;
@@ -159,11 +166,10 @@ public class Game implements Serializable {
     return true;
   }
 
-  //If the leaving player equals host, host status switches to the next possible player
-  public void checkHostChange() {
+  /** Changes the host to the first/next player who isn't set as host */
+  public void changeHost() {
     String currentHost = getHost();
-    Map<String, Player> inGamePlayers = getPlayers();
-    for (Map.Entry<String, Player> entry : inGamePlayers.entrySet()) {
+    for (Map.Entry<String, Player> entry : getPlayers().entrySet()) {
       if (!entry.getValue().getUserName().equals(currentHost)) {
         setHost(entry.getValue().getUserName());
         break;
@@ -171,13 +177,13 @@ public class Game implements Serializable {
     }
   }
 
-  //Checking, if the leaving player is also the last player
+  /**
+   * Whether the leaving player is the last player in the current game
+   *
+   * @return
+   */
   public boolean checkIfLastPlayer() {
-    int currentPlayersInGame = getCurrentNumberOfPlayers();
-    if (currentPlayersInGame == 1) {
-      return true;
-    }
-    return false;
+    return getCurrentNumberOfPlayers() == 1;
   }
 
   public String getName() {

@@ -1,7 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,8 +79,8 @@ public class GameLobby extends BasePage {
           }
         };
 
-    Form LeaveForm =
-        new Form("LeaveForm") {
+    Form leaveForm =
+        new Form("leaveForm") {
 
           private static final long serialVersionUID = 1L;
 
@@ -90,7 +89,7 @@ public class GameLobby extends BasePage {
             setResponsePage(getTbialApplication().getHomePage());
           }
         };
-    add(LeaveForm);
+    add(leaveForm);
 
     startGameLink.setOutputMarkupId(true);
 
@@ -201,6 +200,21 @@ public class GameLobby extends BasePage {
   }
 
   /**
+   * Leaves the current game: Changes host, when leaving player is the host; Removes the game from
+   * GamesList; Sets current game of the leaving player null.
+   */
+  public void leaveCurrentGame() {
+    String currentGameName = getSession().getCurrentGame().getName();
+    if (!getGame().checkIfLastPlayer()) {
+      getGame().changeHost();
+    }
+    if (getGame().checkIfLastPlayer()) {
+      getGameManager().getCurrentGames().remove(currentGameName);
+    }
+    getSession().setCurrentGameNull();
+  }
+
+  /**
    * Returns the state of players.
    *
    * @return A message about how many players can still join the game.
@@ -214,19 +228,6 @@ public class GameLobby extends BasePage {
       return message + " Waiting for the host to start the game.";
     if (currentPlayers > 4) return message + " The host can start the game.";
     else return message + " Waiting for more players to join.";
-  }
-
-  //Leaves the current game
-  public void leaveCurrentGame() {
-    Map<String, Game> currentGames = getGameManager().getCurrentGames();
-    String currentGameName = getSession().getCurrentGame().getName();
-    if (!getGame().checkIfLastPlayer()) {
-      getGame().checkHostChange();
-    }
-    if (getGame().checkIfLastPlayer()) {
-      currentGames.remove(currentGameName);
-    }
-    getSession().setCurrentGameNull();
   }
 
   public Game getGame() {

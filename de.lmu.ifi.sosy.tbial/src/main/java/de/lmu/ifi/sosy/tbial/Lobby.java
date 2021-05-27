@@ -45,7 +45,7 @@ public class Lobby extends BasePage {
 
   public Lobby() {
 
-    Form MenuForm = new Form("MenuForm");
+    Form menuForm = new Form("menuForm");
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -57,7 +57,7 @@ public class Lobby extends BasePage {
           }
         };
 
-    MenuForm.add(createGameButton);
+    menuForm.add(createGameButton);
 
     Button showGamesButton =
         new Button("showGamesButton") {
@@ -69,7 +69,7 @@ public class Lobby extends BasePage {
           }
         };
 
-    MenuForm.add(showGamesButton);
+    menuForm.add(showGamesButton);
 
     Button showPlayersButton =
         new Button("showPlayersButton") {
@@ -80,8 +80,8 @@ public class Lobby extends BasePage {
             setResponsePage(getTbialApplication().getPlayersPage());
           }
         };
-    MenuForm.add(showPlayersButton);
-    add(MenuForm);
+    menuForm.add(showPlayersButton);
+    add(menuForm);
 
     IModel<List<Game>> gameModel =
         (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();

@@ -15,13 +15,14 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 
+/** The page that displays all users that are currently online. */
 public class PlayersPage extends BasePage {
 
   private static final long serialVersionUID = 1L;
 
   public PlayersPage() {
 
-    Form MenuForm = new Form("MenuForm");
+    Form menuForm = new Form("menuForm");
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -32,9 +33,8 @@ public class PlayersPage extends BasePage {
             setResponsePage(getTbialApplication().getHomePage());
           }
         };
-    MenuForm.add(createGameButton);
+    menuForm.add(createGameButton);
 
-    //Button to direct to List of Games
     Button showGamesButton =
         new Button("showGamesButton") {
 
@@ -44,10 +44,8 @@ public class PlayersPage extends BasePage {
             setResponsePage(getTbialApplication().getGamesPage());
           }
         };
+    menuForm.add(showGamesButton);
 
-    MenuForm.add(showGamesButton);
-
-    //Button to direct to list of online players
     Button showPlayersButton =
         new Button("showPlayersButton") {
 
@@ -57,9 +55,8 @@ public class PlayersPage extends BasePage {
             setResponsePage(getTbialApplication().getPlayersPage());
           }
         };
-
-    MenuForm.add(showPlayersButton);
-    add(MenuForm);
+    menuForm.add(showPlayersButton);
+    add(menuForm);
 
     IModel<List<User>> playerModel =
         (IModel<List<User>>) () -> getTbialApplication().getLoggedInUsers();
