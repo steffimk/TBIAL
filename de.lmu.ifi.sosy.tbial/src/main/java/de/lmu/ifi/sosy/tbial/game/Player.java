@@ -1,6 +1,5 @@
 package de.lmu.ifi.sosy.tbial.game;
 
-import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 
@@ -175,6 +174,11 @@ public class Player implements Serializable {
     return selectedHandCard;
   }
 
+  /**
+   * Call when player clicked on one of his own hand cards
+   *
+   * @param selectedCard The card the player clicked on
+   */
   public void setSelectedHandCard(StackCard selectedCard) {
     this.selectedHandCard = selectedCard;
   }

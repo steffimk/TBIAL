@@ -11,6 +11,7 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
@@ -45,17 +46,18 @@ public class PlayerAreaPanel extends Panel {
     add(new Label("bug"));
 
     // Adding block cards to the panel
-    WebMarkupContainer addCardButton = new WebMarkupContainer("addCardButton");
-    addCardButton.add(
-        new AjaxEventBehavior("click") {
+    Link<Void> addCardButton =
+        new Link<Void>("addCardButton") {
+
           private static final long serialVersionUID = 1L;
 
           @Override
-          protected void onEvent(AjaxRequestTarget target) {
-            System.out.println("Clicked on Add Card of " + player.getObject().getUserName());
+          public void onClick() {
+            //  System.out.println("Clicked on Add Card of " + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
           }
-        });
+        };
+
     add(addCardButton);
 
     IModel<List<StackCard>> blockCardModel =
