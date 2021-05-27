@@ -122,7 +122,7 @@ public class GameLobby extends BasePage {
             + getGame().getCurrentNumberOfPlayers()
             + "/"
             + getGame().getMaxPlayers()
-            + "\nCurrent Players:";
+            + "\n";
     WebMarkupContainer gameInfoContainer = new WebMarkupContainer("gameInfoContainer");
     gameInfoContainer.add(gameInfoList);
     gameInfoContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));

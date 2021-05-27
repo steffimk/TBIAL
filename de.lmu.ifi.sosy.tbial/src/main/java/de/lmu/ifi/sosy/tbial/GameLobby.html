@@ -20,14 +20,12 @@
 			style="width: 100%">
 			<span wicket:id="gameInfo" class="mark">This text will be
 				replaced with information about the game</span>
-		<table>
-				
-				<tbody wicket:id="gameInfoContainer">
-					<tr wicket:id="gameInfos">
-						<td><span wicket:id="playerName">Names of the players</span></td>
-					</tr>
-				</tbody>
-			</table>
+			<div wicket:id="gameInfoContainer">
+				Current Players:
+				<ul wicket:id="gameInfos">
+					<li wicket:id="playerName"></li>
+				</ul>
+			</div>
 		</form>
 
 
