@@ -42,11 +42,6 @@ public class Game implements Serializable {
   
   private Stack stack;
 
-  // ------------ turn related ------------ TODO: Ugly, change in future. Maybe move to a new class
-  // Turn?
-  /** Key: The player whose turn it is, Value: The hand card he clicked on */
-  private Map.Entry<Player, StackCard> selectedHandCard;
-
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
@@ -154,13 +149,13 @@ public class Game implements Serializable {
 
   /**
    * Discarding a hand card. Removes the card from the player's hand cards and moves it to the heap.
+   * Does not check whether the player is allowed to do so.
    *
    * @param player The player who wants to discard the card.
    * @param card The card the player wants to discard.
    * @return <code>true</code> if the discarding was successful, <code>false</code> otherwise
    */
   public boolean discardHandCard(Player player, StackCard card) {
-    // TODO: if (not turn of player) return false;
     if (player.removeHandCard(card)) {
       stack.addToHeap(card);
       System.out.println("Removed card from handcards and added it to heap");
@@ -261,13 +256,13 @@ public class Game implements Serializable {
 
   public void clickedOnHandCard(Player player, StackCard handCard) {
     //   TODO: if(not is turn of player) do nothing
-    this.selectedHandCard = new AbstractMap.SimpleEntry<Player, StackCard>(player, handCard);
+    player.setSelectedHandCard(handCard);
   }
 
   public void clickedOnHeap(Player player) {
     //   TODO: if(not is turn of player) do nothing
-    if (selectedHandCard != null && player == selectedHandCard.getKey()) {
-      discardHandCard(player, selectedHandCard.getValue());
+    if (player.getSelectedHandCard() != null) {
+      discardHandCard(player, player.getSelectedHandCard());
     }
   }
 
@@ -280,8 +275,8 @@ public class Game implements Serializable {
    */
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
     //   TODO: if(not is turn of player) do nothing
-    if (selectedHandCard != null && player == selectedHandCard.getKey()) {
-      StackCard selectedCard = selectedHandCard.getValue();
+    StackCard selectedCard = player.getSelectedHandCard();
+    if (selectedCard != null) {
       if (player.removeHandCard(selectedCard)) {
         receiverOfCard.receiveCard(selectedCard);
       }

@@ -30,6 +30,9 @@ public class Player implements Serializable {
   private Set<StackCard> handCards;
   private Set<StackCard> receivedCards;
 
+  /** The last card the player has clicked on. Is <code>null</code> if no card is selected. */
+  private StackCard selectedHandCard;
+
   private boolean fired;
 
   private boolean basePlayer;
@@ -149,6 +152,9 @@ public class Player implements Serializable {
    * @return <code>true</code> if the removal was successful, <code>false</code> otherwise
    */
   public boolean removeHandCard(StackCard card) {
+    if (selectedHandCard == card) {
+      selectedHandCard = null;
+    }
     return handCards.remove(card);
   }
 
@@ -165,4 +171,11 @@ public class Player implements Serializable {
     return receivedCards;
   }
 
+  public StackCard getSelectedHandCard() {
+    return selectedHandCard;
+  }
+
+  public void setSelectedHandCard(StackCard selectedCard) {
+    this.selectedHandCard = selectedCard;
+  }
 }

@@ -42,6 +42,10 @@
 	border: 1px solid black;
 }
 
+.selected {
+	border: outside !important;
+}
+
 .userName {
 	position: absolute;
 	display: inline-block;

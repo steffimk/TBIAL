@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -28,6 +30,7 @@ public class PlayerAreaPanel extends Panel {
 
   public PlayerAreaPanel(String id, IModel<Player> player, Game game, Player basePlayer) {
     super(id, new CompoundPropertyModel<Player>(player));
+    
     add(new Label("userName"));
     Label role = new Label("roleName");
     role.setVisible(false);
@@ -95,6 +98,10 @@ public class PlayerAreaPanel extends Panel {
                     }
                   });
               listItem.add(new Image("handCard", handCard.getResourceFileName()));
+              if (player.getObject().getSelectedHandCard() == handCard) {
+                System.out.println("Add border to handCard");
+                listItem.add(new AttributeModifier("class", "handcard selected"));
+              }
             } else {
               listItem.add(new Image("handCard", "imgs/cards/backSide.png"));
             }
