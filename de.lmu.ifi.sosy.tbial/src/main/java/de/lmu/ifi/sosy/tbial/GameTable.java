@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -15,7 +14,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
@@ -55,7 +53,6 @@ public class GameTable extends BasePage {
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
 
     player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer));
-    player1.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)));
 
     // get the rest of the players
     ArrayList<Player> otherPlayers = new ArrayList<Player>();
@@ -79,7 +76,6 @@ public class GameTable extends BasePage {
             final Player player = listItem.getModelObject();
             PlayerAreaPanel panel =
                 new PlayerAreaPanel("panel", Model.of(player), currentGame, basePlayer);
-            panel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)));
             // add css classes
             listItem.add(
                 new AttributeModifier("class", "player-" + "" + numberOfPlayers + "-" + "" + (i)));

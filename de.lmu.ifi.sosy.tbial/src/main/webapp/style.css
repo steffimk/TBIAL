@@ -158,14 +158,13 @@ fieldset legend {
 }
 
 form input, form textarea {
-	background: #F2701A none repeat-x scroll bottom left;
-	color: #ffffff;
-	border: 1px solid #DE5901;
-	color: #ffffff;
-	font-size: 0.8em;
-	padding: 6px 14px;
-	font-weight: bold;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
+	border: 1px solid #999999;
+	border-bottom-color: #cccccc;
+	border-right-color: #cccccc;
+	padding: 5px;
+	color: #666666;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.0em;
 }
 
 form input.formbutton {
