@@ -25,9 +25,12 @@ public class GameTable extends BasePage {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
+ private static WebMarkupContainer table;
 
   public GameTable() {
 
+    table = new WebMarkupContainer("table");
+    table.setOutputMarkupId(true);
     // get current game
     Game currentGame = getSession().getCurrentGame();
 
@@ -53,7 +56,7 @@ public class GameTable extends BasePage {
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
 
     player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer));
-
+    player1.setOutputMarkupId(true);
     // get the rest of the players
     ArrayList<Player> otherPlayers = new ArrayList<Player>();
     for (Map.Entry<String, Player> entry : currentPlayers.entrySet()) {
@@ -109,15 +112,21 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
+            target.add(player1);
             System.out.println("Clicked on heap");
             currentGame.clickedOnHeap(basePlayer);
           }
         });
 
-    add(stackContainer);
-    add(heapContainer);
-    add(player1);
-    add(playerList);
-    
+    table.add(stackContainer);
+    table.add(heapContainer);
+    table.add(player1);
+    table.add(playerList);
+    add(table);
+ }
+
+  public static WebMarkupContainer getTable() {
+    return table;
+  
   }
 }
