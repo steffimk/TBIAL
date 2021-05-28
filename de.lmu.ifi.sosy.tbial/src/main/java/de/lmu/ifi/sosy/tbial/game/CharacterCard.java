@@ -7,6 +7,8 @@ import java.util.List;
 /** Character Cards are modeled with this class. */
 public class CharacterCard extends Card {
 
+  private static final long serialVersionUID = 1L;
+
   private final Character character;
 
   public CharacterCard(Character character) {

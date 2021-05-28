@@ -3,6 +3,8 @@ package de.lmu.ifi.sosy.tbial.game;
 /** Action Cards are modeled with this class. */
 public class ActionCard extends Card implements StackCard {
 
+  private static final long serialVersionUID = 1L;
+
   private final Action action;
 
   public ActionCard(Action action) {

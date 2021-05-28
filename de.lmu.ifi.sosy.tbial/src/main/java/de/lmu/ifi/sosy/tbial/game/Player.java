@@ -1,6 +1,5 @@
 package de.lmu.ifi.sosy.tbial.game;
 
-import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
