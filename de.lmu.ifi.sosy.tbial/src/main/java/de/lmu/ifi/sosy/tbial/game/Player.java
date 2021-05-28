@@ -1,11 +1,11 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.io.Serializable;
 
 /**
  * A player of a game.
@@ -26,7 +26,11 @@ public class Player implements Serializable {
   private int prestige;
   private int bug;
 
+  // The different set of cards
   private Set<StackCard> handCards;
+  /** The ability cards the player played. */
+  private Set<AbilityCard> playedAbilityCards;
+
   private Set<StackCard> receivedCards;
 
   /** The last card the player has clicked on. Is <code>null</code> if no card is selected. */
@@ -43,6 +47,7 @@ public class Player implements Serializable {
     this.mentalHealth = 0;
     this.bug = 0;
     this.handCards = new HashSet<>();
+    this.playedAbilityCards = new HashSet<>();
     this.receivedCards = new HashSet<>();
   }
 
@@ -181,5 +186,27 @@ public class Player implements Serializable {
    */
   public void setSelectedHandCard(StackCard selectedCard) {
     this.selectedHandCard = selectedCard;
+  }
+
+  /**
+   * Adds this card to the set of uncovered cards that lay in front of the player.
+   *
+   * @param card The card the player wants to uncover.
+   */
+  public void addPlayedAbilityCard(AbilityCard card) {
+    this.playedAbilityCards.add(card);
+  }
+
+  public Set<AbilityCard> getPlayedAbilityCards() {
+    return playedAbilityCards;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || !(o instanceof Player)) {
+      return false;
+    }
+    Player other = (Player) o;
+    return userName.equals(other.userName);
   }
 }

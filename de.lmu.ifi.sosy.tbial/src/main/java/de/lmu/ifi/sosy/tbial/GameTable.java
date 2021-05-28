@@ -101,7 +101,8 @@ public class GameTable extends BasePage {
           @Override
           protected void onEvent(AjaxRequestTarget target) {
             System.out.println("Clicked on stack");
-            // currentGame.drawCardFromStack(basePlayer);
+            // TODO: currentGame.drawCardFromStack(basePlayer);
+            target.add(table);
           }
         });
 
@@ -113,7 +114,6 @@ public class GameTable extends BasePage {
           @Override
           protected void onEvent(AjaxRequestTarget target) {
             target.add(player1);
-            System.out.println("Clicked on heap");
             currentGame.clickedOnHeap(basePlayer);
           }
         });

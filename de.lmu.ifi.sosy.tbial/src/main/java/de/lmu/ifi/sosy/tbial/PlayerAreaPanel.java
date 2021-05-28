@@ -50,7 +50,45 @@ public class PlayerAreaPanel extends Panel {
     add(new Label("prestige"));
     add(new Label("bug"));
 
-    // Adding block cards to the panel
+    // --------------------------- The played cards ---------------------------
+    AjaxLink<Void> playAbilityButton =
+        new AjaxLink<Void>("playAbilityButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onClick(AjaxRequestTarget target) {
+            LOGGER.info(basePlayer.getUserName() + " clicked on play ability button");
+            game.clickedOnPlayAbility(basePlayer);
+            target.add(GameTable.getTable());
+          }
+
+          @Override
+          public boolean isVisible() {
+            return player.getObject().equals(basePlayer);
+          }
+        };
+    add(playAbilityButton);
+
+    IModel<List<StackCard>> playedAbilityCardsModel =
+        (IModel<List<StackCard>>)
+            () -> new ArrayList<StackCard>(player.getObject().getPlayedAbilityCards());
+    ListView<StackCard> playedAbilityCards =
+        new PropertyListView<>("playedCards", playedAbilityCardsModel) {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void populateItem(ListItem<StackCard> item) {
+            final StackCard abilityCard = item.getModelObject();
+            item.add(
+                new Image(
+                    "playedCard",
+                    new PackageResourceReference(getClass(), abilityCard.getResourceFileName())));
+          }
+        };
+    add(playedAbilityCards);
+
+    // --------------------------- The block cards ---------------------------
     AjaxLink<Void> addCardButton =
         new AjaxLink<Void>("addCardButton") {
 
@@ -86,6 +124,8 @@ public class PlayerAreaPanel extends Panel {
           }
         };
     add(blockCards);
+
+    // --------------------------- The hand cards ---------------------------
 
     WebMarkupContainer handCardContainer = new WebMarkupContainer("handCardContainer");
     handCardContainer.setOutputMarkupId(true);

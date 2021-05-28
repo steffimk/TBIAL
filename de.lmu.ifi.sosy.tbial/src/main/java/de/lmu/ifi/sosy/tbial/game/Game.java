@@ -310,8 +310,8 @@ public class Game implements Serializable {
   }
 
   /**
-   * Called when a player clicks on the "Add Card"-Area of another player. If he has selected a hand
-   * card, it will be moved to this other player. No rules are checked yet.
+   * Called when a player clicks on the "Add Card"-Button of another player. If he has selected a
+   * hand card, it will be moved to the block cards of the other player. No rules are checked yet.
    *
    * @param player The player whose turn it should be.
    * @param receiverOfCard The player who should receive the previously selected card.
@@ -322,6 +322,22 @@ public class Game implements Serializable {
     if (selectedCard != null) {
       if (player.removeHandCard(selectedCard)) {
         receiverOfCard.receiveCard(selectedCard);
+      }
+    }
+  }
+
+  /**
+   * Called when a player clicks on the "Play Ability"-Button. If he has selected a hand card of the
+   * type ability, it will be moved to his uncovered cards. No rules are checked yet.
+   *
+   * @param player The player whose turn it should be.
+   */
+  public void clickedOnPlayAbility(Player player) {
+    //   TODO: if(not is turn of player) do nothing
+    StackCard selectedCard = player.getSelectedHandCard();
+    if (selectedCard != null && selectedCard instanceof AbilityCard) {
+      if (player.removeHandCard(selectedCard)) {
+        player.addPlayedAbilityCard((AbilityCard) selectedCard);
       }
     }
   }
