@@ -149,6 +149,15 @@ public class Player implements Serializable {
   }
 
   /**
+   * Adds a card to the player's hand cards
+   *
+   * @param card - the card to be added
+   */
+  public void addToHandCards(StackCard card) {
+    handCards.add(card);
+  }
+
+  /**
    * Removal of a hand card. Removes the card if it is contained in this player's hand cards.
    *
    * @param card The card to be removed from the hand cards.
@@ -194,6 +203,7 @@ public class Player implements Serializable {
    */
   public void addPlayedAbilityCard(AbilityCard card) {
     this.playedAbilityCards.add(card);
+    this.selectedHandCard = null;
   }
 
   public Set<AbilityCard> getPlayedAbilityCards() {

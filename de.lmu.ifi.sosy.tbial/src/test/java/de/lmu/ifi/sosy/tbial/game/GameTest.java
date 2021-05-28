@@ -216,12 +216,6 @@ public class GameTest {
     assertThat(player.getHandCards().contains(testCard), is(false));
   }
 
-  @Test
-  public void clickedOnHandCard_setsSelectedHandCard() {
-    Game game = getNewGameThatHasStarted();
-    Player player = game.getPlayers().get("A");
-  }
-
   // ---------------------- Helper Methods ----------------------
 
   private Game getNewGameThatHasStarted() {
