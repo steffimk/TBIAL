@@ -157,7 +157,6 @@ public class Game implements Serializable {
   public boolean discardHandCard(Player player, StackCard card) {
     if (player.removeHandCard(card)) {
       stack.addToHeap(card);
-      System.out.println("Removed card from handcards and added it to heap");
       return true;
     }
     return false;
@@ -320,9 +319,7 @@ public class Game implements Serializable {
     //   TODO: if(not is turn of player) do nothing
     StackCard selectedCard = player.getSelectedHandCard();
     if (selectedCard != null) {
-      if (player.removeHandCard(selectedCard)) {
-        receiverOfCard.receiveCard(selectedCard);
-      }
+      putCardToPlayer(selectedCard, player, receiverOfCard);
     }
   }
 

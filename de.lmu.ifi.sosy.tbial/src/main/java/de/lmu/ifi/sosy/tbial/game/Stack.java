@@ -9,6 +9,7 @@ import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 
+// TODO: Rename class? Kind of confusing that Stack contains stack and heap.
 /**
  * The Stack of the game. Contains all action, ability and stumbling block cards when initializing.
  */
@@ -16,8 +17,8 @@ public class Stack implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  List<StackCard> stack;
-  List<StackCard> heap;
+  private List<StackCard> stack;
+  private List<StackCard> heap;
 
   public Stack() {
     this.stack = Collections.synchronizedList(new LinkedList<StackCard>());
@@ -65,5 +66,13 @@ public class Stack implements Serializable {
    */
   public void addToHeap(StackCard card) {
     heap.add(card);
+  }
+
+  public List<StackCard> getStack() {
+    return stack;
+  }
+
+  public List<StackCard> getHeap() {
+    return heap;
   }
 }
