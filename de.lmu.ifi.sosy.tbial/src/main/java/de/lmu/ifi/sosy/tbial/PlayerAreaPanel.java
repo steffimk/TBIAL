@@ -34,7 +34,7 @@ public class PlayerAreaPanel extends Panel {
     add(role);
     add(new Label("mentalHealth"));
     add(new Label("prestige"));
-    add(new Label("bug"));
+    //    add(new Label("bug"));
 
     /** adding hand cards to the player area panel */
     IModel<List<StackCard>> handCardModel =
