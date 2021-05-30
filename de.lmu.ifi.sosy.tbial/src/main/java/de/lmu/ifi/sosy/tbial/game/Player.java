@@ -24,7 +24,6 @@ public class Player implements Serializable {
 
   private int mentalHealth;
   private int prestige;
-  private int bug;
 
   private Set<StackCard> handCards;
 
@@ -36,7 +35,6 @@ public class Player implements Serializable {
     this.userName = userName;
     this.prestige = 0;
     this.mentalHealth = 0;
-    this.bug = 0;
     this.handCards = new HashSet<>();
   }
 
@@ -52,9 +50,6 @@ public class Player implements Serializable {
     return "Prestige: " + prestige;
   }
 
-  public String getBug() {
-    return "Bug: " + bug;
-  }
   public RoleCard getRoleCard() {
     return roleCard;
   }
