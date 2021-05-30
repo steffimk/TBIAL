@@ -241,9 +241,9 @@
 }
 
 .container6-2 .userName {
-	left: 40%;
-	top: 94%;
-	transform: rotate(-90deg);
+	left: 29%;
+    top: 82.5%;
+    transform: rotate(-90deg);
 }
 
 .container6-2 .role {
@@ -255,11 +255,12 @@
 
 .container6-2 .profile {
 	left: 83%;
+    top: 89.5%;
 }
 
 .container6-2 .points {
 	transform: rotate(-90deg);
-	top: 87%;
+	top: 89%;
 	left: 72%;
 }
 
@@ -278,8 +279,9 @@
 }
 
 .container6-3 .userName {
-	left: 85%;
-	transform: rotate(180deg);
+	left: 69%;
+    top: 60%;
+    transform: rotate(180deg);
 }
 
 .container6-3 .role {
@@ -290,21 +292,22 @@
 }
 
 .container6-3 .profile {
-	left: 90%;
+	left: 79%;
 }
 
 .container6-3 .points {
 	transform: rotate(180deg);
-	left: 85%;
-	top: 80%;
+    left: 87%;
+    top: 91%;
+    width: 12%;
 }
 
 .container6-3 .cards {
-	left: 68%;
-	top: 57%;
-	transform: rotate(-45deg);
-	width: 21%;
-	height: 30%;
+	left: 67%;
+    top: 59%;
+    transform: rotate(-31deg);
+    width: 21%;
+    height: 30%;
 }
 
 .container6-3 .handcard {
@@ -318,37 +321,40 @@
 }
 
 .container6-4 .userName {
-	left: 28%;
-	transform: rotate(180deg);
+	left: 23%;
+    top: 96%;
+    transform: rotate(180deg);
+    text-align: right;
 }
 
 .container6-4 .role {
-	transform: rotate(-121deg);
-    left: 36%;
-    top: 70%;
+	transform: rotate(121deg);
+    left: 9.5%;
+    top: 78%;
     font-size: 1.7vw;
 }
 
 .container6-4 .profile {
-	left: 65%;
+	left: 63%;
+	top: 85%;
 }
 
 .container6-4 .points {
 	transform: rotate(180deg);
-	left: 51%;
-	top: 90%;
+	left: 62%;
+	top: 94%;
 }
 
 .container6-4 .cards {
-	left: 34%;
+	left: 40%;
 	top: 66%;
-	transform: rotate(32deg);
 	width: 21%;
 	height: 30%;
+	transform: scaleX(-1);
 }
 
 .container6-4 .handcard {
-	transform: rotate(180deg);
+	transform: rotate(180deg) scaleX(-1);
 }
 
 .container6-5 {
@@ -359,20 +365,22 @@
 }
 
 .container6-5 .userName {
-	left: 58%;
-	top: 93%;
-	transform: rotate(90deg);
+	left: 43%;
+    top: 83%;
+    transform: rotate(78deg);
+    text-align: right;
 }
 
 .container6-5 .role {
-	transform: rotate(31deg);
-    left: 52%;
-    top: 66%;
+	transform: rotate(79deg);
+    left: 33%;
+    top: 77%;
     font-size: 1.7vw;
 }
 
 .container6-5 .profile {
 	left: 90%;
+	top: 89%;
 }
 
 .container6-5 .points {
@@ -382,15 +390,15 @@
 }
 
 .container6-5 .cards {
-	left: 60%;
-	top: 64%;
-	transform: rotate(-35deg);
-	width: 21%;
-	height: 30%;
+	left: 63%;
+    top: 61.5%;
+    transform: rotate(301deg) scaleX(-1);
+    width: 21%;
+    height: 30%;
 }
 
 .container6-5 .handcard {
-	transform: rotate(180deg);
+	transform: rotate(180deg) scaleX(-1);
 }
 
 .container6-6 {
@@ -400,33 +408,41 @@
 }
 
 .container6-6 .userName {
-	left: 54%;
-	top: 94%;
-	transform: rotate(90deg);
+	left: 41%;
+    top: 82.5%;
+    transform: rotate(90deg);
+    text-align: right;
 }
 
 .container6-6 .role {
-	transform: rotate(79deg);
-    top: 75%;
-    left: 29%;
+	transform: rotate(135deg);
+    top: 73%;
+    left: 2%;
     font-size: 1.7vw;
 }
 
 .container6-6 .profile {
-	left: 10%;
+	left: 9%;
+	top: 89%;
 }
 
 .container6-6 .points {
 	transform: rotate(90deg);
-	left: 15%;
-	top: 86%;
+    left: 15%;
+    top: 88%;
+    text-align: right;
 }
 
 .container6-6 .cards {
-	left: 31%;
-	top: 67%;
-	width: 22%;
-	height: 32%;
+	left: 32%;
+    top: 67%;
+    width: 22%;
+    height: 32%;
+    transform: scaleX(-1);
+}
+
+.container6-6 .handcard {
+	transform: scaleX(-1);
 }
 
 .container7-2 {
