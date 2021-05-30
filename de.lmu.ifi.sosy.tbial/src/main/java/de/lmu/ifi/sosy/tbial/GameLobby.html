@@ -7,7 +7,16 @@
 
 <body>
   <wicket:extend>
-    <h3>The Game Lobby.</h3>
+
+
+  <h3>The Game Lobby.</h3>
+
+    <form wicket:id="leaveForm">
+		<input type="submit" value="Leave Game(-lobby)" />
+	</form>
+
+
+
     <br>
     <label wicket:id="isHostLabel">Information whether the player is the host of the game.</label>
     <br>
@@ -16,16 +25,19 @@
     <fieldset class="chat"
      style="height: 500px; width: 30%; border: 1px solid; overflow: auto; padding: 5%;">
 	    <div wicket:id="chatMessages">
-	    	<p wicket:id="messages"> 
+	    	<p wicket:id="messages">
 	    		<span wicket:id="sender">Username</span>
 	    		<span wicket:id="textMessage">Chatmessage</span>
 	    	</p>
 	    </div>
-    </fieldset> 
+    </fieldset>
     <form wicket:id="form">
     	<input type="text" wicket:id="message">
     	<input type="submit" value="Send" wicket:id="send">
+
     </form>  
+	
+
 </wicket:extend>
 </body>
 </html>
