@@ -49,16 +49,26 @@
 	transform: rotate(90deg);
 }
 
+.container4-2 .userName {
+	transform: rotate(315deg);
+	top: 84%;
+    left: 5%;
+}
+
 .container4-2 .role {
 	transform: rotate(-135deg);
 	top: 74%;
 	left: 47%;
 }
 
+.container4-2 .profile {
+	top: 89%;
+}
+
 .container4-2 .points {
 	transform: rotate(-90deg);
-	top: 87%;
-	left: 68%;
+	top: 89%;
+    left: 16%;
 }
 
 .container4-3 {
@@ -70,6 +80,8 @@
 
 .container4-3 .userName {
 	transform: rotate(180deg);
+	left: 9%;
+    text-align: right;
 }
 
 .container4-3 .role {
@@ -80,8 +92,6 @@
 
 .container4-3 .points {
 	transform: rotate(180deg);
-	top: 90%;
-	left: 65%;
 }
 
 .container4-3 .handcard {
@@ -94,15 +104,26 @@
 	transform: rotate(90deg) scaleX(-1) scaleY(-1);
 }
 
+.container4-4 .userName {
+	transform: rotate(135deg);
+	top: 84%;
+    left: 5%;
+    text-align: right;
+}
+
 .container4-4 .role {
 	top: 74%;
 	left: 48%;
 }
 
+.container4-4 .profile {
+	top: 89%;
+}
+
 .container4-4 .points {
 	transform: rotate(90deg);
-	top: 87%;
-	left: 66%;
+	text-align: right;
+	left: 16%;
 }
 
 .container5-2 {
@@ -113,7 +134,9 @@
 }
 
 .container5-2 .userName {
-	left: 30%;
+	left: 19%;
+    top: 84%;
+    transform: rotate(-63deg);
 }
 
 .container5-2 .role {
@@ -122,14 +145,20 @@
 	left: 48%;
 }
 
+.container5-2 .profile {
+	top: 89%;
+    left: 82%;
+}
+
 .container5-2 .points {
 	transform: rotate(-90deg);
-	top: 87%;
-	left: 68%;
+    top: 89%;
+    left: 72%;
 }
 
 .container5-2 .cards {
-	left: 40%;
+	left: 41%;
+	top: 64.5%;
 }
 
 .container5-3 {
@@ -140,8 +169,9 @@
 }
 
 .container5-3 .userName {
-	left: 83%;
-	transform: rotate(180deg);
+	left: 68.5%;
+    top: 80%;
+    transform: rotate(180deg);
 }
 
 .container5-3 .role {
@@ -157,7 +187,7 @@
 .container5-3 .points {
 	transform: rotate(180deg);
 	left: 85%;
-	top: 80%;
+	top: 83%;
 }
 
 .container5-3 .cards {
@@ -175,8 +205,10 @@
 }
 
 .container5-4 .userName {
-	left: 14%;
-	transform: rotate(180deg);
+	left: 1%;
+    top: 81%;
+    text-align: right;
+    transform: rotate(180deg);
 }
 
 .container5-4 .role {
@@ -191,16 +223,18 @@
 
 .container5-4 .points {
 	transform: rotate(180deg);
-	left: 1%;
-	top: 80%;
+    left: 1%;
+    top: 84%;
+    text-align: right;
 }
 
 .container5-4 .cards {
-	left: 22%;
+	left: 24%;
+	transform: scaleX(-1);
 }
 
 .container5-4 .handcard {
-	transform: rotate(180deg);
+	transform: rotate(180deg) scaleX(-1);
 }
 
 .container5-5 {
@@ -210,7 +244,10 @@
 }
 
 .container5-5 .userName {
-	left: 65%;
+	left: 51.5%;
+    top: 84%;
+    text-align: right;
+    transform: rotate(63deg);
 }
 
 .container5-5 .role {
@@ -220,17 +257,25 @@
 }
 
 .container5-5 .profile {
-	left: 10%;
+	left: 9%;
+    top: 89%;
 }
 
 .container5-5 .points {
 	transform: rotate(90deg);
-	left: 16%;
-	top: 87%;
+	left: 14%;
+    top: 89%;
+    text-align: right;
 }
 
 .container5-5 .cards {
-	left: 32%;
+	left: 34%;
+    top: 64.5%;
+    transform: scaleX(-1);
+}
+
+.container5-5 .handcard {
+	transform: scaleX(-1);
 }
 
 .container6-2 {
@@ -365,9 +410,9 @@
 }
 
 .container6-5 .userName {
-	left: 43%;
-    top: 83%;
-    transform: rotate(78deg);
+	left: 47%;
+    top: 82.5%;
+    transform: rotate(90deg);
     text-align: right;
 }
 
@@ -385,8 +430,9 @@
 
 .container6-5 .points {
 	transform: rotate(90deg);
-	left: 89%;
-	top: 80%;
+	left: 90%;
+    top: 79%;
+    text-align: right;
 }
 
 .container6-5 .cards {
@@ -580,8 +626,8 @@
 }
 
 .container7-5 .userName {
-	left: 65%;
-    top: 76%;
+	left: 68%;
+    top: 79%;
     text-align: right;
 	transform: rotate(45deg);
 }
@@ -594,17 +640,18 @@
 }
 
 .container7-5 .profile {
-	left: 92%;
-    top: 85.5%;
-	width: 7%;
-	height: 7%;
+	left: 89%;
+    top: 78.5%;
+    width: 7%;
+    height: 7%;
 }
 
 .container7-5 .points {
 	transform: rotate(90deg);
     left: 90%;
-    top: 76%;
+    top: 84.5%;
     text-align: right;
+    width: 14%;
 }
 
 .container7-5 .cards {
