@@ -21,14 +21,14 @@ public class PlayerAreaPanel extends Panel {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
-  public PlayerAreaPanel(String id, IModel<Player> player) {
+  public PlayerAreaPanel(String id, IModel<Player> player, Player basePlayer) {
     super(id, new CompoundPropertyModel<Player>(player));
     add(new Label("userName"));
     Label role = new Label("roleName");
     role.setVisible(false);
     if (player.getObject().getRoleName() == "Manager"
         || player.getObject().isFired()
-        || player.getObject().isBasePlayer()) {
+        || player.getObject().equals(basePlayer)) {
       role.setVisible(true);
     }
     add(role);
@@ -47,7 +47,7 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected void populateItem(final ListItem<StackCard> listItem) {
             final StackCard handCard = listItem.getModelObject();
-            if (player.getObject().isBasePlayer()) {
+            if (player.getObject().equals(basePlayer)) {
               listItem.add(new Image("handCard", handCard.getResourceFileName()));
             } else {
               listItem.add(new Image("handCard", "imgs/cards/backSide.png"));

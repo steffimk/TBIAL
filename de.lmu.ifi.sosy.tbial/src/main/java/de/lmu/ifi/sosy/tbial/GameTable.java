@@ -41,12 +41,12 @@ public class GameTable extends BasePage {
     Map<String, Player> currentPlayers = current.getPlayers();
 
     // set current session player as base player
-    currentPlayers.get(currentPlayerUsername).setBasePlayer(true);
+    Player basePlayer = currentPlayers.get(currentPlayerUsername);
 
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
     add(player1);
-    player1.add(new PlayerAreaPanel("panel1", Model.of(currentPlayers.get(currentPlayerUsername))));
+    player1.add(new PlayerAreaPanel("panel1", Model.of(basePlayer), basePlayer));
 
     // get the rest of the players
     ArrayList<Player> otherPlayers = new ArrayList<Player>();
@@ -68,7 +68,7 @@ public class GameTable extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
-            PlayerAreaPanel panel = new PlayerAreaPanel("panel", Model.of(player));
+            PlayerAreaPanel panel = new PlayerAreaPanel("panel", Model.of(player), basePlayer);
             // add css classes
             listItem.add(
                 new AttributeModifier("class", "player-" + "" + numberOfPlayers + "-" + "" + (i)));
