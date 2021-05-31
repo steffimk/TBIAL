@@ -218,4 +218,13 @@ public class Player implements Serializable {
     Player other = (Player) o;
     return userName.equals(other.userName);
   }
+
+  /**
+   * Checks whether a player can end his turn.
+   *
+   * @return <code>true</code> if the turn can be ended <code>false</code> otherwise
+   */
+  public boolean canEndTurn() {
+    return mentalHealth > handCards.size();
+  }
 }

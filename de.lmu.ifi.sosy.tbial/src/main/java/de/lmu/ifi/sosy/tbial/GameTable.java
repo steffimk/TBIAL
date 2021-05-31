@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -118,11 +119,35 @@ public class GameTable extends BasePage {
           }
         });
 
+    AjaxLink<Void> discardButton =
+        new AjaxLink<>("discardButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onClick(AjaxRequestTarget target) {
+            currentGame.clickedOnDiscardButton(basePlayer);
+          }
+        };
+
+    AjaxLink<Void> endTurnButton =
+        new AjaxLink<>("endTurnButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onClick(AjaxRequestTarget target) {
+            currentGame.clickedOnEndTurnButton(basePlayer);
+          }
+        };
+
     table.add(stackContainer);
     table.add(heapContainer);
     table.add(player1);
     table.add(playerList);
     add(table);
+    add(discardButton);
+    add(endTurnButton);
  }
 
   /** @return The container of the whole game table. */

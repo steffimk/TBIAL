@@ -64,6 +64,7 @@
 }
 
 .linkstyle {
+	display: flex;
 	padding: 0;
 	height: 98px;
 	border-radius: 10px;
