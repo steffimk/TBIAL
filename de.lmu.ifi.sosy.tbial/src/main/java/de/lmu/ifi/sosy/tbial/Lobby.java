@@ -55,6 +55,11 @@ public class Lobby extends BasePage {
           public void onSubmit() {
             setResponsePage(getTbialApplication().getHomePage());
           }
+
+          @Override
+          public boolean isEnabled() {
+            return !isInGame();
+          }
         };
 
     menuForm.add(createGameButton);
@@ -212,5 +217,12 @@ public class Lobby extends BasePage {
     return getGameManager().gameNameTaken(newGameNameField.getModelObject())
         ? "Name already taken."
         : " ";
+  }
+
+  public boolean isInGame() {
+    if (getSession().getCurrentGame() == null) {
+      return false;
+    }
+    return true;
   }
 }

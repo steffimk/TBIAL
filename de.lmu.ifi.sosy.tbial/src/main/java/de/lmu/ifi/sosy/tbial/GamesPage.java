@@ -34,6 +34,11 @@ public class GamesPage extends BasePage {
           public void onSubmit() {
             setResponsePage(getTbialApplication().getHomePage());
           }
+
+          @Override
+          public boolean isEnabled() {
+            return !isInGame();
+          }
         };
     menuForm.add(createGameButton);
 
@@ -82,6 +87,11 @@ public class GamesPage extends BasePage {
                   public void onSubmit() {
                     joinGame(game, joinGamePw.getModelObject());
                   }
+
+                  @Override
+                  public boolean isVisible() {
+                    return !isInGame();
+                  }
                 };
 
             joinGameForm.add(joinGamePw);
@@ -102,6 +112,25 @@ public class GamesPage extends BasePage {
     gameListContainer.setOutputMarkupId(true);
 
     add(gameListContainer);
+
+    Form returnForm = new Form("returnForm");
+
+    Button returnToGameLobbyButton =
+        new Button("returnToGameLobbyButton") {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onSubmit() {
+            returnToGameLobby();
+          }
+
+          @Override
+          public boolean isVisible() {
+            return isInGame();
+          }
+        };
+    returnForm.add(returnToGameLobbyButton);
+    add(returnForm);
   }
 
   /**
@@ -118,5 +147,16 @@ public class GamesPage extends BasePage {
       getSession().setCurrentGame(game);
       setResponsePage(getTbialApplication().getGameLobbyPage());
     }
+  }
+
+  public boolean isInGame() {
+    if (getSession().getCurrentGame() == null) {
+      return false;
+    }
+    return true;
+  }
+
+  public void returnToGameLobby() {
+    setResponsePage(getTbialApplication().getGameLobbyPage());
   }
 }

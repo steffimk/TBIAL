@@ -6,38 +6,44 @@
 </head>
 
 <body>
-  <wicket:extend>
+	<wicket:extend>
 
 
-  <h3>The Game Lobby.</h3>
+		<h3>The Game Lobby.</h3>
 
-    <form wicket:id="leaveForm">
-		<input type="submit" value="Leave Game(-lobby)" />
-	</form>
+		<form wicket:id="leaveForm">
+			<input type="submit" value="Leave Game(-lobby)" />
+		</form>
+
+		<form wicket:id="menuForm">
+			<input wicket:id="showGamesButton" type="submit" value="Games" /> 
+			<input wicket:id="showPlayersButton" type="submit" value="Players" />
+		</form>
 
 
+		<br>
+		<label wicket:id="isHostLabel">Information whether the player
+			is the host of the game.</label>
+		<br>
+		<label wicket:id="currentStatusLabel">Information about the
+			amount of players that can still join.</label>
+		<a wicket:id="startGameLink" class="linkstyle">Start Game</a>
+		<fieldset class="chat"
+			style="height: 500px; width: 30%; border: 1px solid; overflow: auto; padding: 5%;">
+			<div wicket:id="chatMessages">
+				<p wicket:id="messages">
+					<span wicket:id="sender">Username</span> <span
+						wicket:id="textMessage">Chatmessage</span>
+				</p>
+			</div>
+		</fieldset>
+		<form wicket:id="form">
+			<input type="text" wicket:id="message"> <input type="submit"
+				value="Send" wicket:id="send">
 
-    <br>
-    <label wicket:id="isHostLabel">Information whether the player is the host of the game.</label>
-    <br>
-    <label wicket:id="currentStatusLabel">Information about the amount of players that can still join.</label>
-    <a wicket:id="startGameLink" class="linkstyle">Start Game</a>
-    <fieldset class="chat"
-     style="height: 500px; width: 30%; border: 1px solid; overflow: auto; padding: 5%;">
-	    <div wicket:id="chatMessages">
-	    	<p wicket:id="messages">
-	    		<span wicket:id="sender">Username</span>
-	    		<span wicket:id="textMessage">Chatmessage</span>
-	    	</p>
-	    </div>
-    </fieldset>
-    <form wicket:id="form">
-    	<input type="text" wicket:id="message">
-    	<input type="submit" value="Send" wicket:id="send">
+		</form>
 
-    </form>  
-	
 
-</wicket:extend>
+	</wicket:extend>
 </body>
 </html>
