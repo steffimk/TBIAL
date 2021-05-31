@@ -85,6 +85,8 @@ public class TBIALApplication extends WebApplication {
     mountPage("lobby", Lobby.class);
     mountPage("gameLobby", GameLobby.class);
     mountPage("gameTable", GameTable.class);
+    mountPage("users", PlayersPage.class);
+    mountPage("games", GamesPage.class);
   }
 
   /**
