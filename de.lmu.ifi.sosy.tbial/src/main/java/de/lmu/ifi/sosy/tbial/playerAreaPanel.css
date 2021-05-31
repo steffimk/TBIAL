@@ -60,6 +60,10 @@ li {
 	border-radius: 10%;
 }
 
+.selected {
+	border: outside !important;
+}
+
 .userName {
 	position: absolute;
 	display: inline-block;
@@ -77,4 +81,26 @@ li {
 	top: 75%;
 	left: 49%;
 	position: absolute;
+}
+
+.linkstyle {
+	padding: 0;
+	height: 98px;
+	border-radius: 10px;
+	display: table;
+	background: #F4731D;
+	text-decoration: none;
+	text-align: center;
+	color: white;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+a:hover, a:visited {
+	color: white;
+}
+
+span {
+	display: table-cell;
+	vertical-align: middle;
 }

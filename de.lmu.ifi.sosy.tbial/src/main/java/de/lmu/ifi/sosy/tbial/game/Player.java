@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.io.Serializable;
 
 /**
  * A player of a game.
@@ -25,15 +24,26 @@ public class Player implements Serializable {
   private int mentalHealth;
   private int prestige;
 
+  // The different set of cards
   private Set<StackCard> handCards;
+  /** The ability cards the player played. */
+  private Set<AbilityCard> playedAbilityCards;
+
+  private Set<StackCard> receivedCards;
+
+  /** The last card the player has clicked on. Is <code>null</code> if no card is selected. */
+  private StackCard selectedHandCard;
 
   private boolean fired;
 
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
+    this.fired = false;
     this.mentalHealth = 0;
     this.handCards = new HashSet<>();
+    this.playedAbilityCards = new HashSet<>();
+    this.receivedCards = new HashSet<>();
   }
 
   public String getUserName() {
@@ -121,5 +131,76 @@ public class Player implements Serializable {
    */
   public void addToHandCards(Set<StackCard> cards) {
     handCards.addAll(cards);
+  }
+
+  /**
+   * Adds a card to the player's hand cards
+   *
+   * @param card - the card to be added
+   */
+  public void addToHandCards(StackCard card) {
+    handCards.add(card);
+  }
+
+  /**
+   * Removal of a hand card. Removes the card if it is contained in this player's hand cards.
+   *
+   * @param card The card to be removed from the hand cards.
+   * @return <code>true</code> if the removal was successful, <code>false</code> otherwise
+   */
+  public boolean removeHandCard(StackCard card) {
+    if (selectedHandCard == card) {
+      selectedHandCard = null;
+    }
+    return handCards.remove(card);
+  }
+
+  /**
+   * Adds this card to the set of received cards.
+   *
+   * @param card The card the player is receiving.
+   */
+  public void receiveCard(StackCard card) {
+    this.receivedCards.add(card);
+  }
+
+  public Set<StackCard> getReceivedCards() {
+    return receivedCards;
+  }
+
+  public StackCard getSelectedHandCard() {
+    return selectedHandCard;
+  }
+
+  /**
+   * Call when player clicked on one of his own hand cards
+   *
+   * @param selectedCard The card the player clicked on
+   */
+  public void setSelectedHandCard(StackCard selectedCard) {
+    this.selectedHandCard = selectedCard;
+  }
+
+  /**
+   * Adds this card to the set of uncovered cards that lay in front of the player.
+   *
+   * @param card The card the player wants to uncover.
+   */
+  public void addPlayedAbilityCard(AbilityCard card) {
+    this.playedAbilityCards.add(card);
+    this.selectedHandCard = null;
+  }
+
+  public Set<AbilityCard> getPlayedAbilityCards() {
+    return playedAbilityCards;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || !(o instanceof Player)) {
+      return false;
+    }
+    Player other = (Player) o;
+    return userName.equals(other.userName);
   }
 }

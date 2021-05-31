@@ -2,12 +2,17 @@ package de.lmu.ifi.sosy.tbial.game;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
+
+import java.util.ArrayList;
+
 import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 
+/** Tests referring to the Game class. */
 public class GameTest {
 
   private String name;
@@ -103,15 +108,15 @@ public class GameTest {
   @Test
   public void startGame_initializesStack() {
     game.startGame();
-    assertThat(game.getStack(), is(notNullValue(Stack.class)));
+    assertThat(game.getStackAndHeap(), is(notNullValue(StackAndHeap.class)));
   }
 
   @Test
   public void startGame_returnsIfAlreadyStarted() {
-    Stack prev = game.getStack();
+    StackAndHeap prev = game.getStackAndHeap();
     game.setHasStarted(true);
     game.startGame();
-    assertThat(game.getStack(), is(prev));
+    assertThat(game.getStackAndHeap(), is(prev));
   }
 
   @Test
@@ -152,5 +157,73 @@ public class GameTest {
     game.addNewPlayer("C");
     boolean returnValue = game.isAllowedToStartGame("username");
     assertThat(returnValue, is(true));
+  }
+
+  @Test
+  public void discardHandCard_returnsFalseIfCardNotInHandCards() {
+    Game game = getNewGameThatHasStarted();
+    StackCard testCard = new AbilityCard(Ability.GOOGLE);
+    assertThat(game.discardHandCard(game.getPlayers().get("A"), testCard), is(false));
+  }
+
+  @Test
+  public void discardHandCard_addsCardToHeap() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getPlayers().get("A");
+    ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
+    StackCard testCard = handCards.get(0);
+    game.discardHandCard(player, testCard);
+    assertThat(game.getStackAndHeap().getHeap().contains(testCard), is(true));
+  }
+
+  @Test
+  public void discardHandCard_removesCardFromPlayersHandCards() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getPlayers().get("A");
+    ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
+    StackCard testCard = handCards.get(0);
+    game.discardHandCard(player, testCard);
+    assertThat(player.getHandCards().contains(testCard), is(false));
+  }
+  
+  @Test
+  public void putCardToPlayer_returnsFalseIfCardNotInHandCards() {
+    Game game = getNewGameThatHasStarted();
+    StackCard testCard = new AbilityCard(Ability.GOOGLE);
+    assertThat(
+        game.putCardToPlayer(testCard, game.getPlayers().get("A"), game.getPlayers().get("B")),
+        is(false));
+  }
+
+  @Test
+  public void putCardToPlayer_addsCardToReceivedCardsOfReceivingPlayer() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getPlayers().get("A");
+    Player receivingPlayer = game.getPlayers().get("B");
+    ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
+    StackCard testCard = handCards.get(0);
+    game.putCardToPlayer(testCard, player, receivingPlayer);
+    assertThat(receivingPlayer.getReceivedCards().contains(testCard), is(true));
+  }
+
+  @Test
+  public void putCardToPlayer_removesCardFromPlayersHandCards() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getPlayers().get("A");
+    ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
+    StackCard testCard = handCards.get(0);
+    game.putCardToPlayer(testCard, player, game.getPlayers().get("B"));
+    assertThat(player.getHandCards().contains(testCard), is(false));
+  }
+
+  // ---------------------- Helper Methods ----------------------
+
+  private Game getNewGameThatHasStarted() {
+    Game game = new Game(name, maxPlayers, false, password, "username");
+    game.addNewPlayer("A");
+    game.addNewPlayer("B");
+    game.addNewPlayer("C");
+    game.startGame();
+    return game;
   }
 }
