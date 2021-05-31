@@ -108,15 +108,15 @@ public class GameTest {
   @Test
   public void startGame_initializesStack() {
     game.startGame();
-    assertThat(game.getStack(), is(notNullValue(Stack.class)));
+    assertThat(game.getStackAndHeap(), is(notNullValue(StackAndHeap.class)));
   }
 
   @Test
   public void startGame_returnsIfAlreadyStarted() {
-    Stack prev = game.getStack();
+    StackAndHeap prev = game.getStackAndHeap();
     game.setHasStarted(true);
     game.startGame();
-    assertThat(game.getStack(), is(prev));
+    assertThat(game.getStackAndHeap(), is(prev));
   }
 
   @Test
@@ -173,7 +173,7 @@ public class GameTest {
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
     game.discardHandCard(player, testCard);
-    assertThat(game.getStack().getHeap().contains(testCard), is(true));
+    assertThat(game.getStackAndHeap().getHeap().contains(testCard), is(true));
   }
 
   @Test

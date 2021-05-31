@@ -39,7 +39,7 @@ public class Game implements Serializable {
 
   private boolean hasStarted;
 
-  private Stack stack;
+  private StackAndHeap stackAndHeap;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -53,10 +53,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-    // Add three more players for testing
-    //    addNewPlayer("A");
-    //    addNewPlayer("B");
-    //    addNewPlayer("C");
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -107,7 +103,7 @@ public class Game implements Serializable {
     hasStarted = true;
     distributeRoleCards();
     distributeCharacterCardsAndInitialMentalHealthPoints();
-    stack = new Stack();
+    stackAndHeap = new StackAndHeap();
     distributeInitialHandCards();
   }
 
@@ -140,7 +136,7 @@ public class Game implements Serializable {
     for (Player player : players.values()) {
       Set<StackCard> handCards = new HashSet<>();
       for (int i = 0; i < player.getMentalHealthInt(); i++) {
-        handCards.add(stack.drawCard());
+        handCards.add(stackAndHeap.drawCard());
       }
       player.addToHandCards(handCards);
     }
@@ -156,7 +152,7 @@ public class Game implements Serializable {
    */
   public boolean discardHandCard(Player player, StackCard card) {
     if (player.removeHandCard(card)) {
-      stack.addToHeap(card);
+      stackAndHeap.addToHeap(card);
       return true;
     }
     return false;
@@ -292,8 +288,8 @@ public class Game implements Serializable {
     this.host = requireNonNull(host);
   }
 
-  public Stack getStack() {
-    return stack;
+  public StackAndHeap getStackAndHeap() {
+    return stackAndHeap;
   }
 
   public void clickedOnHandCard(Player player, StackCard handCard) {

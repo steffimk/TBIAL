@@ -65,7 +65,7 @@ public class GameTableTest extends PageTestBase {
     ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
     StackCard testCard = handCards.get(0);
     basePlayer.setSelectedHandCard(testCard);
-    List<StackCard> heap = game.getStack().getHeap();
+    List<StackCard> heap = game.getStackAndHeap().getHeap();
     
     tester.executeAjaxEvent("table:heapContainer", "click");
     // Card should be on heap now
