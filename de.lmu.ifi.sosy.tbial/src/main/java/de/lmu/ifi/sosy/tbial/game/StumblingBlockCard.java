@@ -3,6 +3,8 @@ package de.lmu.ifi.sosy.tbial.game;
 /** Stumbling Block Cards are modeled with this class. */
 public class StumblingBlockCard extends Card implements StackCard {
 
+  private static final long serialVersionUID = 1L;
+
   private final StumblingBlock stumblingBlock;
 
   public StumblingBlockCard(StumblingBlock stumblingBlock) {

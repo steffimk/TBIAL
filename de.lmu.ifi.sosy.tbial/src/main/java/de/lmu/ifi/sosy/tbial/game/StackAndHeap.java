@@ -10,19 +10,22 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 
 /**
- * The Stack of the game. Contains all action, ability and stumbling block cards when initializing.
+ * The Stack and Heap of the game. Stack contains all action, ability and stumbling block cards when
+ * initializing, while Heap is empty in the beginning.
  */
-public class Stack implements Serializable {
+public class StackAndHeap implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  List<StackCard> cards;
+  private List<StackCard> stack;
+  private List<StackCard> heap;
 
-  public Stack() {
-    this.cards = Collections.synchronizedList(new LinkedList<StackCard>());
+  public StackAndHeap() {
+    this.stack = Collections.synchronizedList(new LinkedList<StackCard>());
+    this.heap = Collections.synchronizedList(new LinkedList<StackCard>());
 
     addAllCards();
-    Collections.shuffle(cards);
+    Collections.shuffle(stack);
   }
 
   /** Adds all cards to the stack. */
@@ -30,19 +33,19 @@ public class Stack implements Serializable {
     // Add Ability Cards
     for (Ability ability : Ability.values()) {
       for (int i = 0; i < ability.count; i++) {
-        cards.add(new AbilityCard(ability));
+        stack.add(new AbilityCard(ability));
       }
     }
     // Add Action Cards
     for (Action action : Action.values()) {
       for (int i = 0; i < action.count; i++) {
-        cards.add(new ActionCard(action));
+        stack.add(new ActionCard(action));
       }
     }
     // Add Stumbling Block Cards
     for (StumblingBlock stumblingBlock : StumblingBlock.values()) {
       for (int i = 0; i < stumblingBlock.count; i++) {
-        cards.add(new StumblingBlockCard(stumblingBlock));
+        stack.add(new StumblingBlockCard(stumblingBlock));
       }
     }
   }
@@ -53,6 +56,23 @@ public class Stack implements Serializable {
    * @return the first card on the stack
    */
   public StackCard drawCard() {
-    return cards.remove(0);
+    return stack.remove(0);
+  }
+
+  /**
+   * Adds the card to the heap
+   *
+   * @param card The card to be added to the heap
+   */
+  public void addToHeap(StackCard card) {
+    heap.add(card);
+  }
+
+  public List<StackCard> getStack() {
+    return stack;
+  }
+
+  public List<StackCard> getHeap() {
+    return heap;
   }
 }

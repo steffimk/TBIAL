@@ -30,16 +30,21 @@
 	align-items: center;
 }
 
-.handcards, .played .blocked {
+.handcards, .played, .blocked {
 	display: flex;
 }
 
 .handcard {
+	border-radius: 10px;
 	float: left;
 	width: 60px;
 	height: 100px;
 	margin: 5px;
 	border: 1px solid black;
+}
+
+.selected {
+	border: outside !important;
 }
 
 .userName {
@@ -56,4 +61,26 @@
 	transform: rotate(42deg);
 	top: 77%;
 	left: 67%;
+}
+
+.linkstyle {
+	padding: 0;
+	height: 98px;
+	border-radius: 10px;
+	display: table;
+	background: #F4731D;
+	text-decoration: none;
+	text-align: center;
+	color: white;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+a:hover, a:visited {
+	color: white;
+}
+
+span {
+	display: table-cell;
+	vertical-align: middle;
 }
