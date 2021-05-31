@@ -36,19 +36,18 @@ public class PlayerAreaPanel extends Panel {
 
   public PlayerAreaPanel(String id, IModel<Player> player, Game game, Player basePlayer) {
     super(id, new CompoundPropertyModel<Player>(player));
-    
+
     add(new Label("userName"));
     Label role = new Label("roleName");
     role.setVisible(false);
     if (player.getObject().getRoleName() == "Manager"
         || player.getObject().isFired()
-        || player.getObject().isBasePlayer()) {
+        || player.getObject().equals(basePlayer)) {
       role.setVisible(true);
     }
     add(role);
     add(new Label("mentalHealth"));
     add(new Label("prestige"));
-    add(new Label("bug"));
 
     // --------------------------- The played cards ---------------------------
     AjaxLink<Void> playAbilityButton =
@@ -143,7 +142,7 @@ public class PlayerAreaPanel extends Panel {
           protected void populateItem(final ListItem<StackCard> listItem) {
             final StackCard handCard = listItem.getModelObject();
 
-            if (player.getObject().isBasePlayer()) {
+            if (player.getObject().equals(basePlayer)) {
               listItem.add(
                   new AjaxEventBehavior("click") {
                     private static final long serialVersionUID = 1L;
@@ -155,12 +154,13 @@ public class PlayerAreaPanel extends Panel {
                       target.add(handCardContainer);
                     }
                   });
-              listItem.add(
+              Image card =
                   new Image(
                       "handCard",
-                      new PackageResourceReference(getClass(), handCard.getResourceFileName())));
+                      new PackageResourceReference(getClass(), handCard.getResourceFileName()));
+              listItem.add(card);
               if (player.getObject().getSelectedHandCard() == handCard) {
-                listItem.add(new AttributeModifier("class", "handcard selected"));
+                card.add(new AttributeModifier("class", "handcard selected"));
               }
             } else {
               listItem.add(new Image("handCard", cardBackSideImage));
