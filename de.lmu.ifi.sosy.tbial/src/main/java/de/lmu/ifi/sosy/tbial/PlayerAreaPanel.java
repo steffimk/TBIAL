@@ -129,7 +129,6 @@ public class PlayerAreaPanel extends Panel {
 
     WebMarkupContainer handCardContainer = new WebMarkupContainer("handCardContainer");
     handCardContainer.setOutputMarkupId(true);
-
     /** adding hand cards to the player area panel */
     IModel<List<StackCard>> handCardModel =
         (IModel<List<StackCard>>) () -> new ArrayList<StackCard>(player.getObject().getHandCards());
@@ -155,15 +154,25 @@ public class PlayerAreaPanel extends Panel {
                       target.add(handCardContainer);
                     }
                   });
+
               listItem.add(
                   new Image(
                       "handCard",
                       new PackageResourceReference(getClass(), handCard.getResourceFileName())));
+
               if (player.getObject().getSelectedHandCard() == handCard) {
                 listItem.add(new AttributeModifier("class", "handcard selected"));
               }
             } else {
-              listItem.add(new Image("handCard", cardBackSideImage));
+              Image cardImage = new Image("handCard", cardBackSideImage);
+              listItem.add(cardImage);
+              if (true) { // TODO game.getPlayerWithDiscardAnimation() == player.getObject()) {
+                cardImage.add(
+                    new AttributeModifier(
+                        "style",
+                        "animation-name: discardAnimation; animation-duration: 2s; position: relative; animation-timing-function: ease-in;"));
+                // animation-direction: reverse;
+              }
             }
           }
         };
