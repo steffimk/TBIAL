@@ -14,7 +14,7 @@
 	margin: 0;
 	position: absolute;
 	top: 88%;
-    left: 17%;
+	left: 17%;
 }
 
 li {
@@ -92,8 +92,8 @@ li {
 .linkstyle {
 	padding: 0;
 	height: 95%;
-    width: 27%;
-    margin-top: 0;
+	width: 27%;
+	margin-top: 0;
 	display: table;
 	background: #F4731D;
 	text-decoration: none;
