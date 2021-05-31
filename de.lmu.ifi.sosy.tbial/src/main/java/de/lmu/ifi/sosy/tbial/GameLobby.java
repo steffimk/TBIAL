@@ -14,6 +14,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -94,7 +95,31 @@ public class GameLobby extends BasePage {
             setResponsePage(getTbialApplication().getHomePage());
           }
         };
+
+    Form menuForm = new Form("menuForm");
+    Button showGamesButton =
+        new Button("showGamesButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getGamesPage());
+          }
+        };
+    menuForm.add(showGamesButton);
+
+    Button showPlayersButton =
+        new Button("showPlayersButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getPlayersPage());
+          }
+        };
+    menuForm.add(showPlayersButton);
     add(leaveForm);
+    add(menuForm);
 
     IModel<List<Player>> gameInfoModel =
         (IModel<List<Player>>) () -> getGame().getInGamePlayersList();
