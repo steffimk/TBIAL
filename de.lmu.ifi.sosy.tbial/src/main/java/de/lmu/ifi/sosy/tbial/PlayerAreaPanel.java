@@ -154,12 +154,13 @@ public class PlayerAreaPanel extends Panel {
                       target.add(handCardContainer);
                     }
                   });
-              listItem.add(
+              Image card =
                   new Image(
                       "handCard",
-                      new PackageResourceReference(getClass(), handCard.getResourceFileName())));
+                      new PackageResourceReference(getClass(), handCard.getResourceFileName()));
+              listItem.add(card);
               if (player.getObject().getSelectedHandCard() == handCard) {
-                listItem.add(new AttributeModifier("class", "handcard selected"));
+                card.add(new AttributeModifier("class", "handcard selected"));
               }
             } else {
               listItem.add(new Image("handCard", cardBackSideImage));
