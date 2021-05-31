@@ -409,6 +409,10 @@ pre.boxed {
 	border: solid 2px #ff6600;
 }
 
+.centered {
+	text-align: center;
+}
+
 .chat {
 	width: 70%;
 	height: 900px;
