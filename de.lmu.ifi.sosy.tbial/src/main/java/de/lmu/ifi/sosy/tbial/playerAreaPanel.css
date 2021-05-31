@@ -66,7 +66,7 @@ li {
 }
 
 .selected {
-	border: 1px solid orange;
+	border: 3px solid orange;
 }
 
 .userName {
