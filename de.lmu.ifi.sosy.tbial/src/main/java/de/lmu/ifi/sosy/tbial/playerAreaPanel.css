@@ -3,8 +3,8 @@
 	top: 90%;
 	display: inline-block;
 	left: 80%;
-	height: 70px;
-	width: 70px;
+	height: 9%;
+	width: 9%;
 	background: transparent;
 }
 
@@ -13,8 +13,12 @@
 	padding: 0;
 	margin: 0;
 	position: absolute;
-	top: 90%;
-	left: 67%;
+	top: 88%;
+	left: 17%;
+}
+
+li {
+	font-size: 1vw;
 }
 
 .wrapper {
@@ -25,26 +29,44 @@
 .cards {
 	display: flex;
 	position: absolute;
-	top: 63%;
+	width: 25%;
+	height: 35%;
+	top: 65%;
 	flex-direction: column;
 	align-items: center;
 }
 
 .handcards, .played, .blocked {
 	display: flex;
+	width: 100%;
+	height: 32%;
+	margin-bottom: 2%;
+}
+
+.played {
+	top: 33%;
+}
+
+.playedCardWrapper {
+	margin: 0 3% 0 0;
+}
+
+.handcards {
+	top: 68%;
+}
+
+.handCardWrapper {
+	width: 0%;
+	margin: 0 auto 0 0;
 }
 
 .handcard {
-	border-radius: 10px;
-	float: left;
-	width: 60px;
-	height: 100px;
-	margin: 5px;
-	border: 1px solid black;
+	height: 100%;
+	border-radius: 10%;
 }
 
 .selected {
-	border: outside !important;
+	border: 3px solid orange;
 }
 
 .userName {
@@ -52,22 +74,27 @@
 	display: inline-block;
 	top: 95%;
 	left: 10%;
+	width: 30%;
+	font-size: 1.3vw;
 }
 
 .role {
+	font-size: 2vw;
+	z-index: 1;
+	width: 50%;
+	text-align: center;
+	transform: rotate(45deg);
+	top: 75%;
+	left: 49%;
 	position: absolute;
-	display: inline-block;
-	font-size: x-large;
-	transform: rotate(42deg);
-	top: 77%;
-	left: 67%;
 }
 
 .linkstyle {
 	display: flex;
 	padding: 0;
-	height: 98px;
-	border-radius: 10px;
+	height: 95%;
+	width: 27%;
+	margin-top: 0;
 	display: table;
 	background: #F4731D;
 	text-decoration: none;

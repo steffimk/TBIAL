@@ -47,10 +47,6 @@ public class GameTable extends BasePage {
     Map<String, Player> currentPlayers = currentGame.getPlayers();
 
     // set current session player as base player
-    currentPlayers
-        .get(currentPlayerUsername)
-        .setBasePlayer(true); // TODO: doesn't this set all players to base player
-
     Player basePlayer = currentPlayers.get(currentPlayerUsername);
 
     // always add current session player here
