@@ -15,8 +15,7 @@ public class Turn implements Serializable {
   public Turn(List<Player> players) {
     this.players = players;
     this.currentPlayerIndex = 0;
-    //    this.stage = TurnStage.DRAWING_CARDS;
-    this.stage = TurnStage.PLAYING_CARDS; // TODO: remove -- just for testing
+    this.stage = TurnStage.DRAWING_CARDS;
   }
 
   /**

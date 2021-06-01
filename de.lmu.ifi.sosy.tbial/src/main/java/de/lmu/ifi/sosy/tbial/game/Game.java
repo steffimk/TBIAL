@@ -359,7 +359,8 @@ public class Game implements Serializable {
    * @param player The player who clicked on the button.
    */
   public void clickedOnDiscardButton(Player player) {
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) {
+    //	TODO: if (turn.getStage() != TurnStage.PLAYING_CARDS) return;
+    if (turn.getCurrentPlayer() != player) {
       LOGGER.debug("Player clicked on discard button but not his turn or not in the right stage");
       return;
     }
