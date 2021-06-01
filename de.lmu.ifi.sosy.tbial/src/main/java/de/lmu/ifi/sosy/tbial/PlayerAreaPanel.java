@@ -34,7 +34,8 @@ public class PlayerAreaPanel extends Panel {
   public static PackageResourceReference cardBackSideImage =
       new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/backSide.png");
 
-  public PlayerAreaPanel(String id, IModel<Player> player, Game game, Player basePlayer) {
+  public PlayerAreaPanel(
+      String id, IModel<Player> player, Game game, Player basePlayer, WebMarkupContainer table) {
     super(id, new CompoundPropertyModel<Player>(player));
 
     add(new Label("userName"));
@@ -59,7 +60,7 @@ public class PlayerAreaPanel extends Panel {
           public void onClick(AjaxRequestTarget target) {
             LOGGER.info(basePlayer.getUserName() + " clicked on play ability button");
             game.clickedOnPlayAbility(basePlayer);
-            target.add(GameTable.getTable());
+            target.add(table);
           }
 
           @Override
@@ -100,7 +101,7 @@ public class PlayerAreaPanel extends Panel {
                     + " clicked on add card button of "
                     + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
-            target.add(GameTable.getTable());
+            target.add(table);
           }
         };
 

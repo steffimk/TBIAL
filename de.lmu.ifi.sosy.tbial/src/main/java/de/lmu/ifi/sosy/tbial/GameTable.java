@@ -29,7 +29,7 @@ public class GameTable extends BasePage {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
- private static WebMarkupContainer table;
+  private WebMarkupContainer table;
 
   public GameTable() {
 
@@ -55,7 +55,7 @@ public class GameTable extends BasePage {
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
 
-    player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer));
+    player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer, table));
     player1.setOutputMarkupId(true);
     // get the rest of the players
     ArrayList<Player> otherPlayers = new ArrayList<Player>();
@@ -78,7 +78,7 @@ public class GameTable extends BasePage {
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
             PlayerAreaPanel panel =
-                new PlayerAreaPanel("panel", Model.of(player), currentGame, basePlayer);
+                new PlayerAreaPanel("panel", Model.of(player), currentGame, basePlayer, table);
             // add css classes
             listItem.add(
                 new AttributeModifier("class", "player-" + "" + numberOfPlayers + "-" + "" + (i)));
@@ -122,7 +122,7 @@ public class GameTable extends BasePage {
           protected void onEvent(AjaxRequestTarget target) {
             boolean success = currentGame.clickedOnHeap(basePlayer);
             if (!success) return;
-
+            
             StackCard topCardOfHeap = currentGame.getStackAndHeap().getUppermostCardOfHeap();
             if (topCardOfHeap != null) {
               heapImage.setImageResourceReference(
@@ -167,9 +167,4 @@ public class GameTable extends BasePage {
     add(discardButton);
     add(endTurnButton);
  }
-
-  /** @return The container of the whole game table. */
-  public static WebMarkupContainer getTable() {
-    return table;
-  }
 }
