@@ -90,6 +90,10 @@ public class Player implements Serializable {
     this.characterCard = characterCard;
   }
 
+  public void setMentalHealth(int mentalHealth) {
+    this.mentalHealth = mentalHealth;
+  }
+
   public void fire(boolean fired) {
     this.fired = fired;
   }

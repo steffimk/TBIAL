@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -19,6 +21,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -45,9 +48,31 @@ public class PlayerAreaPanel extends Panel {
         || player.getObject().equals(basePlayer)) {
       role.setVisible(true);
     }
+    role.setOutputMarkupPlaceholderTag(true);
     add(role);
-    add(new Label("mentalHealth"));
+    Label mentalHealth = new Label("mentalHealth");
+    add(mentalHealth);
     add(new Label("prestige"));
+
+    // update mental health; if mental health == 0 (-> fire player) -> show role of player on game table
+    mentalHealth.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+            if (player.getObject().getMentalHealthInt() == 0) {
+              System.out.println("onchange");
+              player.getObject().fire(true);
+              role.setVisible(true);
+              target.add(role);
+              stop(target);
+            }
+            // maybe this update should be triggered somewhere else in the future
+            target.add(mentalHealth);
+          }
+        });
 
     // --------------------------- The played cards ---------------------------
     AjaxLink<Void> playAbilityButton =
