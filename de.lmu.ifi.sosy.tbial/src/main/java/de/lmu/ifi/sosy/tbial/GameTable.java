@@ -120,8 +120,9 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            currentGame.clickedOnHeap(basePlayer);
-            
+            boolean success = currentGame.clickedOnHeap(basePlayer);
+            if (!success) return;
+
             StackCard topCardOfHeap = currentGame.getStackAndHeap().getUppermostCardOfHeap();
             if (topCardOfHeap != null) {
               heapImage.setImageResourceReference(
@@ -129,7 +130,8 @@ public class GameTable extends BasePage {
               heapImage.add(
                   new AttributeModifier(
                       "style",
-                      "animation-name: discardAnimation; animation-duration: 2s; position: relative; animation: reverse; animation-timing-function: ease-in;"));
+                      "animation-name: discardAnimation;")); // TODO: make own animation for each
+                                                             // player
             }
             target.add(table);
           }

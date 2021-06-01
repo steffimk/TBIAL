@@ -1202,14 +1202,12 @@
 }
 
 .heapcard {
-	animation-name: discardAnimation;
-	animation-duration: 2s;
+	animation-duration: 1s;
 	position: relative;
-	animation: reverse;
 	animation-timing-function: ease-in;
 }
 
 @keyframes discardAnimation {
-  0%   {left:0px; top:0px;}
-  100% {left:40px; top:-800px;}
+  0%   {left:0px; top:400px;}
+  100% {left:0px; top:0px;}
 }

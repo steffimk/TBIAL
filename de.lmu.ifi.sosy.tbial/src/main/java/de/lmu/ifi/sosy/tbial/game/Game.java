@@ -46,8 +46,6 @@ public class Game implements Serializable {
 
   private Turn turn;
 
-  private Player playerWithDiscardAnimation;
-
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
@@ -312,15 +310,15 @@ public class Game implements Serializable {
    * Call when a player clicked on the heap.
    *
    * @param player The player who clicked on the heap.
+   * @return <code>true</code> if successfully discarded a card, <code>false</code> otherwise
    */
-  public void clickedOnHeap(Player player) {
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS) return;
+  public boolean clickedOnHeap(Player player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS)
+      return false;
     if (player.getSelectedHandCard() != null) {
-      boolean success = discardHandCard(player, player.getSelectedHandCard());
-      if (success) {
-        playerWithDiscardAnimation = player;
-      }
+      return discardHandCard(player, player.getSelectedHandCard());
     }
+    return false;
   }
 
   /**
@@ -382,7 +380,4 @@ public class Game implements Serializable {
     }
   }
   
-  public Player getPlayerWithDiscardAnimation() {
-    return this.playerWithDiscardAnimation;
-  }
 }
