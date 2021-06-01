@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -17,6 +18,8 @@ import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
@@ -110,7 +113,37 @@ public class GameTable extends BasePage {
     stackContainer.add(stackImage);
 
     WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
-    Image heapImage = new Image("heapCard", PlayerAreaPanel.cardBackSideImage);
+    Image heapImage =
+        new Image("heapCard", () -> currentGame.getStackAndHeap().getUppermostCardOfHeap()) {
+
+          private static final long serialVersionUID = 1L;
+          private StackCard previousUppermostHeapCard = null;
+
+          @Override
+          protected ResourceReference getImageResourceReference() {
+            StackCard uppermostHeapCard = (StackCard) this.getDefaultModelObject();
+            if (uppermostHeapCard == null) {
+              previousUppermostHeapCard = null;
+              // this.add(new AttributeModifier("style", "animation-name: none;"));
+              return PlayerAreaPanel.cardBackSideImage;
+            }
+            // If card didn't change: no animation
+            if (uppermostHeapCard == previousUppermostHeapCard) {
+              this.add(new AttributeModifier("style", "animation-name: none;"));
+            }
+            // Card changed -> add animation
+            else {
+              // this.add(
+              //    new AttributeModifier(
+              //      "style",
+              //      "animation-name: discardAnimation;")); // TODO: make own animation for each
+              // player
+            }
+            return new PackageResourceReference(
+                getClass(), ((StackCard) this.getDefaultModelObject()).getResourceFileName());
+          }
+        };
+
     heapImage.setOutputMarkupId(true);
     heapContainer.add(heapImage);
 
@@ -122,17 +155,10 @@ public class GameTable extends BasePage {
           protected void onEvent(AjaxRequestTarget target) {
             boolean success = currentGame.clickedOnHeap(basePlayer);
             if (!success) return;
-            
-            StackCard topCardOfHeap = currentGame.getStackAndHeap().getUppermostCardOfHeap();
-            if (topCardOfHeap != null) {
-              heapImage.setImageResourceReference(
-                  new PackageResourceReference(getClass(), topCardOfHeap.getResourceFileName()));
-              heapImage.add(
-                  new AttributeModifier(
-                      "style",
-                      "animation-name: discardAnimation;")); // TODO: make own animation for each
-                                                             // player
-            }
+            heapImage.add(
+                new AttributeModifier(
+                    "style",
+                    "animation-name: discardAnimation;")); // TODO: Remove when Drag and Drop works
             target.add(table);
           }
         });
@@ -166,5 +192,8 @@ public class GameTable extends BasePage {
     add(table);
     add(discardButton);
     add(endTurnButton);
+
+    // Update the table every 20 seconds for other players
+    add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
  }
 }
