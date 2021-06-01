@@ -10,14 +10,17 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
+import de.lmu.ifi.sosy.tbial.game.StackCard;
 
 /** Game Table */
 @AuthenticationRequired
@@ -103,15 +106,32 @@ public class GameTable extends BasePage {
           }
         });
 
+    Image stackImage = new Image("stackCard", PlayerAreaPanel.cardBackSideImage);
+    stackContainer.add(stackImage);
+
     WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
+    Image heapImage = new Image("heapCard", PlayerAreaPanel.cardBackSideImage);
+    heapImage.setOutputMarkupId(true);
+    heapContainer.add(heapImage);
+
     heapContainer.add(
         new AjaxEventBehavior("click") {
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            target.add(player1);
             currentGame.clickedOnHeap(basePlayer);
+            
+            StackCard topCardOfHeap = currentGame.getStackAndHeap().getUppermostCardOfHeap();
+            if (topCardOfHeap != null) {
+              heapImage.setImageResourceReference(
+                  new PackageResourceReference(getClass(), topCardOfHeap.getResourceFileName()));
+              heapImage.add(
+                  new AttributeModifier(
+                      "style",
+                      "animation-name: discardAnimation; animation-duration: 2s; position: relative; animation: reverse; animation-timing-function: ease-in;"));
+            }
+            target.add(table);
           }
         });
 

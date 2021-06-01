@@ -72,6 +72,16 @@ public class StackAndHeap implements Serializable {
     return stack;
   }
 
+  /**
+   * Returns the uppermost card of the heap, that is the most recently discarded card.
+   *
+   * @return The uppermost card of the heap or <code>null</code> if the heap is empty
+   */
+  public StackCard getUppermostCardOfHeap() {
+    if (heap.isEmpty()) return null;
+    return heap.get(heap.size() - 1);
+  }
+
   public List<StackCard> getHeap() {
     return heap;
   }

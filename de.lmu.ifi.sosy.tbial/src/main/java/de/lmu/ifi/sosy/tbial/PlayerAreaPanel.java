@@ -31,7 +31,7 @@ public class PlayerAreaPanel extends Panel {
 
   private static final Logger LOGGER = LogManager.getLogger(PlayerAreaPanel.class);
 
-  private static PackageResourceReference cardBackSideImage =
+  public static PackageResourceReference cardBackSideImage =
       new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/backSide.png");
 
   public PlayerAreaPanel(String id, IModel<Player> player, Game game, Player basePlayer) {
@@ -162,15 +162,7 @@ public class PlayerAreaPanel extends Panel {
                 card.add(new AttributeModifier("class", "handcard selected"));
               }
             } else {
-              Image cardImage = new Image("handCard", cardBackSideImage);
-              listItem.add(cardImage);
-              if (true) { // TODO game.getPlayerWithDiscardAnimation() == player.getObject()) {
-                cardImage.add(
-                    new AttributeModifier(
-                        "style",
-                        "animation-name: discardAnimation; animation-duration: 2s; position: relative; animation-timing-function: ease-in;"));
-                // animation-direction: reverse;
-              }
+              listItem.add(new Image("handCard", cardBackSideImage));
             }
           }
         };

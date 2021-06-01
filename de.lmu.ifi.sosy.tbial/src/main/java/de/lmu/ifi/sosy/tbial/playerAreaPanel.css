@@ -112,8 +112,3 @@ span {
 	display: table-cell;
 	vertical-align: middle;
 }
-
-@keyframes discardAnimation {
-  0%   {left:0px; top:0px;}
-  100% {left:40px; top:-800px;}
-}
