@@ -120,24 +120,29 @@ public class GameTable extends BasePage {
           private StackCard previousUppermostHeapCard = null;
 
           @Override
-          protected ResourceReference getImageResourceReference() {
+          protected void onBeforeRender() {
             StackCard uppermostHeapCard = (StackCard) this.getDefaultModelObject();
-            if (uppermostHeapCard == null) {
+            // If no card on heap or card didn't change: no animation
+            if (uppermostHeapCard == null || uppermostHeapCard == previousUppermostHeapCard) {
               previousUppermostHeapCard = null;
-              // this.add(new AttributeModifier("style", "animation-name: none;"));
-              return PlayerAreaPanel.cardBackSideImage;
-            }
-            // If card didn't change: no animation
-            if (uppermostHeapCard == previousUppermostHeapCard) {
               this.add(new AttributeModifier("style", "animation-name: none;"));
             }
             // Card changed -> add animation
             else {
-              // this.add(
-              //    new AttributeModifier(
-              //      "style",
-              //      "animation-name: discardAnimation;")); // TODO: make own animation for each
+              this.add(
+                  new AttributeModifier(
+                      "style",
+                      "animation-name: discardAnimation;")); // TODO: make own animation for each
               // player
+            }
+            super.onBeforeRender();
+            previousUppermostHeapCard = uppermostHeapCard;
+          }
+
+          @Override
+          protected ResourceReference getImageResourceReference() {
+            if (this.getDefaultModelObject() == null) {
+              return PlayerAreaPanel.cardBackSideImage; // TODO: add placeholder when stack is empty
             }
             return new PackageResourceReference(
                 getClass(), ((StackCard) this.getDefaultModelObject()).getResourceFileName());

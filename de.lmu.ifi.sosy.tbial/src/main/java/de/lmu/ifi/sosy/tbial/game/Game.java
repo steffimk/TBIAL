@@ -161,7 +161,7 @@ public class Game implements Serializable {
    */
   public boolean discardHandCard(Player player, StackCard card) {
     if (player.removeHandCard(card)) {
-      stackAndHeap.addToHeap(card);
+      stackAndHeap.addToHeap(card, player);
       return true;
     }
     return false;
