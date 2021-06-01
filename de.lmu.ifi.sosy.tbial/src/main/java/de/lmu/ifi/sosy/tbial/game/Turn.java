@@ -59,10 +59,18 @@ public class Turn implements Serializable {
   }
 
   /** An enum containing the different stages of a turn. */
-  enum TurnStage {
+  public enum TurnStage {
     DRAWING_CARDS,
     PLAYING_CARDS,
     DISCARDING_CARDS
   }
-  
+
+  /**
+   * For testing only.
+   *
+   * @param basePlayer The player to be set as the current player
+   */
+  public void setTurnPlayerUseForTestingOnly(Player basePlayer) {
+    currentPlayerIndex = players.indexOf(basePlayer);
+  }
 }

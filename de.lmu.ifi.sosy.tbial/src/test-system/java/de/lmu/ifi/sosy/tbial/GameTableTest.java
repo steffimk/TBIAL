@@ -24,6 +24,7 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
+import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 public class GameTableTest extends PageTestBase {
 
@@ -62,6 +63,8 @@ public class GameTableTest extends PageTestBase {
   @Test
   public void clickOnHeapTriggersClickedOnHeapInGame() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
     ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
     StackCard testCard = handCards.get(0);
     basePlayer.setSelectedHandCard(testCard);
@@ -86,6 +89,8 @@ public class GameTableTest extends PageTestBase {
   @Test
   public void clickOnHandCardTriggersSelectHandCard() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
     ListView<StackCard> handCardsListView =
         (ListView<StackCard>)
             tester.getComponentFromLastRenderedPage(
@@ -114,6 +119,8 @@ public class GameTableTest extends PageTestBase {
   @Test
   public void clickOnPlayAbilityWorks() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
 
     AbilityCard testCard = new AbilityCard(Ability.GOOGLE);
     basePlayer.addToHandCards(testCard);
@@ -138,6 +145,8 @@ public class GameTableTest extends PageTestBase {
   @Test
   public void clickOnAddCardLetsPlayerReceiveCard() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
 
     ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
     StackCard testCard = handCards.get(0);

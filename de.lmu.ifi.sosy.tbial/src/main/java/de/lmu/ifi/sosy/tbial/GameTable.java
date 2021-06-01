@@ -191,7 +191,8 @@ public class GameTable extends BasePage {
     add(discardButton);
     add(endTurnButton);
 
-    // Update the table every 20 seconds for other players
+    // Update the table every 20 seconds so that other players can see progress
+    // -> Is there a better way for this?
     add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
  }
 

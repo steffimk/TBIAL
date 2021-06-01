@@ -237,6 +237,10 @@ public class Game implements Serializable {
     return salt;
   }
 
+  public Turn getTurn() {
+    return turn;
+  }
+
   public int getCurrentNumberOfPlayers() {
     return players.size();
   }
