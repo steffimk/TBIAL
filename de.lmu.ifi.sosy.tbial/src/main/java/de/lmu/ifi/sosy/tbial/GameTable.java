@@ -129,11 +129,8 @@ public class GameTable extends BasePage {
             }
             // Card changed -> add animation
             else {
-              this.add(
-                  new AttributeModifier(
-                      "style",
-                      "animation-name: discardAnimation;")); // TODO: make own animation for each
-              // player
+              Player player = currentGame.getStackAndHeap().getLastPlayerToDiscardCard();
+              this.add(getDiscardingAnimationForPlayer(otherPlayers, player, numberOfPlayers));
             }
             super.onBeforeRender();
             previousUppermostHeapCard = uppermostHeapCard;
@@ -160,10 +157,6 @@ public class GameTable extends BasePage {
           protected void onEvent(AjaxRequestTarget target) {
             boolean success = currentGame.clickedOnHeap(basePlayer);
             if (!success) return;
-            heapImage.add(
-                new AttributeModifier(
-                    "style",
-                    "animation-name: discardAnimation;")); // TODO: Remove when Drag and Drop works
             target.add(table);
           }
         });
@@ -201,4 +194,15 @@ public class GameTable extends BasePage {
     // Update the table every 20 seconds for other players
     add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
  }
+
+  private AttributeModifier getDiscardingAnimationForPlayer(
+      List<Player> otherPlayers, Player player, int numberOfPlayers) {
+    int playerIndex = 2 + otherPlayers.indexOf(player);
+    // If basePlayer
+    if (playerIndex == 1) {
+      return new AttributeModifier("style", "animation-name: discardAnimation");
+    }
+    return new AttributeModifier(
+        "style", "animation-name: discardAnimation" + numberOfPlayers + "-" + playerIndex);
+  }
 }

@@ -1211,3 +1211,93 @@
   0%   {left:0px; top:400px;}
   100% {left:0px; top:0px;}
 }
+
+@keyframes discardAnimation4-2 {
+  0%   {left:-400px; top:0px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation4-3 {
+  0%   {left:0px; top:-400px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation4-4 {
+  0%   {left:400px; top:0px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-2 {
+  0%   {left:-400px; top:0px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-3 {
+  0%   {left:-200px; top:-400px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-4 {
+  0%   {left:200px; top:-400px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-5 {
+  0%   {left:400px; top:0px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-2 {
+  0%   {left:-400px; top:100px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-3 {
+  0%   {left:-350px; top:-350px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-4 {
+  0%   {left:0px; top:-400px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-5 {
+  0%   {left:350px; top:-350px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-6 {
+  0%   {left:400px; top:100px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-2 {
+  0%   {left:-350px; top:200px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-3 {
+  0%   {left:-300px; top:-200px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-4 {
+  0%   {left:-150px; top:-400px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-5 {
+  0%   {left:150px; top:-400px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-6 {
+  0%   {left:300px; top:-200px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-7 {
+  0%   {left:350px; top:200px;}
+  100% {left:0px; top:0px;}
+}
