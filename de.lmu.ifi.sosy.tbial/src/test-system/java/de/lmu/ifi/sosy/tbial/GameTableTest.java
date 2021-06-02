@@ -76,15 +76,13 @@ public class GameTableTest extends PageTestBase {
 
     // Player A
     tester.assertComponent("table:container:0:panel", PlayerAreaPanel.class);
-    tester.assertModelValue("table:container:0:panel", game.getPlayers().get("A"));
+    tester.assertModelValue("table:container:0:panel", playerA);
     tester.assertComponent("table:container:0:panel:userName", Label.class);
     tester.assertModelValue("table:container:0:panel:userName", "A");
     tester.assertComponent("table:container:0:panel:mentalHealth", Label.class);
-    tester.assertModelValue(
-        "table:container:0:panel:mentalHealth", game.getPlayers().get("A").getMentalHealth());
+    tester.assertModelValue("table:container:0:panel:mentalHealth", playerA.getMentalHealth());
     tester.assertComponent("table:container:0:panel:prestige", Label.class);
-    tester.assertModelValue(
-        "table:container:0:panel:prestige", game.getPlayers().get("A").getPrestige());
+    tester.assertModelValue("table:container:0:panel:prestige", playerA.getPrestige());
     // only visible if role = manager
     if (game.getPlayers().get("A").getRoleName() == "Manager") {
       tester.assertComponent("table:container:0:panel:roleName", Label.class);
@@ -93,15 +91,13 @@ public class GameTableTest extends PageTestBase {
 
     // Player B
     tester.assertComponent("table:container:1:panel", PlayerAreaPanel.class);
-    tester.assertModelValue("table:container:1:panel", game.getPlayers().get("B"));
+    tester.assertModelValue("table:container:1:panel", playerB);
     tester.assertComponent("table:container:1:panel:userName", Label.class);
     tester.assertModelValue("table:container:1:panel:userName", "B");
     tester.assertComponent("table:container:1:panel:mentalHealth", Label.class);
-    tester.assertModelValue(
-        "table:container:1:panel:mentalHealth", game.getPlayers().get("B").getMentalHealth());
+    tester.assertModelValue("table:container:1:panel:mentalHealth", playerB.getMentalHealth());
     tester.assertComponent("table:container:1:panel:prestige", Label.class);
-    tester.assertModelValue(
-        "table:container:1:panel:prestige", game.getPlayers().get("B").getPrestige());
+    tester.assertModelValue("table:container:1:panel:prestige", playerB.getPrestige());
     // only visible if role = manager
     if (game.getPlayers().get("B").getRoleName() == "Manager") {
       tester.assertComponent("table:container:1:panel:roleName", Label.class);
@@ -110,15 +106,13 @@ public class GameTableTest extends PageTestBase {
 
     // Player C
     tester.assertComponent("table:container:2:panel", PlayerAreaPanel.class);
-    tester.assertModelValue("table:container:2:panel", game.getPlayers().get("C"));
+    tester.assertModelValue("table:container:2:panel", playerC);
     tester.assertComponent("table:container:2:panel:userName", Label.class);
     tester.assertModelValue("table:container:2:panel:userName", "C");
     tester.assertComponent("table:container:2:panel:mentalHealth", Label.class);
-    tester.assertModelValue(
-        "table:container:2:panel:mentalHealth", game.getPlayers().get("C").getMentalHealth());
+    tester.assertModelValue("table:container:2:panel:mentalHealth", playerC.getMentalHealth());
     tester.assertComponent("table:container:2:panel:prestige", Label.class);
-    tester.assertModelValue(
-        "table:container:2:panel:prestige", game.getPlayers().get("C").getPrestige());
+    tester.assertModelValue("table:container:2:panel:prestige", playerC.getPrestige());
     // only visible if role = manager
     if (game.getPlayers().get("C").getRoleName() == "Manager") {
       tester.assertComponent("table:container:2:panel:roleName", Label.class);
