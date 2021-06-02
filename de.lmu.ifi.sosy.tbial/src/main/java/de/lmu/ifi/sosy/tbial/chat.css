@@ -1,0 +1,72 @@
+.chatWindow {
+	height: 100%;
+	padding-left: 4px;
+	border: 2px solid rgb(221, 221, 221);
+	background: #e6e6e6;
+	font-style: normal;
+}
+
+.chatWrapper {
+	border: 5px solid #f99451;
+	float: right;
+	padding: 8px;
+	width: 20%;
+	height: 100%;
+	background: #ff8c40;
+	border-radius: 10px;
+}
+
+fieldset {
+	width: auto;
+	border: none;
+	margin-top: 3px;
+}
+
+fieldset p {
+	margin-bottom: 3px;
+	font-weight: normal;
+	color: #000000;
+	line-height: normal;
+}
+
+.username {
+	font-weight: bold;
+}
+
+.chatMessage {
+	position: fixed; 
+	margin: 12pt;
+}
+
+.messageInput {
+	width: auto;
+}
+
+.submitButton {
+	display: inline-block;
+  	padding: 2px 5px;
+  	cursor: pointer;
+  	text-align: center;
+  	text-decoration: none;
+  	outline: none;
+  	color: #fff;
+  	background-color: #c0c0c0;
+  	border: none;
+  	border-radius: 12px;
+  	box-shadow: 0 9px #999;
+}
+
+.submitButton:hover {
+	border-radius: 12px;
+	background-color: #c0c0c0;
+}
+
+.submitButton:active {
+	background-color: #c0c0c0;
+  	box-shadow: 0 5px #000000;
+  	transform: translateY(2px);
+}
+
+div.sidebar p {
+	margin:none;
+}

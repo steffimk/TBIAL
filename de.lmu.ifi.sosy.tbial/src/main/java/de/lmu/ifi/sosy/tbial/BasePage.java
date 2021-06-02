@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
@@ -8,6 +9,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
+
+import org.apache.wicket.markup.html.panel.Panel;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
@@ -68,7 +71,7 @@ public abstract class BasePage extends WebPage {
     add(link);
     add(users);
 
-    // Show user name in navigaton bar next to Logout
+    // Show user name in navigation bar next to Logout
     loggedInUsername = new Label("loggedInUsername", "");
 	loggedInUsername.setOutputMarkupId(true);
     add(loggedInUsername);
