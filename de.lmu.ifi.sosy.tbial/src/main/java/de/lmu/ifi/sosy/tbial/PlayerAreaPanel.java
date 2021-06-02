@@ -63,13 +63,12 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected void onTimer(AjaxRequestTarget target) {
             if (player.getObject().getMentalHealthInt() == 0) {
-              System.out.println("onchange");
               player.getObject().fire(true);
               role.setVisible(true);
               target.add(role);
               stop(target);
             }
-            // maybe this update should be triggered somewhere else in the future
+            // TODO maybe this update should be triggered somewhere else in the future
             target.add(mentalHealth);
           }
         });
