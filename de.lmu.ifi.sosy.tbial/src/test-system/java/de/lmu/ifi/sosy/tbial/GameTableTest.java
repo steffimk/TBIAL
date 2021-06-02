@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -53,10 +54,57 @@ public class GameTableTest extends PageTestBase {
     tester.startPage(GameTable.class);
     tester.assertComponent("gameName", Label.class);
     tester.assertModelValue("gameName", game.getName());
+
+    // basePlayer
     tester.assertComponent("table:player1:panel1", PlayerAreaPanel.class);
     tester.assertModelValue("table:player1:panel1", basePlayer);
     tester.assertComponent("table:player1:panel1:playAbilityButton", AjaxLink.class);
-    // TODO T6: Game Table
+    tester.assertComponent("table:player1:panel1:userName", Label.class);
+    tester.assertModelValue("table:player1:panel1:userName", "testuser");
+    tester.assertComponent("table:player1:panel1:mentalHealth", Label.class);
+    tester.assertModelValue("table:player1:panel1:mentalHealth", basePlayer.getMentalHealth());
+    tester.assertComponent("table:player1:panel1:prestige", Label.class);
+    tester.assertModelValue("table:player1:panel1:prestige", basePlayer.getPrestige());
+
+    // Player A
+    tester.assertComponent("table:container:0:panel", PlayerAreaPanel.class);
+    tester.assertModelValue("table:container:0:panel", game.getPlayers().get("A"));
+    tester.assertComponent("table:container:0:panel:userName", Label.class);
+    tester.assertModelValue("table:container:0:panel:userName", "A");
+    tester.assertComponent("table:container:0:panel:mentalHealth", Label.class);
+    tester.assertModelValue(
+        "table:container:0:panel:mentalHealth", game.getPlayers().get("A").getMentalHealth());
+    tester.assertComponent("table:container:0:panel:prestige", Label.class);
+    tester.assertModelValue(
+        "table:container:0:panel:prestige", game.getPlayers().get("A").getPrestige());
+
+    // Player B
+    tester.assertComponent("table:container:1:panel", PlayerAreaPanel.class);
+    tester.assertModelValue("table:container:1:panel", game.getPlayers().get("B"));
+    tester.assertComponent("table:container:1:panel:userName", Label.class);
+    tester.assertModelValue("table:container:1:panel:userName", "B");
+    tester.assertComponent("table:container:1:panel:mentalHealth", Label.class);
+    tester.assertModelValue(
+        "table:container:1:panel:mentalHealth", game.getPlayers().get("B").getMentalHealth());
+    tester.assertComponent("table:container:1:panel:prestige", Label.class);
+    tester.assertModelValue(
+        "table:container:1:panel:prestige", game.getPlayers().get("B").getPrestige());
+
+    // Player C
+    tester.assertComponent("table:container:2:panel", PlayerAreaPanel.class);
+    tester.assertModelValue("table:container:2:panel", game.getPlayers().get("C"));
+    tester.assertComponent("table:container:2:panel:userName", Label.class);
+    tester.assertModelValue("table:container:2:panel:userName", "C");
+    tester.assertComponent("table:container:2:panel:mentalHealth", Label.class);
+    tester.assertModelValue(
+        "table:container:2:panel:mentalHealth", game.getPlayers().get("C").getMentalHealth());
+    tester.assertComponent("table:container:2:panel:prestige", Label.class);
+    tester.assertModelValue(
+        "table:container:2:panel:prestige", game.getPlayers().get("C").getPrestige());
+
+    // Stack and Heap
+    tester.assertComponent("table:stackContainer", WebMarkupContainer.class);
+    tester.assertComponent("table:heapContainer", WebMarkupContainer.class);
   }
 
   @Test
