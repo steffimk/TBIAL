@@ -187,13 +187,13 @@ public class GameTable extends BasePage {
     table.add(heapContainer);
     table.add(player1);
     table.add(playerList);
+    // Update the table every 20 seconds so that other players can see progress
+    // -> Is there a better way for this?
+    table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
+
     add(table);
     add(discardButton);
     add(endTurnButton);
-
-    // Update the table every 20 seconds so that other players can see progress
-    // -> Is there a better way for this?
-    add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
  }
 
   private AttributeModifier getDiscardingAnimationForPlayer(
