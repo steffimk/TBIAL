@@ -1,8 +1,12 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -10,15 +14,12 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.wicket.RestartResponseAtInterceptPageException;
-import org.apache.wicket.markup.html.link.Link;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -77,6 +78,18 @@ public class GameLobby extends BasePage {
             return game.getPlayers().size() > 3;
           }
         };
+
+    Form leaveForm =
+        new Form("leaveForm") {
+
+          private static final long serialVersionUID = 1L;
+
+          protected void onSubmit() {
+            leaveCurrentGame();
+            setResponsePage(getTbialApplication().getHomePage());
+          }
+        };
+    add(leaveForm);
 
     startGameLink.setOutputMarkupId(true);
 
@@ -186,6 +199,21 @@ public class GameLobby extends BasePage {
     TBIALSession session = getSession();
     String hostName = game.getHost();
     return session.getUser().getName().equals(hostName);
+  }
+
+  /**
+   * Leaves the current game: Changes host, when leaving player is the host; Removes the game from
+   * GamesList; Sets current game of the leaving player null.
+   */
+  public void leaveCurrentGame() {
+    String currentGameName = getSession().getCurrentGame().getName();
+    if (!getGame().checkIfLastPlayer()) {
+      getGame().changeHost();
+    }
+    if (getGame().checkIfLastPlayer()) {
+      getGameManager().getCurrentGames().remove(currentGameName);
+    }
+    getSession().setCurrentGameNull();
   }
 
   /**

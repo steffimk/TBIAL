@@ -3,6 +3,8 @@ package de.lmu.ifi.sosy.tbial.game;
 /** Ability Cards are modeled with this class. */
 public class AbilityCard extends Card implements StackCard {
 
+  private static final long serialVersionUID = 1L;
+
   private final Ability ability;
 
   public AbilityCard(Ability ability) {

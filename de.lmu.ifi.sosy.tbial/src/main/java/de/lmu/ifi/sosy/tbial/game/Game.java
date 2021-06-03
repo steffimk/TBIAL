@@ -28,8 +28,8 @@ public class Game implements Serializable {
 
   private int maxPlayers;
 
-  private Map<String,Player> players;
-  
+  private Map<String, Player> players;
+
   private String host;
 
   private boolean isPrivate;
@@ -38,8 +38,8 @@ public class Game implements Serializable {
   private byte[] salt;
 
   private boolean hasStarted;
-  
-  private Stack stack;
+
+  private StackAndHeap stackAndHeap;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -103,7 +103,7 @@ public class Game implements Serializable {
     hasStarted = true;
     distributeRoleCards();
     distributeCharacterCardsAndInitialMentalHealthPoints();
-    stack = new Stack();
+    stackAndHeap = new StackAndHeap();
     distributeInitialHandCards();
   }
 
@@ -136,10 +136,87 @@ public class Game implements Serializable {
     for (Player player : players.values()) {
       Set<StackCard> handCards = new HashSet<>();
       for (int i = 0; i < player.getMentalHealthInt(); i++) {
-        handCards.add(stack.drawCard());
+        handCards.add(stackAndHeap.drawCard());
       }
       player.addToHandCards(handCards);
     }
+  }
+
+  /**
+   * Discarding a hand card. Removes the card from the player's hand cards and moves it to the heap.
+   * Does not check whether the player is allowed to do so.
+   *
+   * @param player The player who wants to discard the card.
+   * @param card The card the player wants to discard.
+   * @return <code>true</code> if the discarding was successful, <code>false</code> otherwise
+   */
+  public boolean discardHandCard(Player player, StackCard card) {
+    if (player.removeHandCard(card)) {
+      stackAndHeap.addToHeap(card);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Removes the card from the player's hand cards and adds it to the receiver's received cards.
+   *
+   * @param card The card to be played
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean putCardToPlayer(StackCard card, Player player, Player receiver) {
+    // TODO: if (not turn of player) return false;
+    if (player.removeHandCard(card)) {
+      receiver.receiveCard(card);
+      return true; // TODO: maybe receiver needs to respond to this action immediately
+    }
+    return false;
+  }
+
+  /**
+   * Checks whether the game already started, is already filled, the player is already inGame and
+   * the games privacy
+   *
+   * @param username
+   * @param password
+   * @return Whether the play is able/allowed to join the game
+   */
+  public boolean checkIfYouCanJoin(String username, String password) {
+    if (hasStarted()) {
+      return false;
+    }
+    if (getCurrentNumberOfPlayers() >= getMaxPlayers()) {
+      return false;
+    }
+    if (getPlayers().containsKey(username)) {
+      return false;
+    }
+    if (isPrivate() && !getHash().equals(Game.getHashedPassword(password, getSalt()))) {
+      return false;
+    }
+    return true;
+  }
+
+  /** Changes the host to the first/next player who isn't set as host */
+  public void changeHost() {
+    String currentHost = getHost();
+    for (Map.Entry<String, Player> entry : getPlayers().entrySet()) {
+      if (!entry.getValue().getUserName().equals(currentHost)) {
+        setHost(entry.getValue().getUserName());
+        break;
+      }
+    }
+  }
+
+  /**
+   * Whether the leaving player is the last player in the current game
+   *
+   * @return
+   */
+  public boolean checkIfLastPlayer() {
+    return getCurrentNumberOfPlayers() == 1;
   }
 
   public String getName() {
@@ -211,7 +288,50 @@ public class Game implements Serializable {
     this.host = requireNonNull(host);
   }
 
-  public Stack getStack() {
-    return stack;
+  public StackAndHeap getStackAndHeap() {
+    return stackAndHeap;
+  }
+
+  public void clickedOnHandCard(Player player, StackCard handCard) {
+    //   TODO: if(not is turn of player) do nothing
+    player.setSelectedHandCard(handCard);
+  }
+
+  public void clickedOnHeap(Player player) {
+    //   TODO: if(not is turn of player) do nothing
+    if (player.getSelectedHandCard() != null) {
+      discardHandCard(player, player.getSelectedHandCard());
+    }
+  }
+
+  /**
+   * Called when a player clicks on the "Add Card"-Button of another player. If he has selected a
+   * hand card, it will be moved to the block cards of the other player. No rules are checked yet.
+   *
+   * @param player The player whose turn it should be.
+   * @param receiverOfCard The player who should receive the previously selected card.
+   */
+  public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
+    //   TODO: if(not is turn of player) do nothing
+    StackCard selectedCard = player.getSelectedHandCard();
+    if (selectedCard != null) {
+      putCardToPlayer(selectedCard, player, receiverOfCard);
+    }
+  }
+
+  /**
+   * Called when a player clicks on the "Play Ability"-Button. If he has selected a hand card of the
+   * type ability, it will be moved to his uncovered cards. No rules are checked yet.
+   *
+   * @param player The player whose turn it should be.
+   */
+  public void clickedOnPlayAbility(Player player) {
+    //   TODO: if(not is turn of player) do nothing
+    StackCard selectedCard = player.getSelectedHandCard();
+    if (selectedCard != null && selectedCard instanceof AbilityCard) {
+      if (player.removeHandCard(selectedCard)) {
+        player.addPlayedAbilityCard((AbilityCard) selectedCard);
+      }
+    }
   }
 }
