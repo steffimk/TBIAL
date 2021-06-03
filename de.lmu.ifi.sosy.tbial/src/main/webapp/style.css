@@ -239,9 +239,8 @@ div.page-wrap {
 
 div.content {
 	float: left;
-	width: 65%;
+	width: 100%;
 	padding-right: 20px;
-	border-right: 1px dashed #e0e0e0;
 }
 
 div.content ul {
@@ -407,16 +406,4 @@ div.footer p a {
 pre.boxed {
 	white-space: pre-wrap;
 	border: solid 2px #ff6600;
-}
-
-.centered {
-	text-align: center;
-}
-
-.chat {
-	width: 70%;
-	height: 900px;
-	margin-left: 1%;
-	margin-top: 10%;
-	border: 2px solid black;
 }
