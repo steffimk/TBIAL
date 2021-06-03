@@ -268,6 +268,7 @@ public class GameLobby extends BasePage {
     if (getGame().checkIfLastPlayer()) {
       getGameManager().getCurrentGames().remove(currentGameName);
     }
+    getGame().getPlayers().remove(getSession().getUser().getName());
     getSession().setCurrentGameNull();
   }
 
