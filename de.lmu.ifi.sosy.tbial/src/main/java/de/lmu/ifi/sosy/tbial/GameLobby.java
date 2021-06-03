@@ -5,7 +5,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -112,8 +112,8 @@ public class GameLobby extends BasePage {
     chatMessagesContainer.add(ajaxBehavior);
     add(chatMessagesContainer);
 
-    Component send =
-        new AjaxSubmitLink("send") {
+    AjaxButton send =
+        new AjaxButton("send") {
           private static final long serialVersionUID = 1L;
 
           @Override
