@@ -123,6 +123,8 @@ public class GameLobby extends BasePage {
 
             ChatMessage chatMessage = new ChatMessage(username, text);
 
+            if (chatMessage.isMessageEmpty()) return;
+
             synchronized (chatMessages) {
               if (chatMessages.size() >= maxMessages) {
                 chatMessages.removeFirst();
