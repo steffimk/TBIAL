@@ -58,6 +58,8 @@ fieldset p {
   	cursor: pointer;
   	text-align: center;
   	text-decoration: none;
+  	font-size: small;
+  	width: 30%;
   	outline: none;
   	color: #fff;
   	background-color: #c0c0c0;
