@@ -58,6 +58,9 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    addNewPlayer("A");
+    addNewPlayer("B");
+    addNewPlayer("C");
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -381,5 +384,18 @@ public class Game implements Serializable {
       turn.switchToNextPlayer();
     }
   }
-  
+
+  /**
+   * A player clicked on the play cards button.
+   *
+   * @param player The player who clicked on the button.
+   */
+  public void clickedOnPlayCardsButton(Player player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
+      LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
+      return;
+    }
+    // TODO: Check whether player has drawn cards from stack
+    turn.setStage(TurnStage.PLAYING_CARDS);
+  }
 }

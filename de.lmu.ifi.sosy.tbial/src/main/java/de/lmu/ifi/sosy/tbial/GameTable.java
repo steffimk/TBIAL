@@ -161,6 +161,17 @@ public class GameTable extends BasePage {
           }
         });
 
+    AjaxLink<Void> playCardsButton =
+        new AjaxLink<>("playCardsButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onClick(AjaxRequestTarget target) {
+            currentGame.clickedOnPlayCardsButton(basePlayer);
+          }
+        };
+
     AjaxLink<Void> discardButton =
         new AjaxLink<>("discardButton") {
 
@@ -192,6 +203,7 @@ public class GameTable extends BasePage {
     table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
 
     add(table);
+    add(playCardsButton);
     add(discardButton);
     add(endTurnButton);
  }

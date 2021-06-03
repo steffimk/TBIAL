@@ -24,7 +24,6 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
@@ -125,8 +124,9 @@ public class GameTableTest extends PageTestBase {
     // Stack and Heap
     tester.assertComponent("table:stackContainer", WebMarkupContainer.class);
     tester.assertComponent("table:heapContainer", WebMarkupContainer.class);
-    
+
     // Turn related buttons
+    tester.assertComponent("playCardsButton", AjaxLink.class);
     tester.assertComponent("discardButton", AjaxLink.class);
     tester.assertComponent("endTurnButton", AjaxLink.class);
   }
@@ -273,6 +273,17 @@ public class GameTableTest extends PageTestBase {
 
     assertTrue(receivingPlayer.getReceivedCards().contains(testCard));
     assertFalse(basePlayer.getHandCards().contains(testCard));
+  }
+
+  @Test
+  public void clickOnPlayCardButtonWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DRAWING_CARDS);
+
+    tester.clickLink(tester.getComponentFromLastRenderedPage("playCardsButton"));
+
+    assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
   }
 
   @Test
