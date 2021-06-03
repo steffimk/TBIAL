@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -55,16 +56,15 @@ public class LobbyTest extends PageTestBase {
     tester.assertComponent("newGameForm:newGameName", TextField.class);
     tester.assertComponent("newGameForm:maxPlayers", NumberTextField.class);
     tester.assertComponent("newGameForm:isPrivate", AjaxCheckBox.class);
-    tester.assertComponent("newGameForm:passwordContainer:newGamePw", PasswordTextField.class);
+    tester.assertInvisible("newGameForm:passwordContainer");
     tester.assertModelValue("newGameForm:maxPlayers", 4);
-    tester.assertModelValue("newGameForm:isPrivate", true);
-    tester.assertModelValue("newGameForm:passwordContainer:newGamePw", null);
+    tester.assertModelValue("newGameForm:isPrivate", false);
   }
 
   @Test
   public void createGameOk() {
     Lobby lobby = tester.startPage(Lobby.class);
-    attemptCreateNewGame("newGame", "5", true, "testPassword");
+    attemptCreateNewPublicGame("newGame", "5");
 
     TBIALSession session = getSession();
 
@@ -76,8 +76,7 @@ public class LobbyTest extends PageTestBase {
     tester.assertRenderedPage(GameLobby.class);
   }
 
-  private void attemptCreateNewGame(
-      String gameName, String maxPlayers, boolean isPrivate, String password) {
+  private void attemptCreateNewPublicGame(String gameName, String maxPlayers) {
     // start and render the test page
     tester.startPage(Lobby.class);
 
@@ -87,8 +86,7 @@ public class LobbyTest extends PageTestBase {
     FormTester form = tester.newFormTester("newGameForm");
     form.setValue("newGameName", gameName);
     form.setValue("maxPlayers", maxPlayers);
-    form.setValue("isPrivate", true);
-    form.setValue("passwordContainer:newGamePw", password);
+    form.setValue("isPrivate", false);
     form.submit("newGameButton");
   }
 

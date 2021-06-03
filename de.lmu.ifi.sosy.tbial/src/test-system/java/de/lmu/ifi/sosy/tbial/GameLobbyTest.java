@@ -43,7 +43,7 @@ public class GameLobbyTest extends PageTestBase {
     Game game = gameLobby.getGame();
     assertEquals(game.hasStarted(), true);
     assertEquals(game.hasStarted(), true);
-    assertNotNull(game.getStack());
+    assertNotNull(game.getStackAndHeap());
     game.getPlayers()
         .values()
         .forEach(
