@@ -13,7 +13,7 @@
 
 <body>
 <wicket:extend>
- <div>
+ <div class="contentWrapper">
     <h3>The Game Lobby.</h3>
     <br> 
     <label wicket:id="isHostLabel">Information whether the player is the host of the game.</label>
@@ -27,11 +27,11 @@
 		<fieldset wicket:id="chatMessages">
 			<p wicket:id="messages"> 
 				<span class="username" wicket:id="sender">Username</span>
-				<span wicket:id="textMessage">Chatmessage</span>
+				<span class="chatMessage" wicket:id="textMessage">Chatmessage</span>
 			</p>	
 		</fieldset>
 		  	
-	  <form wicket:id="form">
+	  <form wicket:id="form" class="inputWrapper">
 		<input class="messageInput" type="text" wicket:id="message">
 	 	<input class="submitButton" type="submit" value="Send" wicket:id="send">
 	  </form> 
