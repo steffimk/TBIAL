@@ -137,17 +137,7 @@ public class GameLobby extends BasePage {
           }
         };
 
-    String gameInfoText =
-        "\nCurrent game: "
-            + getGame().getName()
-            + " (Private: "
-            + getGame().isPrivate()
-            + ")"
-            + "\nCurrently in the lobby: "
-            + getGame().getCurrentNumberOfPlayers()
-            + "/"
-            + getGame().getMaxPlayers()
-            + "\n";
+    String gameInfoText = getGame().getName() + " (Private: " + getGame().isPrivate() + ")" + "\n";
     WebMarkupContainer gameInfoContainer = new WebMarkupContainer("gameInfoContainer");
     gameInfoContainer.add(gameInfoList);
     gameInfoContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
