@@ -60,6 +60,7 @@ public class GameLobby extends BasePage {
 
     isHostLabel = new Label("isHostLabel", () -> currentHostMessage());
     currentStatusLabel = new Label("currentStatusLabel", () -> getCurrentStatusMessage());
+    currentStatusLabel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
     startGameLink =
         new Link<Void>("startGameLink") {
