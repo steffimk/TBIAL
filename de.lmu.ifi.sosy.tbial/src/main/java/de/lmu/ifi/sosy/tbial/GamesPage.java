@@ -90,7 +90,7 @@ public class GamesPage extends BasePage {
                 new Label(
                     "numberOfPlayers",
                     game.getCurrentNumberOfPlayers() + "/" + game.getMaxPlayers()));
-            listItem.add(new Label("name", game.getName()));
+            listItem.add(new Label("gamename", game.getName()));
             WebMarkupContainer lockedIcon = new WebMarkupContainer("lockedIcon");
             lockedIcon.setOutputMarkupId(true);
             lockedIcon.setVisible(game.isPrivate());

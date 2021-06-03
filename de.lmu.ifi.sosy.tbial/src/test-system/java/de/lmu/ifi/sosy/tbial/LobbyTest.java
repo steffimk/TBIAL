@@ -10,9 +10,7 @@ import static org.junit.Assert.assertEquals;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.NumberTextField;
-import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.TagTester;
@@ -93,18 +91,25 @@ public class LobbyTest extends PageTestBase {
   @Test
   public void numberOfCreatedGamesCorrect() {
     tester.startPage(Lobby.class);
+    tester.assertRenderedPage(Lobby.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("showGamesButton");
 
     String htmlDocument = tester.getLastResponse().getDocument();
+    System.out.println(htmlDocument);
     List<TagTester> tagTesterList =
         TagTester.createTagsByAttribute(htmlDocument, "wicket:id", "gamename", false);
     Assert.assertEquals(3, tagTesterList.size());
-
-    tester.assertRenderedPage(Lobby.class);
   }
 
   @Test
   public void displayCreatedGamesInLobby() {
     tester.startPage(Lobby.class);
+    tester.assertRenderedPage(Lobby.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("showGamesButton");
 
     String htmlDocument = tester.getLastResponse().getDocument();
     List<TagTester> tagTesterList =
