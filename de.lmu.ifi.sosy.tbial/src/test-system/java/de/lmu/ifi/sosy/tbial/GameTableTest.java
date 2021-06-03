@@ -57,6 +57,8 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent("table:player1:panel1", PlayerAreaPanel.class);
     tester.assertModelValue("table:player1:panel1", basePlayer);
     tester.assertComponent("table:player1:panel1:playAbilityButton", AjaxLink.class);
+    tester.assertComponent("discardButton", AjaxLink.class);
+    tester.assertComponent("endTurnButton", AjaxLink.class);
     // TODO T6: Game Table
   }
 
@@ -115,7 +117,7 @@ public class GameTableTest extends PageTestBase {
     assertEquals(basePlayer.getSelectedHandCard(), clickedOnHandCard);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("unlikely-arg-type")
   @Test
   public void clickOnPlayAbilityWorks() {
     tester.startPage(GameTable.class);
@@ -172,5 +174,39 @@ public class GameTableTest extends PageTestBase {
 
     assertTrue(receivingPlayer.getReceivedCards().contains(testCard));
     assertFalse(basePlayer.getHandCards().contains(testCard));
+  }
+
+  @Test
+  public void clickOnDiscardButtonWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    tester.clickLink(tester.getComponentFromLastRenderedPage("discardButton"));
+
+    assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+  }
+
+  @Test
+  public void clickOnEndTurnButtonWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
+    int mentalHealth = basePlayer.getMentalHealthInt();
+    int handCardSize = basePlayer.getHandCards().size();
+
+    // Make mental health smaller than amount of hand cards -> player cannot end turn
+    basePlayer.addToMentalHealth(-mentalHealth);
+    tester.clickLink(tester.getComponentFromLastRenderedPage("endTurnButton"));
+    
+    assertEquals(game.getTurn().getCurrentPlayer(), basePlayer);
+    assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+
+    // Make mental health bigger than amount of hand cards -> player can end turn
+    basePlayer.addToMentalHealth(handCardSize + 1);
+    tester.clickLink(tester.getComponentFromLastRenderedPage("endTurnButton"));
+    
+    assertFalse(game.getTurn().getCurrentPlayer() == basePlayer);
+    assertEquals(game.getTurn().getStage(), TurnStage.DRAWING_CARDS);
   }
 }
