@@ -21,4 +21,8 @@ public class ChatMessage implements Serializable {
   public String getTextMessage() {
     return textMessage;
   }
+
+  public boolean isMessageEmpty() {
+    return textMessage == null;
+  }
 }
