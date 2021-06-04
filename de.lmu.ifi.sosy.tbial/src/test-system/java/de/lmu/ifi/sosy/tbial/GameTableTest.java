@@ -27,6 +27,7 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
+import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 public class GameTableTest extends PageTestBase {
 
@@ -67,6 +68,7 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent("table:player1:panel1", PlayerAreaPanel.class);
     tester.assertModelValue("table:player1:panel1", basePlayer);
     tester.assertComponent("table:player1:panel1:playAbilityButton", AjaxLink.class);
+
     tester.assertComponent("table:player1:panel1:userName", Label.class);
     tester.assertModelValue("table:player1:panel1:userName", "testuser");
     tester.assertComponent("table:player1:panel1:mentalHealth", Label.class);
@@ -168,6 +170,11 @@ public class GameTableTest extends PageTestBase {
     // Stack and Heap
     tester.assertComponent("table:stackContainer", WebMarkupContainer.class);
     tester.assertComponent("table:heapContainer", WebMarkupContainer.class);
+
+    // Turn related buttons
+    tester.assertComponent("playCardsButton", AjaxLink.class);
+    tester.assertComponent("discardButton", AjaxLink.class);
+    tester.assertComponent("endTurnButton", AjaxLink.class);
   }
 
   /**
@@ -203,6 +210,8 @@ public class GameTableTest extends PageTestBase {
   @Test
   public void clickOnHeapTriggersClickedOnHeapInGame() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
     ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
     StackCard testCard = handCards.get(0);
     basePlayer.setSelectedHandCard(testCard);
@@ -227,6 +236,8 @@ public class GameTableTest extends PageTestBase {
   @Test
   public void clickOnHandCardTriggersSelectHandCard() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
     ListView<StackCard> handCardsListView =
         (ListView<StackCard>)
             tester.getComponentFromLastRenderedPage(
@@ -251,10 +262,12 @@ public class GameTableTest extends PageTestBase {
     assertEquals(basePlayer.getSelectedHandCard(), clickedOnHandCard);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("unlikely-arg-type")
   @Test
   public void clickOnPlayAbilityWorks() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
 
     AbilityCard testCard = new AbilityCard(Ability.GOOGLE);
     basePlayer.addToHandCards(testCard);
@@ -279,6 +292,8 @@ public class GameTableTest extends PageTestBase {
   @Test
   public void clickOnAddCardLetsPlayerReceiveCard() {
     tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
 
     ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
     StackCard testCard = handCards.get(0);
@@ -304,5 +319,50 @@ public class GameTableTest extends PageTestBase {
 
     assertTrue(receivingPlayer.getReceivedCards().contains(testCard));
     assertFalse(basePlayer.getHandCards().contains(testCard));
+  }
+
+  @Test
+  public void clickOnPlayCardButtonWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DRAWING_CARDS);
+
+    tester.clickLink(tester.getComponentFromLastRenderedPage("playCardsButton"));
+
+    assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
+  }
+
+  @Test
+  public void clickOnDiscardButtonWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    tester.clickLink(tester.getComponentFromLastRenderedPage("discardButton"));
+
+    assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+  }
+
+  @Test
+  public void clickOnEndTurnButtonWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
+    int mentalHealth = basePlayer.getMentalHealthInt();
+    int handCardSize = basePlayer.getHandCards().size();
+
+    // Make mental health smaller than amount of hand cards -> player cannot end turn
+    basePlayer.addToMentalHealth(-mentalHealth);
+    tester.clickLink(tester.getComponentFromLastRenderedPage("endTurnButton"));
+    
+    assertEquals(game.getTurn().getCurrentPlayer(), basePlayer);
+    assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+
+    // Make mental health bigger than amount of hand cards -> player can end turn
+    basePlayer.addToMentalHealth(handCardSize + 1);
+    tester.clickLink(tester.getComponentFromLastRenderedPage("endTurnButton"));
+    
+    assertFalse(game.getTurn().getCurrentPlayer() == basePlayer);
+    assertEquals(game.getTurn().getStage(), TurnStage.DRAWING_CARDS);
   }
 }

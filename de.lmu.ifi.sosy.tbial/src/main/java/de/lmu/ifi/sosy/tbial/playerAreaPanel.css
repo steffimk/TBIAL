@@ -90,6 +90,7 @@ li {
 }
 
 .linkstyle {
+	display: flex;
 	padding: 0;
 	height: 95%;
 	width: 27%;
