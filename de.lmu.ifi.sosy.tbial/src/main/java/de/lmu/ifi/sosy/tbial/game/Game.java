@@ -53,6 +53,9 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    addNewPlayer("A");
+    addNewPlayer("B");
+    addNewPlayer("C");
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -324,13 +327,14 @@ public class Game implements Serializable {
    * type ability, it will be moved to his uncovered cards. No rules are checked yet.
    *
    * @param player The player whose turn it should be.
+   * @param receiverOfCard
    */
-  public void clickedOnPlayAbility(Player player) {
+  public void clickedOnPlayAbility(Player player, Player receiverOfCard) {
     //   TODO: if(not is turn of player) do nothing
     StackCard selectedCard = player.getSelectedHandCard();
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
       if (player.removeHandCard(selectedCard)) {
-        player.addPlayedAbilityCard((AbilityCard) selectedCard);
+        receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
       }
     }
   }
