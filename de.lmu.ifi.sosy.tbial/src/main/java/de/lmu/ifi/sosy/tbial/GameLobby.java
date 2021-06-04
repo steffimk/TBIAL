@@ -11,6 +11,7 @@ import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -64,6 +65,8 @@ public class GameLobby extends BasePage {
 
     startGameLink =
         new Link<Void>("startGameLink") {
+          private String customCSS = null;
+          private boolean customEnabled = true;
           private static final long serialVersionUID = 1L;
 
           @Override
@@ -75,6 +78,7 @@ public class GameLobby extends BasePage {
           public boolean isVisible() {
             // TODO: When implementing change of host: Check if this works or if we have to set
             // visibility differently.
+
             return isHost();
           }
 
@@ -82,7 +86,20 @@ public class GameLobby extends BasePage {
           public boolean isEnabled() {
             // TODO: When implementing join game: Check if this works or if we have to set
             // isEnabled differently.
-            return game.getPlayers().size() > 3;
+            if (game.getPlayers().size() <= 3) {
+              customCSS = "disabled";
+              customEnabled = false;
+            } else {
+              customCSS = null;
+              customEnabled = true;
+            }
+            return game.getPlayers().size() >= 4 && super.isEnabled() && customEnabled;
+          }
+
+          @Override
+          protected void onComponentTag(ComponentTag tag) {
+            super.onComponentTag(tag);
+            if (customCSS != null) tag.put("class", customCSS);
           }
         };
 
@@ -210,6 +227,9 @@ public class GameLobby extends BasePage {
 
     Component chatForm = new Form<String>("form").add(textField, send);
 
+    //AjaxSelfUpdatingTimerBehavior ajaxStartGameBehavior =
+    //new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3));
+    //startGameLink.add(ajaxStartGameBehavior);
     add(currentStatusLabel);
     add(isHostLabel);
     add(startGameLink);
@@ -286,6 +306,7 @@ public class GameLobby extends BasePage {
     String message = currentPlayers + "/" + maxPlayers + " players.";
     if (maxPlayers - currentPlayers == 0)
       return message + " Waiting for the host to start the game.";
+
     if (currentPlayers > 4) return message + " The host can start the game.";
     else return message + " Waiting for more players to join.";
   }
