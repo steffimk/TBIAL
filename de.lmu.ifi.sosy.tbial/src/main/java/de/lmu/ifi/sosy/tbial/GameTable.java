@@ -33,6 +33,7 @@ public class GameTable extends BasePage {
   private static final long serialVersionUID = 1L;
 
   private WebMarkupContainer table;
+  public float test = 1.0f;
 
   public GameTable() {
 
@@ -105,11 +106,37 @@ public class GameTable extends BasePage {
           protected void onEvent(AjaxRequestTarget target) {
             System.out.println("Clicked on stack");
             // TODO: currentGame.drawCardFromStack(basePlayer);
+
+            Image image = (Image) this.getComponent().get("stackCard");
+            updateStackImage(image, currentGame);
+
             target.add(table);
+          }
+
+          // stack image changes depending on amount of cards left on stack
+          public void updateStackImage(Image image, Game currentGame) {
+            int currentStackSize = currentGame.getStackAndHeap().getStack().size();
+            int StackSizeAtStart = currentGame.getStackAndHeap().getStackSizeAtStart();
+            float remainingCardsPercentage = (float) currentStackSize / (float) StackSizeAtStart;
+            test -= 0.1;
+            remainingCardsPercentage = test;
+
+            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+              image.setImageResourceReference(PlayerAreaPanel.smallStackImage);
+
+            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
+              image.setImageResourceReference(PlayerAreaPanel.mediumStackImage);
+
+            } else if (remainingCardsPercentage >= 0.66) {
+              image.setImageResourceReference(PlayerAreaPanel.bigStackImage);
+
+            } else {
+              image.setImageResourceReference(PlayerAreaPanel.stackEmptyImage);
+            }
           }
         });
 
-    Image stackImage = new Image("stackCard", PlayerAreaPanel.cardBackSideImage);
+    Image stackImage = new Image("stackCard", PlayerAreaPanel.bigStackImage);
     stackContainer.add(stackImage);
 
     WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
@@ -139,7 +166,8 @@ public class GameTable extends BasePage {
           @Override
           protected ResourceReference getImageResourceReference() {
             if (this.getDefaultModelObject() == null) {
-              return PlayerAreaPanel.cardBackSideImage; // TODO: add placeholder when stack is empty
+              return PlayerAreaPanel.heapEmptyImage;
+              // TODO: add placeholder when stack is empty
             }
             return new PackageResourceReference(
                 getClass(), ((StackCard) this.getDefaultModelObject()).getResourceFileName());
