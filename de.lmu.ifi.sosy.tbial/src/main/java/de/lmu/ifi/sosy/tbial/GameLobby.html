@@ -27,8 +27,13 @@
 		<form wicket:id="gameLobbyInfoForm" class="boxedform"
 			style="width: 98%">
 			<b>Current Game: </b>
-			<span wicket:id="gameInfo" class="mark">This text will be
-				replaced with information about the game</span>
+			<span wicket:id="gameInfo" class="gameStyle">Game Info</span>
+			<br>
+			<div wicket:id="lockedIcon" class=centered ><i class="fas fa-lock"></i>
+			<span><i>The Game is private!</i></span></div>
+			<div wicket:id="unlockedIcon" class=centered ><i class="fas fa-unlock"></i>
+			<span><i>The Game is not password protected!</i></span></div>
+			<br>
 			<div wicket:id="gameInfoContainer">
 				<b>Current Players:</b>
 				<ul wicket:id="gameInfos">
@@ -45,14 +50,11 @@
     <br>
     <label wicket:id="currentStatusLabel">Information about the amount of players that can still join.</label>
     <br>
-    
-
-		    
-			<a wicket:id="startGameLink" class="linkstyle">Start Game </a>
-			<br>
+	<a wicket:id="startGameLink" >Start Game </a>
+	<br>
 
 	
-<div class="chatWrapper">
+	<div class="chatWrapper">
 	<div class="chatWindow">
 		<fieldset wicket:id="chatMessages">
 			<p wicket:id="messages"> 

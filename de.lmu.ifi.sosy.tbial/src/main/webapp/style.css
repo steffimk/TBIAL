@@ -324,23 +324,7 @@ div.footer p a {
 	height: 31px;
 	text-align: center;
 	line-height: 25px;
-	color:#F4731D;
-	font-size: 1em;
-	font-weight: bold;
-}
-
-.disabled {
-	display: block;
-	margin-top: 14px;
-	padding-top: 4px;
-	border-radius: 20px;
-	border: 2px solid #828282;
-	text-decoration: none;
-	width: 100px;
-	height: 31px;
-	text-align: center;
-	line-height: 25px;
-	color: #828282;
+	color: #F4731D;
 	font-size: 1em;
 	font-weight: bold;
 }

@@ -14,7 +14,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -67,6 +66,7 @@ public class GameLobby extends BasePage {
         new Link<Void>("startGameLink") {
           private String customCSS = null;
           private boolean customEnabled = true;
+
           private static final long serialVersionUID = 1L;
 
           @Override
@@ -78,7 +78,6 @@ public class GameLobby extends BasePage {
           public boolean isVisible() {
             // TODO: When implementing change of host: Check if this works or if we have to set
             // visibility differently.
-
             return isHost();
           }
 
@@ -86,20 +85,23 @@ public class GameLobby extends BasePage {
           public boolean isEnabled() {
             // TODO: When implementing join game: Check if this works or if we have to set
             // isEnabled differently.
-            if (game.getPlayers().size() <= 3) {
-              customCSS = "disabled";
+            if (game.getPlayers().size() < 4) {
               customEnabled = false;
             } else {
-              customCSS = null;
               customEnabled = true;
             }
-            return game.getPlayers().size() >= 4 && super.isEnabled() && customEnabled;
+            return customEnabled;
           }
 
           @Override
           protected void onComponentTag(ComponentTag tag) {
+            if (game.getPlayers().size() < 4) {
+              customCSS = "disabledStyle";
+            } else {
+              customCSS = "linkstyle";
+            }
             super.onComponentTag(tag);
-            if (customCSS != null) tag.put("class", customCSS);
+            tag.put("class", customCSS);
           }
         };
 
@@ -154,14 +156,22 @@ public class GameLobby extends BasePage {
           }
         };
 
-    String gameInfoText = getGame().getName() + " (Private: " + getGame().isPrivate() + ")" + "\n";
+    WebMarkupContainer lockedIcon = new WebMarkupContainer("lockedIcon");
+    lockedIcon.setOutputMarkupId(true);
+    lockedIcon.setVisible(getGame().isPrivate());
+    WebMarkupContainer unlockedIcon = new WebMarkupContainer("unlockedIcon");
+    unlockedIcon.setOutputMarkupId(true);
+    unlockedIcon.setVisible(!getGame().isPrivate());
+
     WebMarkupContainer gameInfoContainer = new WebMarkupContainer("gameInfoContainer");
     gameInfoContainer.add(gameInfoList);
     gameInfoContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
     gameInfoContainer.setOutputMarkupId(true);
 
     Form<?> gameLobbyInfoForm = new Form<>("gameLobbyInfoForm");
-    gameLobbyInfoForm.add(new MultiLineLabel("gameInfo", gameInfoText));
+    gameLobbyInfoForm.add(new Label("gameInfo", getGame().getName()));
+    gameLobbyInfoForm.add(lockedIcon);
+    gameLobbyInfoForm.add(unlockedIcon);
     gameLobbyInfoForm.add(gameInfoContainer);
     add(gameLobbyInfoForm);
 
@@ -227,9 +237,6 @@ public class GameLobby extends BasePage {
 
     Component chatForm = new Form<String>("form").add(textField, send);
 
-    //AjaxSelfUpdatingTimerBehavior ajaxStartGameBehavior =
-    //new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3));
-    //startGameLink.add(ajaxStartGameBehavior);
     add(currentStatusLabel);
     add(isHostLabel);
     add(startGameLink);
