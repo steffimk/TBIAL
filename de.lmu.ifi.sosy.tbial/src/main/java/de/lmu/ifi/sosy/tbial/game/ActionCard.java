@@ -30,6 +30,11 @@ public class ActionCard extends Card implements StackCard {
     return action.fileName;
   }
 
+  @Override
+  public String toString() {
+    return action.toString();
+  }
+
   /** Enum containing information about the specific action cards. */
   public enum Action {
     RED_BULL("Red Bull Dispenser", 1, ActionType.SPECIAL, "imgs/cards/card14.png"),

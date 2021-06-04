@@ -26,6 +26,11 @@ public class StumblingBlockCard extends Card implements StackCard {
     return stumblingBlock.fileName;
   }
 
+  @Override
+  public String toString() {
+    return stumblingBlock.toString();
+  }
+
   /** Enum containing information about the specific stumbling block cards. */
   public enum StumblingBlock {
     MAINTENANCE("Fortran Maintenance", 1, "imgs/cards/card19.png"),

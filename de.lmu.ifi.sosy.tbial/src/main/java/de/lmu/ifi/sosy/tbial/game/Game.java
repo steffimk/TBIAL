@@ -17,9 +17,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
-import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
-import de.lmu.ifi.sosy.tbial.game.ActionCard.ActionType;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
@@ -62,9 +59,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-    addNewPlayer("A");
-    addNewPlayer("B");
-    addNewPlayer("C");
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -152,11 +146,6 @@ public class Game implements Serializable {
         handCards.add(stackAndHeap.drawCard());
       }
       player.addToHandCards(handCards);
-      // TODO: Remove. Only for testing.
-      player.addToHandCards(new AbilityCard(Ability.BUG_DELEGATION));
-      player.addToHandCards(new ActionCard(Action.NOT_FOUND));
-      player.addToHandCards(new ActionCard(Action.NOT_FOUND));
-      player.addToHandCards(new ActionCard(Action.NOT_FOUND));
     }
   }
 
@@ -177,7 +166,9 @@ public class Game implements Serializable {
   }
 
   /**
-   * Removes the card from the player's hand cards and adds it to the receiver's received cards.
+   * Removes the card from the player's hand cards and adds it to the receiver's received cards. If
+   * the card is a bug and the receiver owns a bug delegation card, there's a 25% chance the card
+   * will get blocked and added to the heap immediately.
    *
    * @param card The card to be played
    * @param player The player who is playing the card.
@@ -190,6 +181,17 @@ public class Game implements Serializable {
       if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
         // Receiver moves card to heap immediately without having to react
         stackAndHeap.addToHeap(card, receiver);
+        // TODO: Add System Chat Message
+        LOGGER.info(
+            receiver.getUserName()
+                + " blocked "
+                + card.toString()
+                + " with his bug delegation card.");
+        System.out.println(
+            receiver.getUserName()
+                + " blocked \""
+                + card.toString()
+                + "\" with a bug delegation card.");
         return true;
       }
       receiver.receiveCard(card);
@@ -349,7 +351,7 @@ public class Game implements Serializable {
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
-    if (selectedCard != null) {
+    if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
   }

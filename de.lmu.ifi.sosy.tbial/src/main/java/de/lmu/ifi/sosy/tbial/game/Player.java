@@ -1,8 +1,6 @@
 package de.lmu.ifi.sosy.tbial.game;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
-import de.lmu.ifi.sosy.tbial.game.ActionCard.ActionType;
-import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
@@ -228,7 +226,8 @@ public class Player implements Serializable {
    * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
    */
   public boolean bugGetsBlockedByBugDelegationCard() {
-	  Stream<AbilityCard> bugDelCards = playedAbilityCards.stream().filter( card ->  card.getAbility() == Ability.BUG_DELEGATION);
+    Stream<AbilityCard> bugDelCards =
+        playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
     return bugDelCards.count() > 0 && Math.random() < 0.25;
   }
 }
