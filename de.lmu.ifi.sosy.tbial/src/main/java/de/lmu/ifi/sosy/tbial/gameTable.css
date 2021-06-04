@@ -1,7 +1,6 @@
 #wrapper {
 	display: flex;
 	margin-top: 1%;
-	margin-bottom: 1%;
 }
 
 #table {
@@ -1185,7 +1184,6 @@
 .stack {
 	height: 50%;
 	width: 30%;
-	border: 1px solid black;
 	display: inline-block;
 	margin-left: 17%;
 	margin-top: 25%;
@@ -1194,7 +1192,112 @@
 .heap {
 	height: 50%;
 	width: 30%;
-	border: 1px solid black;
 	display: inline-block;
 	margin-left: 5%;
+}
+
+.heapcard, .stackcard {
+	height: 100%;
+	border-radius: 10%;
+}
+
+.heapcard {
+	animation-duration: 1s;
+	position: relative;
+	animation-timing-function: ease-in;
+}
+
+@keyframes discardAnimation {
+  0%   {left:0vw; top:35vh;}
+  100% {left:0vw; top:0vh;}
+}
+
+@keyframes discardAnimation4-2 {
+  0%   {left:-20vw; top:0vh;}
+  100% {left:0vw; top:0vh;}
+}
+
+@keyframes discardAnimation4-3 {
+  0%   {left:0px; top:-35vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation4-4 {
+  0%   {left:20vw; top:0px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-2 {
+  0%   {left:-20vw; top:0px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-3 {
+  0%   {left:-10vw; top:-35vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-4 {
+  0%   {left:10vw; top:-35vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation5-5 {
+  0%   {left:20vw; top:0px;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-2 {
+  0%   {left:-20vw; top:8vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-3 {
+  0%   {left:-17vw; top:-30vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-4 {
+  0%   {left:0px; top:-35vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-5 {
+  0%   {left:17vw; top:-30vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation6-6 {
+  0%   {left:20vw; top:8vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-2 {
+  0%   {left:-17vw; top:15vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-3 {
+  0%   {left:-15vw; top:-15vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-4 {
+  0%   {left:-5vw; top:-35vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-5 {
+  0%   {left:5vw; top:-35vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-6 {
+  0%   {left:15vw; top:-15vh;}
+  100% {left:0px; top:0px;}
+}
+
+@keyframes discardAnimation7-7 {
+  0%   {left:17vw; top:15vh;}
+  100% {left:0px; top:0px;}
 }

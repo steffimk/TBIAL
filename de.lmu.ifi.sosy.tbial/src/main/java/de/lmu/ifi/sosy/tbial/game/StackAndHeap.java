@@ -19,11 +19,13 @@ public class StackAndHeap implements Serializable {
 
   private List<StackCard> stack;
   private List<StackCard> heap;
+  /** The last player to add a card to the heap. Needed for the animation of the discard */
+  private Player lastPlayerToDiscardCard;
 
   public StackAndHeap() {
     this.stack = Collections.synchronizedList(new LinkedList<StackCard>());
     this.heap = Collections.synchronizedList(new LinkedList<StackCard>());
-
+    
     addAllCards();
     Collections.shuffle(stack);
   }
@@ -64,15 +66,35 @@ public class StackAndHeap implements Serializable {
    *
    * @param card The card to be added to the heap
    */
-  public void addToHeap(StackCard card) {
+  public void addToHeap(StackCard card, Player player) {
     heap.add(card);
+    lastPlayerToDiscardCard = player;
   }
 
   public List<StackCard> getStack() {
     return stack;
   }
 
+  /**
+   * Returns the uppermost card of the heap, that is the most recently discarded card.
+   *
+   * @return The uppermost card of the heap or <code>null</code> if the heap is empty
+   */
+  public StackCard getUppermostCardOfHeap() {
+    if (heap.isEmpty()) return null;
+    return heap.get(heap.size() - 1);
+  }
+
   public List<StackCard> getHeap() {
     return heap;
+  }
+
+  /**
+   * Get the last player to add a card to the heap. Needed for the animation of the discard
+   *
+   * @return The last player to add a card to the heap.
+   */
+  public Player getLastPlayerToDiscardCard() {
+    return lastPlayerToDiscardCard;
   }
 }
