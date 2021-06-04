@@ -25,6 +25,7 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 
 public class GameTableTest extends PageTestBase {
@@ -127,7 +128,7 @@ public class GameTableTest extends PageTestBase {
                 player.getPath().substring(2) + ":panel:prestige",
                 player.getModelObject().getPrestige());
             // only visible if role = manager
-            if (player.getModelObject().getRoleName() == "Manager") {
+            if (player.getModelObject().getRole() == Role.MANAGER) {
               tester.assertComponent(
                   player.getPath().substring(2) + ":panel:roleName", Label.class);
               tester.assertModelValue(
