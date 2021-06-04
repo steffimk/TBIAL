@@ -62,10 +62,11 @@ public class GameLobby extends BasePage {
     currentStatusLabel = new Label("currentStatusLabel", () -> getCurrentStatusMessage());
     currentStatusLabel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
+    Form startGameForm = new Form("startGameForm");
     startGameLink =
         new Link<Void>("startGameLink") {
           private String customCSS = null;
-          private boolean customEnabled = true;
+          private boolean customEnabled = false;
 
           private static final long serialVersionUID = 1L;
 
@@ -104,6 +105,8 @@ public class GameLobby extends BasePage {
             tag.put("class", customCSS);
           }
         };
+    startGameForm.add(startGameLink);
+    startGameForm.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
     Form leaveForm =
         new Form("leaveForm") {
@@ -239,7 +242,8 @@ public class GameLobby extends BasePage {
 
     add(currentStatusLabel);
     add(isHostLabel);
-    add(startGameLink);
+    //add(startGameLink);
+    add(startGameForm);
     add(chatForm);
   }
 

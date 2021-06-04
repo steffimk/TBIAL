@@ -409,19 +409,3 @@ pre.boxed {
 	border: solid 2px #ff6600;
 }
 
-.gameStyle {
-	color: #ff6600;
-	font-size: 1,5em;
-}
-
-.buttonStyle {
-	background-color: #e8e8e8;
-	border: 1px solid #ff6600;
-	font-size: 1em;
-	color: black;
-}
-
-.buttonStyle:hover {
-	background-color: #ff6600;
-	color: white;
-}

@@ -32,7 +32,7 @@
 			<div wicket:id="lockedIcon" class=centered ><i class="fas fa-lock"></i>
 			<span><i>The Game is private!</i></span></div>
 			<div wicket:id="unlockedIcon" class=centered ><i class="fas fa-unlock"></i>
-			<span><i>The Game is not password protected!</i></span></div>
+			<span><i>The Game is public!</i></span></div>
 			<br>
 			<div wicket:id="gameInfoContainer">
 				<b>Current Players:</b>
@@ -50,7 +50,9 @@
     <br>
     <label wicket:id="currentStatusLabel">Information about the amount of players that can still join.</label>
     <br>
+    <form wicket:id="startGameForm">
 	<a wicket:id="startGameLink" >Start Game </a>
+	</form>
 	<br>
 
 	
