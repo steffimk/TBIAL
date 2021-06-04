@@ -2,8 +2,6 @@ package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -25,13 +23,11 @@ public class ChatPanel extends Panel {
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = LogManager.getLogger(ChatPanel.class);
-
   private static final int maxMessages = 80;
-  private static final LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
+
   private MarkupContainer chatMessagesContainer;
 
-  public ChatPanel(String id) {
+  public ChatPanel(String id, LinkedList<ChatMessage> chatMessages) {
     super(id);
 
     final TextField<String> textField = new TextField<String>("message", new Model<String>());
@@ -95,6 +91,4 @@ public class ChatPanel extends Panel {
     Component chatForm = new Form<String>("form").add(textField, send);
     add(chatForm);
   }
-  
- 
 }

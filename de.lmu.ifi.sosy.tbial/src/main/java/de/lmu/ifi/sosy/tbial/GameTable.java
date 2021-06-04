@@ -206,7 +206,7 @@ public class GameTable extends BasePage {
     add(playCardsButton);
     add(discardButton);
     add(endTurnButton);
-    add(new ChatPanel("chatPanel"));
+    add(new ChatPanel("chatPanel", currentGame.getChatMessages()));
  }
 
   private AttributeModifier getDiscardingAnimationForPlayer(

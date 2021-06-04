@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -45,6 +47,8 @@ public class Game implements Serializable {
   private StackAndHeap stackAndHeap;
 
   private Turn turn;
+
+  private LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -106,6 +110,7 @@ public class Game implements Serializable {
       return;
     }
     hasStarted = true;
+    chatMessages.clear();
     distributeRoleCards();
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
@@ -239,6 +244,10 @@ public class Game implements Serializable {
 
   public Turn getTurn() {
     return turn;
+  }
+
+  public LinkedList<ChatMessage> getChatMessages() {
+    return chatMessages;
   }
 
   public int getCurrentNumberOfPlayers() {

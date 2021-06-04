@@ -89,7 +89,7 @@ public class GameLobby extends BasePage {
 
     startGameLink.setOutputMarkupId(true);
 
-    add(new ChatPanel("chatPanel"));
+    add(new ChatPanel("chatPanel", game.getChatMessages()));
 
     add(currentStatusLabel);
     add(isHostLabel);
@@ -143,12 +143,12 @@ public class GameLobby extends BasePage {
    * GamesList; Sets current game of the leaving player null.
    */
   public void leaveCurrentGame() {
-    String currentGameName = getSession().getCurrentGame().getName();
+    Game currentGame = getSession().getCurrentGame();
     if (!getGame().checkIfLastPlayer()) {
       getGame().changeHost();
     }
     if (getGame().checkIfLastPlayer()) {
-      getGameManager().getCurrentGames().remove(currentGameName);
+      getGameManager().removeGame(currentGame);
     }
     getSession().setCurrentGameNull();
   }
