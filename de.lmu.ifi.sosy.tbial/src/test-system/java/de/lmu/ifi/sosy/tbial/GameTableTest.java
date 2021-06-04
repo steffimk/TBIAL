@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.junit.Before;
@@ -175,6 +177,9 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent("playCardsButton", AjaxLink.class);
     tester.assertComponent("discardButton", AjaxLink.class);
     tester.assertComponent("endTurnButton", AjaxLink.class);
+
+    // Chat
+    tester.assertComponent("chatPanel", ChatPanel.class);
   }
 
   /**
@@ -364,5 +369,48 @@ public class GameTableTest extends PageTestBase {
     
     assertFalse(game.getTurn().getCurrentPlayer() == basePlayer);
     assertEquals(game.getTurn().getStage(), TurnStage.DRAWING_CARDS);
+  }
+
+  @Test
+  public void chatIsWorking() {
+    tester.startPage(GameTable.class);
+
+    // check if chat is empty at start of game
+    assertEquals(game.getChatMessages().isEmpty(), true);
+
+    // basePlayer writing (also empty) messages
+    FormTester form = tester.newFormTester("chatPanel:form");
+    form.setValue("message", "hallo");
+    form.submit("send");
+    form.setValue("message", "");
+    form.submit("send");
+    form.setValue("message", "hey");
+    form.submit("send");
+
+    // check if messages get displayed
+    @SuppressWarnings("unchecked")
+    ListView<ChatMessage> messageList =
+        (ListView<ChatMessage>)
+            tester.getComponentFromLastRenderedPage("chatPanel:chatMessages:messages");
+
+    messageList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<ChatMessage>, Void>() {
+
+          @Override
+          public void component(ListItem<ChatMessage> item, IVisit<Void> visit) {
+            tester.assertComponent(item.getPath().substring(2) + ":sender", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":sender", item.getModelObject().getSender());
+            tester.assertComponent(item.getPath().substring(2) + ":textMessage", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":textMessage",
+                item.getModelObject().getTextMessage());
+            visit.dontGoDeeper();
+          }
+        });
+
+    // check if only the two not empty messages were added
+    assertEquals(game.getChatMessages().size(), 2);
   }
 }
