@@ -17,7 +17,6 @@ public class ActionCard extends Card implements StackCard {
   }
 
   public boolean isBug() {
-    // TODO: Do some special cards count as bugs?
     return action.actionType == ActionType.BUG;
   }
 
