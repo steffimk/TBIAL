@@ -17,6 +17,10 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
+import de.lmu.ifi.sosy.tbial.game.ActionCard.ActionType;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -148,6 +152,11 @@ public class Game implements Serializable {
         handCards.add(stackAndHeap.drawCard());
       }
       player.addToHandCards(handCards);
+      // TODO: Remove. Only for testing.
+      player.addToHandCards(new AbilityCard(Ability.BUG_DELEGATION));
+      player.addToHandCards(new ActionCard(Action.NOT_FOUND));
+      player.addToHandCards(new ActionCard(Action.NOT_FOUND));
+      player.addToHandCards(new ActionCard(Action.NOT_FOUND));
     }
   }
 
@@ -178,6 +187,11 @@ public class Game implements Serializable {
   public boolean putCardToPlayer(StackCard card, Player player, Player receiver) {
     if (turn.getCurrentPlayer() != player) return false;
     if (player.removeHandCard(card)) {
+      if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
+        // Receiver moves card to heap immediately without having to react
+        stackAndHeap.addToHeap(card, receiver);
+        return true;
+      }
       receiver.receiveCard(card);
       return true; // TODO: maybe receiver needs to respond to this action immediately
     }

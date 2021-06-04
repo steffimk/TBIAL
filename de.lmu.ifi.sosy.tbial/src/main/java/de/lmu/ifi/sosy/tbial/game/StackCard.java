@@ -4,4 +4,6 @@ package de.lmu.ifi.sosy.tbial.game;
 public interface StackCard {
   // public boolean playCard();
   public abstract String getResourceFileName();
+
+  public abstract boolean isBug();
 }

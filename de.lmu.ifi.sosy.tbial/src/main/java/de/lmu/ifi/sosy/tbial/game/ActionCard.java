@@ -16,6 +16,15 @@ public class ActionCard extends Card implements StackCard {
     return action;
   }
 
+  public boolean isBug() {
+    // TODO: Do some special cards count as bugs?
+    return action.actionType == ActionType.BUG;
+  }
+
+  public ActionType getActionType() {
+    return action.actionType;
+  }
+
   @Override
   public String getResourceFileName() {
     return action.fileName;
