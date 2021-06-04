@@ -36,10 +36,6 @@ public class GameLobby extends BasePage {
   private final Label isHostLabel;
   private final Label currentStatusLabel;
 
-  private static final int maxMessages = 80;
-  private static final LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
-  private MarkupContainer chatMessagesContainer;
-
   private final Game game;
 
   public GameLobby() {
@@ -93,70 +89,11 @@ public class GameLobby extends BasePage {
 
     startGameLink.setOutputMarkupId(true);
 
-    final TextField<String> textField = new TextField<String>("message", new Model<String>());
-    textField.setOutputMarkupId(true);
-
-    chatMessagesContainer = new WebMarkupContainer("chatMessages");
-
-    final ListView<ChatMessage> listView =
-        new ListView<ChatMessage>("messages", chatMessages) {
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          protected void populateItem(ListItem<ChatMessage> item) {
-            this.modelChanging();
-
-            ChatMessage chatMessage = item.getModelObject();
-
-            Label sender = new Label("sender", new PropertyModel<String>(chatMessage, "sender"));
-            item.add(sender);
-
-            Label text =
-                new Label("textMessage", new PropertyModel<String>(chatMessage, "textMessage"));
-            item.add(text);
-          }
-        };
-
-    chatMessagesContainer.setOutputMarkupId(true);
-    chatMessagesContainer.add(listView);
-
-    AjaxSelfUpdatingTimerBehavior ajaxBehavior =
-        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3));
-    chatMessagesContainer.add(ajaxBehavior);
-    add(chatMessagesContainer);
-
-    AjaxButton send =
-        new AjaxButton("send") {
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          protected void onSubmit(AjaxRequestTarget target) {
-            String username = ((TBIALSession) getSession()).getUser().getName();
-            String text = textField.getModelObject();
-
-            ChatMessage chatMessage = new ChatMessage(username, text);
-
-            if (chatMessage.isMessageEmpty()) return;
-
-            synchronized (chatMessages) {
-              if (chatMessages.size() >= maxMessages) {
-                chatMessages.removeFirst();
-              }
-
-              chatMessages.addLast(chatMessage);
-            }
-
-            textField.setModelObject("");
-            target.add(chatMessagesContainer, textField);
-          }
-        };
-
-    Component chatForm = new Form<String>("form").add(textField, send);
+    add(new ChatPanel("chatPanel"));
 
     add(currentStatusLabel);
     add(isHostLabel);
     add(startGameLink);
-    add(chatForm);
   }
 
   /**

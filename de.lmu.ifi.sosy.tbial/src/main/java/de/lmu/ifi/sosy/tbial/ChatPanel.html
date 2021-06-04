@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<wicket:panel>
+		<wicket:link>
+			<link rel="stylesheet" href="chat.css" type="text/css" />
+		</wicket:link>
+		<div class="chatWindow">
+		<fieldset wicket:id="chatMessages">
+			<p wicket:id="messages"> 
+				<span class="username" wicket:id="sender">Username</span>
+				<span class="chatMessage" wicket:id="textMessage">Chatmessage</span>
+			</p>	
+		</fieldset>
+		  	
+	  <form wicket:id="form" class="inputWrapper">
+		<input class="messageInput" type="text" wicket:id="message">
+	 	<input class="submitButton" type="submit" value="Send" wicket:id="send">
+	  </form> 
+	</div>	
+	</wicket:panel>
+
+</body>
+</html>
