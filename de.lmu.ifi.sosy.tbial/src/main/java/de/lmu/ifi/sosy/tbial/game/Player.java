@@ -23,7 +23,6 @@ public class Player implements Serializable {
 
   private int mentalHealth;
   private int prestige;
-  private int bug;
 
   // The different set of cards
   private Set<StackCard> handCards;
@@ -37,14 +36,11 @@ public class Player implements Serializable {
 
   private boolean fired;
 
-  private boolean basePlayer;
-
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
     this.fired = false;
     this.mentalHealth = 0;
-    this.bug = 0;
     this.handCards = new HashSet<>();
     this.playedAbilityCards = new HashSet<>();
     this.receivedCards = new HashSet<>();
@@ -62,9 +58,6 @@ public class Player implements Serializable {
     return "Prestige: " + prestige;
   }
 
-  public String getBug() {
-    return "Bug: " + bug;
-  }
   public RoleCard getRoleCard() {
     return roleCard;
   }
@@ -93,20 +86,16 @@ public class Player implements Serializable {
     return fired;
   }
 
-  public boolean isBasePlayer() {
-    return basePlayer;
-  }
-
   public void setCharacterCard(CharacterCard characterCard) {
     this.characterCard = characterCard;
   }
 
-  public void fire(boolean fired) {
-    this.fired = fired;
+  public void setMentalHealth(int mentalHealth) {
+    this.mentalHealth = mentalHealth;
   }
 
-  public void setBasePlayer(boolean basePlayer) {
-    this.basePlayer = basePlayer;
+  public void fire(boolean fired) {
+    this.fired = fired;
   }
 
   /**

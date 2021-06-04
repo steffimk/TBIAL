@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -19,6 +21,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -36,19 +39,39 @@ public class PlayerAreaPanel extends Panel {
 
   public PlayerAreaPanel(String id, IModel<Player> player, Game game, Player basePlayer) {
     super(id, new CompoundPropertyModel<Player>(player));
-    
+
     add(new Label("userName"));
     Label role = new Label("roleName");
     role.setVisible(false);
     if (player.getObject().getRoleName() == "Manager"
         || player.getObject().isFired()
-        || player.getObject().isBasePlayer()) {
+        || player.getObject().equals(basePlayer)) {
       role.setVisible(true);
     }
+    role.setOutputMarkupPlaceholderTag(true);
     add(role);
-    add(new Label("mentalHealth"));
+    Label mentalHealth = new Label("mentalHealth");
+    add(mentalHealth);
     add(new Label("prestige"));
-    add(new Label("bug"));
+
+    // update mental health; if mental health == 0 (-> fire player) -> show role of player on game table
+    mentalHealth.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+            if (player.getObject().getMentalHealthInt() == 0) {
+              player.getObject().fire(true);
+              role.setVisible(true);
+              target.add(role);
+              stop(target);
+            }
+            // TODO maybe this update should be triggered somewhere else in the future
+            target.add(mentalHealth);
+          }
+        });
 
     // --------------------------- The played cards ---------------------------
     AjaxLink<Void> playAbilityButton =
@@ -143,7 +166,7 @@ public class PlayerAreaPanel extends Panel {
           protected void populateItem(final ListItem<StackCard> listItem) {
             final StackCard handCard = listItem.getModelObject();
 
-            if (player.getObject().isBasePlayer()) {
+            if (player.getObject().equals(basePlayer)) {
               listItem.add(
                   new AjaxEventBehavior("click") {
                     private static final long serialVersionUID = 1L;
@@ -155,12 +178,13 @@ public class PlayerAreaPanel extends Panel {
                       target.add(handCardContainer);
                     }
                   });
-              listItem.add(
+              Image card =
                   new Image(
                       "handCard",
-                      new PackageResourceReference(getClass(), handCard.getResourceFileName())));
+                      new PackageResourceReference(getClass(), handCard.getResourceFileName()));
+              listItem.add(card);
               if (player.getObject().getSelectedHandCard() == handCard) {
-                listItem.add(new AttributeModifier("class", "handcard selected"));
+                card.add(new AttributeModifier("class", "handcard selected"));
               }
             } else {
               listItem.add(new Image("handCard", cardBackSideImage));

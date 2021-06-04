@@ -6,9 +6,9 @@
 <title><wicket:message key="applicationName">The bug is a Lie</wicket:message>
 </title>
 <link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" crossorigin="anonymous">
 </head>
 <body>
-
 	<div class="header-wrapper">
 		<div class="header pagewidth">
 			<!-- TITLE -->
@@ -31,10 +31,8 @@
 					<wicket:link>
 						<li><a href="Lobby.html">Home</a></li>
 						<li><a href="TBIAL_Spielanleitung.pdf">About the game</a></li>
-						<li><a href="#">Forum</a></li>
-						<li><a href="#">Contact</a></li>
 						<li><a wicket:id="signout">Logout</a></li>
-						<li><a wicket:id="loggedInUsername">Username</a></li>
+						<li><span wicket:id="loggedInUsername">Username</span></li>
 					</wicket:link>
 					<!-- END MENU -->
 				</ul>
@@ -45,22 +43,10 @@
 		<div class="page-wrap">
 			<div class="content">
 				<!-- CONTENT -->
-
-				<wicket:child />
-
-				<!-- END CONTENT -->
-
+				<wicket:child/>
 			</div>
-
-			<div class="sidebar">
-
-				<!-- SIDEBAR -->
-				
-				<div class="chat">Chat</div>
-
-				<!-- SIDEBAR -->
-
-			</div>
+					
+			<!-- END CONTENT -->
 
 			<div class="clear"></div>
 		</div>
@@ -80,6 +66,5 @@
 			</div>
 		</div>
 	</div>
-
 </body>
 </html>

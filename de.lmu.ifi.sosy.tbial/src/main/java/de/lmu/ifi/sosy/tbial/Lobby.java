@@ -1,7 +1,5 @@
 package de.lmu.ifi.sosy.tbial;
 
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -14,10 +12,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.list.PropertyListView;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -45,7 +39,7 @@ public class Lobby extends BasePage {
 
   public Lobby() {
 
-    Form menuForm = new Form("menuForm");
+    Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -82,25 +76,6 @@ public class Lobby extends BasePage {
         };
     menuForm.add(showPlayersButton);
     add(menuForm);
-
-    IModel<List<Game>> gameModel =
-        (IModel<List<Game>>) () -> getGameManager().getCurrentGamesAsList();
-
-    ListView<Game> gameList =
-        new PropertyListView<>("openGames", gameModel) {
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          protected void populateItem(final ListItem<Game> listItem) {
-            final Game game = listItem.getModelObject();
-            listItem.add(new Label("name", game.getName()));
-            listItem.add(
-                new Label(
-                    "numberOfPlayers",
-                    game.getCurrentNumberOfPlayers() + "/" + game.getMaxPlayers()));
-            listItem.add(new Label("access", game.isPrivate()));
-          }
-        };
 
     newGameButton =
         new Button("newGameButton") {
@@ -150,16 +125,9 @@ public class Lobby extends BasePage {
     maxPlayersField.setMaximum(7);
 
     WebMarkupContainer passwordContainer = new WebMarkupContainer("passwordContainer");
-    passwordContainer.setOutputMarkupPlaceholderTag(true);
-
-    newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
-
-    passwordContainer.add(newGamePwField);
-
-    newGamePwField.setOutputMarkupPlaceholderTag(true);
 
     isPrivateCheckBox =
-        new AjaxCheckBox("isPrivate", new Model<Boolean>(true)) {
+        new AjaxCheckBox("isPrivate", new Model<Boolean>(false)) {
           /** UID for serialization. */
           private static final long serialVersionUID = 2;
 
@@ -171,6 +139,14 @@ public class Lobby extends BasePage {
             target.add(passwordContainer);
           }
         };
+
+    passwordContainer.setOutputMarkupPlaceholderTag(true);
+    passwordContainer.setVisible(isPrivateCheckBox.getModelObject());
+
+    newGamePwField = new PasswordTextField("newGamePw", new Model<>(""));
+
+    passwordContainer.add(newGamePwField);
+
 
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
@@ -192,7 +168,6 @@ public class Lobby extends BasePage {
    * @param password can be null if the game is not private
    */
   private void createNewGame(String name, int maxPlayers, boolean isPrivate, String password) {
-
     String hostName = getSession().getUser().getName();
     // if game name not taken
     if (!getGameManager().gameNameTaken(name)) {

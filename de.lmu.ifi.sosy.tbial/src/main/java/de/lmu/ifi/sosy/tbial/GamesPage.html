@@ -27,16 +27,18 @@
 						<th></th>
 						<th>Game Name</th>
 						<th>Players</th>
-						<th>Password needed</th>
+						<th>Privacy</th>
 						<th>Join Game</th>
 					</tr>
 				</thead>
 				<tbody wicket:id="gameListContainer">
 					<tr wicket:id="openGames">
 						<td></td>
-						<td><span wicket:id="name">gamename</span></td>
+						<td><span wicket:id="gamename">gamename</span></td>
 						<td><span wicket:id="numberOfPlayers">players</span></td>
-						<td><span wicket:id="access">private</span></td>
+						<td><div wicket:id="lockedIcon" class=centered ><i class="fas fa-lock"></i></div>
+							<div wicket:id="unlockedIcon" class=centered ><i class="fas fa-unlock"></i></div>
+						</td>
 						<td><form wicket:id="joinGameForm"><input wicket:id="joinGamePw" type="password"/>
 							<input type="submit" wicket:id="joinGameButton" value="Join Game"/></form></td>
 					</tr>

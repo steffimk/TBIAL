@@ -24,7 +24,7 @@ public class GamesPage extends BasePage {
 
   public GamesPage() {
 
-    Form menuForm = new Form("menuForm");
+    Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -90,8 +90,15 @@ public class GamesPage extends BasePage {
                 new Label(
                     "numberOfPlayers",
                     game.getCurrentNumberOfPlayers() + "/" + game.getMaxPlayers()));
-            listItem.add(new Label("name", game.getName()));
-            listItem.add(new Label("access", game.isPrivate()));
+            listItem.add(new Label("gamename", game.getName()));
+            WebMarkupContainer lockedIcon = new WebMarkupContainer("lockedIcon");
+            lockedIcon.setOutputMarkupId(true);
+            lockedIcon.setVisible(game.isPrivate());
+            listItem.add(lockedIcon);
+            WebMarkupContainer unlockedIcon = new WebMarkupContainer("unlockedIcon");
+            unlockedIcon.setVisible(!game.isPrivate());
+            unlockedIcon.setOutputMarkupId(true);
+            listItem.add(unlockedIcon);
             listItem.add(joinGameForm);
           }
         };
