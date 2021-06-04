@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <title>GamesPage</title>
+<wicket:link>
+		<link rel="stylesheet" href="style.css" type="text/css" />
+	</wicket:link>
 </head>
 
 <body>
@@ -11,12 +14,12 @@
 		<h3>The Games.</h3>
 
 		<form wicket:id="menuForm">
-			<input wicket:id="createGameButton" type="submit"
+			<input wicket:id="createGameButton" class="buttonStyle" type="submit"
 				value="Create a new Game" />
 			<input wicket:id="showGamesButton"
-				type="submit" value="Games" />
+				class="buttonStyle" type="submit" value="Games" />
 			<input wicket:id="showPlayersButton"
-				type="submit" value="Players" />
+				class="buttonStyle" type="submit" value="Players" />
 		</form>
 
 
