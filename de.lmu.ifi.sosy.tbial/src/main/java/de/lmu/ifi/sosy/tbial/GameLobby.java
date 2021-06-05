@@ -67,7 +67,6 @@ public class GameLobby extends BasePage {
     startGameLink =
         new Link<Void>("startGameLink") {
           private String customCSS = null;
-          private boolean customEnabled = false;
 
           private static final long serialVersionUID = 1L;
 
@@ -91,12 +90,7 @@ public class GameLobby extends BasePage {
 
           @Override
           public boolean isEnabled() {
-            if (game.getPlayers().size() < 4) {
-              customEnabled = false;
-            } else {
-              customEnabled = true;
-            }
-            return customEnabled;
+            return game.getPlayers().size() > 3;
           }
 
           @Override
@@ -247,8 +241,8 @@ public class GameLobby extends BasePage {
 
     add(currentStatusLabel);
     add(isHostLabel);
-    //add(startGameLink);
     add(startGameForm);
+    //add(startGameLink);
     add(chatForm);
   }
 
