@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -45,6 +48,8 @@ public class Game implements Serializable {
   private StackAndHeap stackAndHeap;
 
   private Turn turn;
+
+  private LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -106,6 +111,7 @@ public class Game implements Serializable {
       return;
     }
     hasStarted = true;
+    chatMessages.clear();
     distributeRoleCards();
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
@@ -165,7 +171,9 @@ public class Game implements Serializable {
   }
 
   /**
-   * Removes the card from the player's hand cards and adds it to the receiver's received cards.
+   * Removes the card from the player's hand cards and adds it to the receiver's received cards. If
+   * the card is a bug and the receiver owns a bug delegation card, there's a 25% chance the card
+   * will get blocked and added to the heap immediately.
    *
    * @param card The card to be played
    * @param player The player who is playing the card.
@@ -175,6 +183,22 @@ public class Game implements Serializable {
   public boolean putCardToPlayer(StackCard card, Player player, Player receiver) {
     if (turn.getCurrentPlayer() != player) return false;
     if (player.removeHandCard(card)) {
+      if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
+        // Receiver moves card to heap immediately without having to react
+        stackAndHeap.addToHeap(card, receiver);
+        // TODO: Add System Chat Message
+        LOGGER.info(
+            receiver.getUserName()
+                + " blocked "
+                + card.toString()
+                + " with his bug delegation card.");
+        System.out.println(
+            receiver.getUserName()
+                + " blocked \""
+                + card.toString()
+                + "\" with a bug delegation card.");
+        return true;
+      }
       receiver.receiveCard(card);
       return true; // TODO: maybe receiver needs to respond to this action immediately
     }
@@ -239,6 +263,10 @@ public class Game implements Serializable {
 
   public Turn getTurn() {
     return turn;
+  }
+
+  public LinkedList<ChatMessage> getChatMessages() {
+    return chatMessages;
   }
 
   public int getCurrentNumberOfPlayers() {
@@ -332,7 +360,7 @@ public class Game implements Serializable {
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
-    if (selectedCard != null) {
+    if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
   }
@@ -342,13 +370,14 @@ public class Game implements Serializable {
    * type ability, it will be moved to his uncovered cards. No rules are checked yet.
    *
    * @param player The player whose turn it should be.
+   * @param receiverOfCard
    */
-  public void clickedOnPlayAbility(Player player) {
+  public void clickedOnPlayAbility(Player player, Player receiverOfCard) {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
       if (player.removeHandCard(selectedCard)) {
-        player.addPlayedAbilityCard((AbilityCard) selectedCard);
+        receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
       }
     }
   }

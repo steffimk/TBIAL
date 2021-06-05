@@ -30,6 +30,11 @@ public class RoleCard extends Card {
     return role.fileName;
   }
 
+  @Override
+  public String toString() {
+    return role.toString();
+  }
+
   /**
    * Returns a list of count role cards in random order
    * @param count - the amount of role cards to be returned (3 < count < 8)

@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.junit.Before;
@@ -175,6 +177,9 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent("playCardsButton", AjaxLink.class);
     tester.assertComponent("discardButton", AjaxLink.class);
     tester.assertComponent("endTurnButton", AjaxLink.class);
+
+    // Chat
+    tester.assertComponent("chatPanel", ChatPanel.class);
   }
 
   /**
@@ -286,6 +291,21 @@ public class GameTableTest extends PageTestBase {
 
     assertFalse(basePlayer.getPlayedAbilityCards().contains(testCardShouldFail));
     assertEquals(basePlayer.getSelectedHandCard(), testCardShouldFail);
+
+    AbilityCard bugDelegationCard = new AbilityCard(Ability.BUG_DELEGATION);
+    basePlayer.addToHandCards(bugDelegationCard);
+    basePlayer.setSelectedHandCard(bugDelegationCard);
+
+    tester.clickLink("table:container:0:panel:playAbilityButton");
+
+    receivingPlayer =
+        (Player)
+            ((PlayerAreaPanel) tester.getComponentFromLastRenderedPage("table:container:0:panel"))
+                .getDefaultModelObject();
+
+    assertFalse(basePlayer.getHandCards().contains(bugDelegationCard));
+    assertNull(basePlayer.getSelectedHandCard());
+    assertTrue(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
   }
 
   @SuppressWarnings("unchecked")
@@ -294,9 +314,10 @@ public class GameTableTest extends PageTestBase {
     tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-
-    ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
-    StackCard testCard = handCards.get(0);
+    
+    // Testing with ActionCard because Ability-Bug might get blocked
+    ActionCard testCard = new ActionCard(Action.BORING);
+    basePlayer.addToHandCards(testCard);
     basePlayer.setSelectedHandCard(testCard);
 
     ListView<Player> playerPanelListView =
@@ -319,6 +340,21 @@ public class GameTableTest extends PageTestBase {
 
     assertTrue(receivingPlayer.getReceivedCards().contains(testCard));
     assertFalse(basePlayer.getHandCards().contains(testCard));
+
+    // Make sure that ability cards do not get added to the "played cards" area of players
+    AbilityCard testCardShouldFail = new AbilityCard(Ability.ACCENTURE);
+    basePlayer.addToHandCards(testCardShouldFail);
+    basePlayer.setSelectedHandCard(testCardShouldFail);
+
+    tester.clickLink("table:container:0:panel:addCardButton");
+
+    receivingPlayer =
+        (Player)
+            ((PlayerAreaPanel) tester.getComponentFromLastRenderedPage("table:container:0:panel"))
+                .getDefaultModelObject();
+
+    assertTrue(basePlayer.getHandCards().contains(testCardShouldFail));
+    assertFalse(receivingPlayer.getReceivedCards().contains(testCardShouldFail));
   }
 
   @Test
@@ -364,5 +400,48 @@ public class GameTableTest extends PageTestBase {
     
     assertFalse(game.getTurn().getCurrentPlayer() == basePlayer);
     assertEquals(game.getTurn().getStage(), TurnStage.DRAWING_CARDS);
+  }
+
+  @Test
+  public void chatIsWorking() {
+    tester.startPage(GameTable.class);
+
+    // check if chat is empty at start of game
+    assertEquals(game.getChatMessages().isEmpty(), true);
+
+    // basePlayer writing (also empty) messages
+    FormTester form = tester.newFormTester("chatPanel:form");
+    form.setValue("message", "hallo");
+    form.submit("send");
+    form.setValue("message", "");
+    form.submit("send");
+    form.setValue("message", "hey");
+    form.submit("send");
+
+    // check if messages get displayed
+    @SuppressWarnings("unchecked")
+    ListView<ChatMessage> messageList =
+        (ListView<ChatMessage>)
+            tester.getComponentFromLastRenderedPage("chatPanel:chatMessages:messages");
+
+    messageList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<ChatMessage>, Void>() {
+
+          @Override
+          public void component(ListItem<ChatMessage> item, IVisit<Void> visit) {
+            tester.assertComponent(item.getPath().substring(2) + ":sender", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":sender", item.getModelObject().getSender());
+            tester.assertComponent(item.getPath().substring(2) + ":textMessage", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":textMessage",
+                item.getModelObject().getTextMessage());
+            visit.dontGoDeeper();
+          }
+        });
+
+    // check if only the two not empty messages were added
+    assertEquals(game.getChatMessages().size(), 2);
   }
 }

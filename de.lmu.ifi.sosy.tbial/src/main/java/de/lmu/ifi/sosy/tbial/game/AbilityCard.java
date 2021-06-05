@@ -21,6 +21,16 @@ public class AbilityCard extends Card implements StackCard {
     return ability.fileName;
   }
 
+  @Override
+  public boolean isBug() {
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    return ability.toString();
+  }
+
   /** Enum containing information about the specific ability cards. */
   public enum Ability {
     SUNGLASSES("Wears Sunglasses at Work", 1, AbilityType.GARMENT, "" + "imgs/cards/card17.png"),

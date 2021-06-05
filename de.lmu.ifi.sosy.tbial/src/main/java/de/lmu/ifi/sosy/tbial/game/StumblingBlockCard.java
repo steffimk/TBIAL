@@ -17,8 +17,18 @@ public class StumblingBlockCard extends Card implements StackCard {
   }
 
   @Override
+  public boolean isBug() {
+    return false; // TODO: Are StumblingBlockCards bugs?
+  }
+
+  @Override
   public String getResourceFileName() {
     return stumblingBlock.fileName;
+  }
+
+  @Override
+  public String toString() {
+    return stumblingBlock.toString();
   }
 
   /** Enum containing information about the specific stumbling block cards. */

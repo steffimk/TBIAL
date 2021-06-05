@@ -9,7 +9,6 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -82,14 +81,12 @@ public class PlayerAreaPanel extends Panel {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            LOGGER.info(basePlayer.getUserName() + " clicked on play ability button");
-            game.clickedOnPlayAbility(basePlayer);
+            LOGGER.info(
+                basePlayer.getUserName()
+                    + " clicked on play ability button of "
+                    + player.getObject().getUserName());
+            game.clickedOnPlayAbility(basePlayer, player.getObject());
             target.add(table);
-          }
-
-          @Override
-          public boolean isVisible() {
-            return player.getObject().equals(basePlayer);
           }
         };
     add(playAbilityButton);
