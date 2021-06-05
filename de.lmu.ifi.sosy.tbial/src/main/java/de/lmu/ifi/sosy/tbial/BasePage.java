@@ -11,6 +11,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
+import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
 
 /**
@@ -101,7 +102,7 @@ public abstract class BasePage extends WebPage {
 
     // TODO add blinking (just number or whole container?)
     messageContainer.add(message);
-        numberOfMessages =
+    numberOfMessages =
         new Label(
             "numberOfMessages",
             () -> {
