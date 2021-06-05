@@ -148,6 +148,16 @@ public class GameTable extends BasePage {
           private StackCard previousUppermostHeapCard = null;
 
           @Override
+          public void onConfigure() {
+            if (this.getDefaultModelObject() == null) {
+              this.setVisible(false);
+            } else {
+              this.setVisible(true);
+            }
+            super.onConfigure();
+          }
+
+          @Override
           protected void onBeforeRender() {
             StackCard uppermostHeapCard = (StackCard) this.getDefaultModelObject();
             // If no card on heap or card didn't change: no animation
