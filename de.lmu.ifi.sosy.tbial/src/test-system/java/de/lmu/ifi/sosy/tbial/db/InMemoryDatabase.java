@@ -2,16 +2,11 @@ package de.lmu.ifi.sosy.tbial.db;
 
 import static java.util.Collections.synchronizedList;
 import static java.util.Objects.requireNonNull;
-import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
 import de.lmu.ifi.sosy.tbial.game.Game;
-
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 
 import de.lmu.ifi.sosy.tbial.util.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A simple in-memory database using a list for managing users.

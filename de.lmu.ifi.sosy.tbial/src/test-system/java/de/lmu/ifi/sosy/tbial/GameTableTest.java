@@ -291,6 +291,21 @@ public class GameTableTest extends PageTestBase {
 
     assertFalse(basePlayer.getPlayedAbilityCards().contains(testCardShouldFail));
     assertEquals(basePlayer.getSelectedHandCard(), testCardShouldFail);
+
+    AbilityCard bugDelegationCard = new AbilityCard(Ability.BUG_DELEGATION);
+    basePlayer.addToHandCards(bugDelegationCard);
+    basePlayer.setSelectedHandCard(bugDelegationCard);
+
+    tester.clickLink("table:container:0:panel:playAbilityButton");
+
+    receivingPlayer =
+        (Player)
+            ((PlayerAreaPanel) tester.getComponentFromLastRenderedPage("table:container:0:panel"))
+                .getDefaultModelObject();
+
+    assertFalse(basePlayer.getHandCards().contains(bugDelegationCard));
+    assertNull(basePlayer.getSelectedHandCard());
+    assertTrue(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
   }
 
   @SuppressWarnings("unchecked")
@@ -299,9 +314,10 @@ public class GameTableTest extends PageTestBase {
     tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-
-    ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
-    StackCard testCard = handCards.get(0);
+    
+    // Testing with ActionCard because Ability-Bug might get blocked
+    ActionCard testCard = new ActionCard(Action.BORING);
+    basePlayer.addToHandCards(testCard);
     basePlayer.setSelectedHandCard(testCard);
 
     ListView<Player> playerPanelListView =
@@ -324,6 +340,21 @@ public class GameTableTest extends PageTestBase {
 
     assertTrue(receivingPlayer.getReceivedCards().contains(testCard));
     assertFalse(basePlayer.getHandCards().contains(testCard));
+
+    // Make sure that ability cards do not get added to the "played cards" area of players
+    AbilityCard testCardShouldFail = new AbilityCard(Ability.ACCENTURE);
+    basePlayer.addToHandCards(testCardShouldFail);
+    basePlayer.setSelectedHandCard(testCardShouldFail);
+
+    tester.clickLink("table:container:0:panel:addCardButton");
+
+    receivingPlayer =
+        (Player)
+            ((PlayerAreaPanel) tester.getComponentFromLastRenderedPage("table:container:0:panel"))
+                .getDefaultModelObject();
+
+    assertTrue(basePlayer.getHandCards().contains(testCardShouldFail));
+    assertFalse(receivingPlayer.getReceivedCards().contains(testCardShouldFail));
   }
 
   @Test

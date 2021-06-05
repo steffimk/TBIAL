@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 
 /** Tests referring to the Game class. */
 public class GameTest {
@@ -196,12 +197,21 @@ public class GameTest {
   }
 
   @Test
+  public void putCardToPlayer_returnsFalseIfNotTurnOfPlayer() {
+    Game game = getNewGameThatHasStarted();
+    StackCard testCard = new AbilityCard(Ability.GOOGLE);
+    assertThat(
+        game.putCardToPlayer(testCard, game.getPlayers().get("B"), game.getPlayers().get("A")),
+        is(false));
+  }
+
+  @Test
   public void putCardToPlayer_addsCardToReceivedCardsOfReceivingPlayer() {
     Game game = getNewGameThatHasStarted();
     Player player = game.getPlayers().get("A");
     Player receivingPlayer = game.getPlayers().get("B");
-    ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
-    StackCard testCard = handCards.get(0);
+    StackCard testCard = new ActionCard(Action.FEATURE);
+    player.addToHandCards(testCard);
     game.putCardToPlayer(testCard, player, receivingPlayer);
     assertThat(receivingPlayer.getReceivedCards().contains(testCard), is(true));
   }
