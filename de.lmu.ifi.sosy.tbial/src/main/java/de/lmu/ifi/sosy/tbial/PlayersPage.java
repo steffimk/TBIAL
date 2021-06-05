@@ -22,7 +22,7 @@ public class PlayersPage extends BasePage {
 
   public PlayersPage() {
 
-    Form menuForm = new Form("menuForm");
+    Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -69,12 +69,49 @@ public class PlayersPage extends BasePage {
           @Override
           protected void populateItem(final ListItem<User> listItem) {
             listItem.add(new Label("name"));
+            Form<?> invitationForm = new Form<>("invitationForm");
+            Button inviteButton =
+                new Button("inviteButton") {
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  public void onSubmit() {
+                    // TODO send invitiation
+                  }
+
+                  @Override
+                  public boolean isVisible() {
+                    if (((TBIALSession) getSession()).getCurrentGame() != null
+                        && ((TBIALSession) getSession())
+                            .getCurrentGame()
+                            .getHost()
+                            .equals(((TBIALSession) getSession()).getUser().getName())) {
+                      return !listItem
+                          .getModelObject()
+                          .equals(((TBIALSession) getSession()).getUser());
+                    }
+                    return false;
+                  }
+
+                  @Override
+                  public boolean isEnabled() {
+                    if (((TBIALSession) getSession()).getCurrentGame() != null) {
+                      return !(((TBIALSession) getSession())
+                          .getCurrentGame()
+                          .getPlayers()
+                          .containsKey(listItem.getModelObject().getName()));
+                    }
+                    return true;
+                  }
+                };
+            invitationForm.add(inviteButton);
+            listItem.add(invitationForm);
           }
         };
 
     WebMarkupContainer playerListContainer = new WebMarkupContainer("playerlistContainer");
     playerListContainer.add(playerList);
-    playerListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
+    playerListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
     playerListContainer.setOutputMarkupId(true);
 
     add(playerListContainer);
