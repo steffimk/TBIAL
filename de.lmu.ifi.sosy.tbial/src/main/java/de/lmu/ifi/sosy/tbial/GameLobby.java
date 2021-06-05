@@ -85,15 +85,11 @@ public class GameLobby extends BasePage {
 
           @Override
           public boolean isVisible() {
-            // TODO: When implementing change of host: Check if this works or if we have to set
-            // visibility differently.
             return isHost();
           }
 
           @Override
           public boolean isEnabled() {
-            // TODO: When implementing join game: Check if this works or if we have to set
-            // isEnabled differently.
             if (game.getPlayers().size() < 4) {
               customEnabled = false;
             } else {
@@ -176,7 +172,7 @@ public class GameLobby extends BasePage {
 
     WebMarkupContainer gameInfoContainer = new WebMarkupContainer("gameInfoContainer");
     gameInfoContainer.add(gameInfoList);
-    gameInfoContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
+    gameInfoContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
     gameInfoContainer.setOutputMarkupId(true);
 
     Form<?> gameLobbyInfoForm = new Form<>("gameLobbyInfoForm");

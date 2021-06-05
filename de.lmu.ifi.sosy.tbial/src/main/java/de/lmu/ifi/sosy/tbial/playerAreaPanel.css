@@ -104,19 +104,6 @@ li {
 	font-weight: bold;
 }
 
-.linkstyle2 {
-	padding: 0;
-	height: 95%;
-	width: 27%;
-	margin-top: 0;
-	display: table;
-	background: rgb(128, 128, 128);
-	text-decoration: none;
-	text-align: center;
-	color: white;
-	font-size: 1em;
-	font-weight: bold;
-}
 
 a:hover, a:visited {
 	color: white;
