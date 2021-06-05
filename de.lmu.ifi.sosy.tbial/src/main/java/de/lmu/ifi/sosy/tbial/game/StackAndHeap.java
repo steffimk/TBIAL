@@ -19,7 +19,7 @@ public class StackAndHeap implements Serializable {
 
   private List<StackCard> stack;
   private List<StackCard> heap;
-  private int stackSizeAtStart;
+  public static final int STACK_SIZE_AT_START = 80;
   /** The last player to add a card to the heap. Needed for the animation of the discard */
   private Player lastPlayerToDiscardCard;
 
@@ -51,7 +51,6 @@ public class StackAndHeap implements Serializable {
         stack.add(new StumblingBlockCard(stumblingBlock));
       }
     }
-    stackSizeAtStart = stack.size();
   }
 
   /**
@@ -101,6 +100,6 @@ public class StackAndHeap implements Serializable {
   }
 
   public int getStackSizeAtStart() {
-    return stackSizeAtStart;
+    return STACK_SIZE_AT_START;
   }
 }

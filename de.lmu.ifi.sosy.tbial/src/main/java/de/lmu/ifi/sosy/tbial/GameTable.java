@@ -33,8 +33,7 @@ public class GameTable extends BasePage {
   private static final long serialVersionUID = 1L;
 
   private WebMarkupContainer table;
-  public float test = 1.0f;
-
+  
   public GameTable() {
 
     table = new WebMarkupContainer("table");
@@ -105,7 +104,8 @@ public class GameTable extends BasePage {
           @Override
           protected void onEvent(AjaxRequestTarget target) {
             System.out.println("Clicked on stack");
-            // TODO: currentGame.drawCardFromStack(basePlayer);
+            // TODO: currentGame.drawCardFromStack(basePlayer); it is possible to draw cards from
+            // the stack
 
             Image image = (Image) this.getComponent().get("stackCard");
             updateStackImage(image, currentGame);
@@ -118,25 +118,23 @@ public class GameTable extends BasePage {
             int currentStackSize = currentGame.getStackAndHeap().getStack().size();
             int StackSizeAtStart = currentGame.getStackAndHeap().getStackSizeAtStart();
             float remainingCardsPercentage = (float) currentStackSize / (float) StackSizeAtStart;
-            test -= 0.1;
-            remainingCardsPercentage = test;
 
             if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
-              image.setImageResourceReference(PlayerAreaPanel.smallStackImage);
+              image.setImageResourceReference(StackImageResourceReferences.smallStackImage);
 
             } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
-              image.setImageResourceReference(PlayerAreaPanel.mediumStackImage);
+              image.setImageResourceReference(StackImageResourceReferences.mediumStackImage);
 
             } else if (remainingCardsPercentage >= 0.66) {
-              image.setImageResourceReference(PlayerAreaPanel.bigStackImage);
+              image.setImageResourceReference(StackImageResourceReferences.bigStackImage);
 
             } else {
-              image.setImageResourceReference(PlayerAreaPanel.stackEmptyImage);
+              image.setImageResourceReference(StackImageResourceReferences.stackEmptyImage);
             }
           }
         });
 
-    Image stackImage = new Image("stackCard", PlayerAreaPanel.bigStackImage);
+    Image stackImage = new Image("stackCard", StackImageResourceReferences.bigStackImage);
     stackContainer.add(stackImage);
 
     WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
@@ -166,8 +164,7 @@ public class GameTable extends BasePage {
           @Override
           protected ResourceReference getImageResourceReference() {
             if (this.getDefaultModelObject() == null) {
-              return PlayerAreaPanel.heapEmptyImage;
-              // TODO: add placeholder when stack is empty
+              return StackImageResourceReferences.heapEmptyImage;
             }
             return new PackageResourceReference(
                 getClass(), ((StackCard) this.getDefaultModelObject()).getResourceFileName());
