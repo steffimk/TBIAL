@@ -104,8 +104,6 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            System.out.println("Clicked on stack");
-
             currentGame.drawCardFromStack(basePlayer);
 
             target.add(table);
@@ -179,6 +177,46 @@ public class GameTable extends BasePage {
     heapImage.setOutputMarkupId(true);
     heapContainer.add(heapImage);
 
+    Image heapBackgroundImage =
+        new Image("heapBackground", () -> currentGame.getStackAndHeap().getHeap().size()) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onBeforeRender() {
+            double remainingCardsPercentage =
+                (double) ((int) this.getDefaultModelObject()) / (double) StackAndHeap.HEAP_MAX_SIZE;
+            if (remainingCardsPercentage > 0.66) {
+              this.add(new AttributeModifier("style", "top: -1vh; left: -0.4vw;"));
+            } else if (remainingCardsPercentage > 0.33) {
+              this.add(new AttributeModifier("style", "top: -0.6vh; left: -0.3vw;"));
+            } else {
+              this.add(new AttributeModifier("style", "top: auto; left: auto;"));
+            }
+            super.onBeforeRender();
+          }
+
+          @Override
+          protected ResourceReference getImageResourceReference() {
+            // heap image changes depending on amount of cards left on the heap
+            int currentHeapSize = (int) this.getDefaultModelObject();
+            double remainingCardsPercentage =
+                (double) currentHeapSize / (double) StackAndHeap.HEAP_MAX_SIZE;
+
+            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+              return StackImageResourceReferences.smallHeapImage;
+            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
+              return StackImageResourceReferences.mediumHeapImage;
+            } else if (remainingCardsPercentage >= 0.66) {
+              return StackImageResourceReferences.bigHeapImage;
+            } else {
+              return StackImageResourceReferences.heapEmptyImage;
+            }
+          }
+        };
+    heapBackgroundImage.setOutputMarkupId(true);
+    heapContainer.add(heapBackgroundImage);
+
     heapContainer.add(
         new AjaxEventBehavior("click") {
           private static final long serialVersionUID = 1L;
@@ -187,29 +225,9 @@ public class GameTable extends BasePage {
           protected void onEvent(AjaxRequestTarget target) {
             boolean success = currentGame.clickedOnHeap(basePlayer);
             if (!success) return;
-            updateHeapImage(heapImage, currentGame);
             target.add(table);
           }
 
-          // heap image changes depending on amount of cards left on the heap
-          public void updateHeapImage(Image image, Game currentGame) {
-            int currentHeapSize = currentGame.getStackAndHeap().getHeap().size();
-            int heapMaxSize = currentGame.getStackAndHeap().getHeapMaxSize();
-            float remainingCardsPercentage = (float) currentHeapSize / (float) heapMaxSize;
-
-            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
-              image.setImageResourceReference(StackImageResourceReferences.smallHeapImage);;
-
-            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
-              image.setImageResourceReference(StackImageResourceReferences.mediumHeapImage);;
-
-            } else if (remainingCardsPercentage >= 0.66) {
-              image.setImageResourceReference(StackImageResourceReferences.bigHeapImage);
-
-            } else {
-              image.setImageResourceReference(StackImageResourceReferences.heapEmptyImage);
-            }
-          }
         });
 
     AjaxLink<Void> playCardsButton =

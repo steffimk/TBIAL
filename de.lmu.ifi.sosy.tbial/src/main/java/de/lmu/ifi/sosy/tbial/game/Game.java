@@ -58,7 +58,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -397,11 +396,11 @@ public class Game implements Serializable {
     turn.setStage(TurnStage.PLAYING_CARDS);
   }
 
-  public void drawCardFromStack(Player basePlayer) {
+  public void drawCardFromStack(Player player) {
 	if (stackAndHeap.getStack().size() == 0) {
       stackAndHeap.refillStack();
     }
     StackCard drawnCard = stackAndHeap.drawCard();
-    basePlayer.addToHandCards(drawnCard);
+    player.addToHandCards(drawnCard);
   }
 }
