@@ -324,10 +324,11 @@ div.footer p a {
 	height: 31px;
 	text-align: center;
 	line-height: 25px;
-	color:#F4731D;
+	color: #F4731D;
 	font-size: 1em;
 	font-weight: bold;
 }
+
 
 /* ----------- Boxed Form ----------- */
 /* inspired by http://woork.blogspot.de/2008/06/clean-and-pure-css-form-design.html */
@@ -407,3 +408,4 @@ pre.boxed {
 	white-space: pre-wrap;
 	border: solid 2px #ff6600;
 }
+
