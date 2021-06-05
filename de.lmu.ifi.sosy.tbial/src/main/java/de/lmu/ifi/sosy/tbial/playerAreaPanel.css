@@ -90,6 +90,7 @@ li {
 }
 
 .linkstyle {
+	display: flex;
 	padding: 0;
 	height: 95%;
 	width: 27%;
@@ -102,6 +103,7 @@ li {
 	font-size: 1em;
 	font-weight: bold;
 }
+
 
 a:hover, a:visited {
 	color: white;

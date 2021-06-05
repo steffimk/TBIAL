@@ -239,9 +239,8 @@ div.page-wrap {
 
 div.content {
 	float: left;
-	width: 65%;
+	width: 100%;
 	padding-right: 20px;
-	border-right: 1px dashed #e0e0e0;
 }
 
 div.content ul {
@@ -325,10 +324,11 @@ div.footer p a {
 	height: 31px;
 	text-align: center;
 	line-height: 25px;
-	color:#F4731D;
+	color: #F4731D;
 	font-size: 1em;
 	font-weight: bold;
 }
+
 
 /* ----------- Boxed Form ----------- */
 /* inspired by http://woork.blogspot.de/2008/06/clean-and-pure-css-form-design.html */
@@ -409,14 +409,3 @@ pre.boxed {
 	border: solid 2px #ff6600;
 }
 
-.centered {
-	text-align: center;
-}
-
-.chat {
-	width: 70%;
-	height: 900px;
-	margin-left: 1%;
-	margin-top: 10%;
-	border: 2px solid black;
-}

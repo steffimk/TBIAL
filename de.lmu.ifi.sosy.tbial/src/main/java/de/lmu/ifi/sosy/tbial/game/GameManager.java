@@ -27,6 +27,12 @@ public class GameManager {
     }
   }
 
+  public synchronized void removeGame(Game game) {
+    requireNonNull(game);
+    game.getChatMessages().clear();
+    this.currentGames.remove(game.getName());
+  }
+
   public boolean gameNameTaken(String name) {
     requireNonNull(name);
     for (String gameName : currentGames.keySet()) {

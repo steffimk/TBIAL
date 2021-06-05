@@ -68,7 +68,7 @@ public abstract class BasePage extends WebPage {
     add(link);
     add(users);
 
-    // Show user name in navigaton bar next to Logout
+    // Show user name in navigation bar next to Logout
     loggedInUsername = new Label("loggedInUsername", "");
 	loggedInUsername.setOutputMarkupId(true);
     add(loggedInUsername);

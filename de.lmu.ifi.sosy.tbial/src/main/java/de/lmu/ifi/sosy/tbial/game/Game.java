@@ -6,15 +6,21 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
+import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
 public class Game implements Serializable {
@@ -41,6 +47,10 @@ public class Game implements Serializable {
 
   private StackAndHeap stackAndHeap;
 
+  private Turn turn;
+
+  private LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
+
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
@@ -53,6 +63,7 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -101,9 +112,11 @@ public class Game implements Serializable {
       return;
     }
     hasStarted = true;
+    chatMessages.clear();
     distributeRoleCards();
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
+    turn = new Turn(new ArrayList<Player>(players.values()));
     distributeInitialHandCards();
   }
 
@@ -152,14 +165,16 @@ public class Game implements Serializable {
    */
   public boolean discardHandCard(Player player, StackCard card) {
     if (player.removeHandCard(card)) {
-      stackAndHeap.addToHeap(card);
+      stackAndHeap.addToHeap(card, player);
       return true;
     }
     return false;
   }
 
   /**
-   * Removes the card from the player's hand cards and adds it to the receiver's received cards.
+   * Removes the card from the player's hand cards and adds it to the receiver's received cards. If
+   * the card is a bug and the receiver owns a bug delegation card, there's a 25% chance the card
+   * will get blocked and added to the heap immediately.
    *
    * @param card The card to be played
    * @param player The player who is playing the card.
@@ -167,8 +182,24 @@ public class Game implements Serializable {
    * @return <code>true</code> if the action was successful, <code>false</code> otherwise
    */
   public boolean putCardToPlayer(StackCard card, Player player, Player receiver) {
-    // TODO: if (not turn of player) return false;
+    if (turn.getCurrentPlayer() != player) return false;
     if (player.removeHandCard(card)) {
+      if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
+        // Receiver moves card to heap immediately without having to react
+        stackAndHeap.addToHeap(card, receiver);
+        // TODO: Add System Chat Message
+        LOGGER.info(
+            receiver.getUserName()
+                + " blocked "
+                + card.toString()
+                + " with his bug delegation card.");
+        System.out.println(
+            receiver.getUserName()
+                + " blocked \""
+                + card.toString()
+                + "\" with a bug delegation card.");
+        return true;
+      }
       receiver.receiveCard(card);
       return true; // TODO: maybe receiver needs to respond to this action immediately
     }
@@ -219,6 +250,10 @@ public class Game implements Serializable {
     return getCurrentNumberOfPlayers() == 1;
   }
 
+  public List<Player> getInGamePlayersList() {
+    return new ArrayList<Player>(getPlayers().values());
+  }
+
   public String getName() {
     return name;
   }
@@ -229,6 +264,14 @@ public class Game implements Serializable {
 
   public byte[] getSalt() {
     return salt;
+  }
+
+  public Turn getTurn() {
+    return turn;
+  }
+
+  public LinkedList<ChatMessage> getChatMessages() {
+    return chatMessages;
   }
 
   public int getCurrentNumberOfPlayers() {
@@ -293,15 +336,23 @@ public class Game implements Serializable {
   }
 
   public void clickedOnHandCard(Player player, StackCard handCard) {
-    //   TODO: if(not is turn of player) do nothing
+    if (turn.getCurrentPlayer() != player) return;
     player.setSelectedHandCard(handCard);
   }
 
-  public void clickedOnHeap(Player player) {
-    //   TODO: if(not is turn of player) do nothing
+  /**
+   * Call when a player clicked on the heap.
+   *
+   * @param player The player who clicked on the heap.
+   * @return <code>true</code> if successfully discarded a card, <code>false</code> otherwise
+   */
+  public boolean clickedOnHeap(Player player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS)
+      return false;
     if (player.getSelectedHandCard() != null) {
-      discardHandCard(player, player.getSelectedHandCard());
+      return discardHandCard(player, player.getSelectedHandCard());
     }
+    return false;
   }
 
   /**
@@ -312,9 +363,9 @@ public class Game implements Serializable {
    * @param receiverOfCard The player who should receive the previously selected card.
    */
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
-    //   TODO: if(not is turn of player) do nothing
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
-    if (selectedCard != null) {
+    if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
   }
@@ -324,14 +375,58 @@ public class Game implements Serializable {
    * type ability, it will be moved to his uncovered cards. No rules are checked yet.
    *
    * @param player The player whose turn it should be.
+   * @param receiverOfCard
    */
-  public void clickedOnPlayAbility(Player player) {
-    //   TODO: if(not is turn of player) do nothing
+  public void clickedOnPlayAbility(Player player, Player receiverOfCard) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
       if (player.removeHandCard(selectedCard)) {
-        player.addPlayedAbilityCard((AbilityCard) selectedCard);
+        receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
       }
     }
+  }
+
+  /**
+   * A player clicked on the discard button to initiate the discarding of surplus hand cards.
+   *
+   * @param player The player who clicked on the button.
+   */
+  public void clickedOnDiscardButton(Player player) {
+    //	TODO: if (turn.getStage() != TurnStage.PLAYING_CARDS) return;
+    if (turn.getCurrentPlayer() != player) {
+      LOGGER.debug("Player clicked on discard button but not his turn or not in the right stage");
+      return;
+    }
+    turn.setStage(TurnStage.DISCARDING_CARDS);
+  }
+
+  /**
+   * A player clicked on the end turn button.
+   *
+   * @param player The player who clicked on the button.
+   */
+  public void clickedOnEndTurnButton(Player player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS) {
+      LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
+      return;
+    }
+    if (player.canEndTurn()) {
+      turn.switchToNextPlayer();
+    }
+  }
+
+  /**
+   * A player clicked on the play cards button.
+   *
+   * @param player The player who clicked on the button.
+   */
+  public void clickedOnPlayCardsButton(Player player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
+      LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
+      return;
+    }
+    // TODO: Check whether player has drawn cards from stack
+    turn.setStage(TurnStage.PLAYING_CARDS);
   }
 }

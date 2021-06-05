@@ -9,7 +9,6 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -34,10 +33,11 @@ public class PlayerAreaPanel extends Panel {
 
   private static final Logger LOGGER = LogManager.getLogger(PlayerAreaPanel.class);
 
-  private static PackageResourceReference cardBackSideImage =
+  public static PackageResourceReference cardBackSideImage =
       new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/backSide.png");
 
-  public PlayerAreaPanel(String id, IModel<Player> player, Game game, Player basePlayer) {
+  public PlayerAreaPanel(
+      String id, IModel<Player> player, Game game, Player basePlayer, WebMarkupContainer table) {
     super(id, new CompoundPropertyModel<Player>(player));
 
     add(new Label("userName"));
@@ -81,14 +81,12 @@ public class PlayerAreaPanel extends Panel {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            LOGGER.info(basePlayer.getUserName() + " clicked on play ability button");
-            game.clickedOnPlayAbility(basePlayer);
-            target.add(GameTable.getTable());
-          }
-
-          @Override
-          public boolean isVisible() {
-            return player.getObject().equals(basePlayer);
+            LOGGER.info(
+                basePlayer.getUserName()
+                    + " clicked on play ability button of "
+                    + player.getObject().getUserName());
+            game.clickedOnPlayAbility(basePlayer, player.getObject());
+            target.add(table);
           }
         };
     add(playAbilityButton);
@@ -124,7 +122,7 @@ public class PlayerAreaPanel extends Panel {
                     + " clicked on add card button of "
                     + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
-            target.add(GameTable.getTable());
+            target.add(table);
           }
         };
 
@@ -152,7 +150,6 @@ public class PlayerAreaPanel extends Panel {
 
     WebMarkupContainer handCardContainer = new WebMarkupContainer("handCardContainer");
     handCardContainer.setOutputMarkupId(true);
-
     /** adding hand cards to the player area panel */
     IModel<List<StackCard>> handCardModel =
         (IModel<List<StackCard>>) () -> new ArrayList<StackCard>(player.getObject().getHandCards());

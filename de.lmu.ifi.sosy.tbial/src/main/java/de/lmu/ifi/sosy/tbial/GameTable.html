@@ -6,16 +6,17 @@
 <wicket:head>
 	<wicket:link>
 		<link rel="stylesheet" href="gameTable.css" type="text/css" />
+		<link rel="stylesheet" href="chat.css" type="text/css" />
 	</wicket:link>
 </wicket:head>
 </head>
 
 <body>
 	<wicket:extend>
-		<div>
+		<div class="contentWrapper">
 			<h3 wicket:id="gameName" align="center" style="margin-top: 1%;">Game
 				Name</h3>
-		</div>
+		
 		<div id=wrapper>
 			<div wicket:id="table" id=table>
 				<div wicket:id="player1" class="player-1">
@@ -25,11 +26,29 @@
 					<div wicket:id="panel"></div>
 				</div>
 				<div class="circleBase center">
-					<div wicket:id="stackContainer" class="stack">Stack</div>
-					<div wicket:id="heapContainer" class="heap">Heap</div>
+					<div wicket:id="stackContainer" class="stack">
+						<img wicket:id="stackCard" class="stackcard"/>Stack</div>
+					<div wicket:id="heapContainer" class="heap">
+						<img wicket:id="heapCard" class="heapcard"/>Heap</div>
 				</div>
 			</div>
 		</div>
+		<div id=wrapper style="align-items:center">
+			<a style="margin-left: 2%; height: 40px; width: 25%;" class="linkstyle">
+				<span>Draw Cards</span>
+			</a>
+			<a wicket:id="playCardsButton" style="margin-left: 2%; height: 40px; width: 25%;" class="linkstyle">
+				<span>Play Cards</span>
+			</a>
+			<a wicket:id="discardButton" style="margin-left: 2%; height: 40px; width: 25%;" class="linkstyle">
+				<span>Discard Surplus Hand Cards</span>
+			</a>
+			<a wicket:id="endTurnButton" style="margin-left: 2%; height: 40px; width: 25%; margin-right: 2%;" class="linkstyle">
+				<span>End Turn</span>
+			</a>
+		</div>
+		</div>
+		<div wicket:id="chatPanel" class="chatWrapper"></div>
 	</wicket:extend>
 </body>
 </html>

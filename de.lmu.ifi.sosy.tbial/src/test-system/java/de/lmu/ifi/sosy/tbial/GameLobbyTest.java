@@ -2,7 +2,6 @@ package de.lmu.ifi.sosy.tbial;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -31,7 +30,7 @@ public class GameLobbyTest extends PageTestBase {
   public void lobbyPageHasEmptyForm() {
     tester.startPage(GameLobby.class);
     tester.assertComponent("isHostLabel", Label.class);
-    tester.assertComponent("startGameLink", Link.class);
+    tester.assertComponent("startGameForm:startGameLink", Link.class);
     tester.assertComponent("currentStatusLabel", Label.class);
   }
 
@@ -65,9 +64,8 @@ public class GameLobbyTest extends PageTestBase {
   private void attemptStartGame() {
     // start and render the test page
     tester.startPage(GameLobby.class);
-
     // assert rendered page class
     tester.assertRenderedPage(GameLobby.class);
-    tester.clickLink("startGameLink");
+    tester.clickLink("startGameForm:startGameLink");
   }
 }

@@ -74,7 +74,6 @@ public class GamesPage extends BasePage {
 
           @Override
           protected void populateItem(final ListItem<Game> listItem) {
-
             final Game game = listItem.getModelObject();
             Form<?> joinGameForm = new Form<>("joinGameForm");
             PasswordTextField joinGamePw = new PasswordTextField("joinGamePw", new Model<>(""));
