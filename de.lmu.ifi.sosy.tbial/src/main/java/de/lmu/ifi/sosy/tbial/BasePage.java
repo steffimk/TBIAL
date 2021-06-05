@@ -2,10 +2,13 @@ package de.lmu.ifi.sosy.tbial;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
@@ -75,13 +78,37 @@ public abstract class BasePage extends WebPage {
     loggedInUsername = new Label("loggedInUsername", "");
 	loggedInUsername.setOutputMarkupId(true);
     add(loggedInUsername);
-    
+
+    // show invitation messages
+    Form<?> messageForm = new Form<>("messageForm");
+    Link<Void> message =
+        new Link<Void>("message") {
+
+          /** UID for serialization. */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onClick() {
+            // TODO open message in modal window?
+          }
+        };
+    // TODO add correct number of messages; add blinking
+    Label numberOfMessages = new Label("numberOfMessages", "1");
+    messageForm.add(numberOfMessages);
+    messageForm.add(message);
+
+    messageForm.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
+    messageForm.setVisible(false);
+    add(messageForm);
+
     Session currentSession = super.getSession();
-    if (currentSession instanceof TBIALSession && ((TBIALSession)currentSession).getUser() != null) {
-    	loggedInUsername.setDefaultModelObject(((TBIALSession)currentSession).getUser().getName());
-    	add(loggedInUsername);
+    if (currentSession instanceof TBIALSession
+        && ((TBIALSession) currentSession).getUser() != null) {
+      loggedInUsername.setDefaultModelObject(((TBIALSession) currentSession).getUser().getName());
+      add(loggedInUsername);
+      messageForm.setVisible(true);
     }
-    
+
     if (!getSession().isSignedIn()) {
       link.setVisible(false);
       link.setEnabled(false);

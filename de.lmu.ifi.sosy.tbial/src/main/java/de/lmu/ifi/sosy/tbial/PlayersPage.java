@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -73,6 +74,7 @@ public class PlayersPage extends BasePage {
             Button inviteButton =
                 new Button("inviteButton") {
                   private static final long serialVersionUID = 1L;
+                  //                  private String customCSS = null;
 
                   @Override
                   public void onSubmit() {
@@ -103,6 +105,19 @@ public class PlayersPage extends BasePage {
                     }
                     return true;
                   }
+
+                  // TODO add css styling (wait for MR 21)
+
+                  //                  @Override
+                  //                  protected void onComponentTag(ComponentTag tag) {
+                  //                    if (isEnabled()) {
+                  //                      customCSS = "linkStyle";
+                  //                    } else {
+                  //                      customCSS = "disabledStyle";
+                  //                    }
+                  //                    super.onComponentTag(tag);
+                  //                    tag.put("class", customCSS);
+                  //                  }
                 };
             invitationForm.add(inviteButton);
             listItem.add(invitationForm);
