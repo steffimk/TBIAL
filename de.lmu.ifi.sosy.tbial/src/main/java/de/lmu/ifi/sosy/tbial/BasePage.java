@@ -77,7 +77,16 @@ public abstract class BasePage extends WebPage {
     add(loggedInUsername);
 
     // show invitation messages
-    WebMarkupContainer messageContainer = new WebMarkupContainer("messageContainer");
+    WebMarkupContainer messageContainer =
+        new WebMarkupContainer("messageContainer") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public boolean isVisible() {
+            return ((TBIALSession) currentSession).getUser() != null;
+          }
+        };
     Link<Void> message =
         new Link<Void>("message") {
 
@@ -92,20 +101,24 @@ public abstract class BasePage extends WebPage {
 
     // TODO add blinking (just number or whole container?)
     messageContainer.add(message);
-    numberOfMessages = new Label("numberOfMessages", "");
+        numberOfMessages =
+        new Label(
+            "numberOfMessages",
+            () -> {
+              User currentUser = ((TBIALSession) currentSession).getUser();
+              if (currentUser == null) {
+                return "";
+              } else return currentUser.getInvitations().size();
+            });
     numberOfMessages.setOutputMarkupId(true);
     messageContainer.add(numberOfMessages);
     // TODO doesn't update properly.. only when loading new page
     numberOfMessages.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
-    messageContainer.setVisible(false);
     add(messageContainer);
 
     if (currentSession instanceof TBIALSession
         && ((TBIALSession) currentSession).getUser() != null) {
       loggedInUsername.setDefaultModelObject(((TBIALSession) currentSession).getUser().getName());
-      numberOfMessages.setDefaultModelObject(
-          ((TBIALSession) currentSession).getUser().getInvitations().size());
-      messageContainer.setVisible(true);
     }
 
     if (!getSession().isSignedIn()) {
