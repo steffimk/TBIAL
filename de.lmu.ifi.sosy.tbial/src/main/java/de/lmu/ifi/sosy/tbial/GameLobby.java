@@ -65,6 +65,14 @@ public class GameLobby extends BasePage {
           }
 
           @Override
+          public void onConfigure() {
+            if (game.hasStarted()) {
+              throw new RestartResponseAtInterceptPageException(GameTable.class);
+            }
+            super.onConfigure();
+          }
+
+          @Override
           public boolean isVisible() {
             // TODO: When implementing change of host: Check if this works or if we have to set
             // visibility differently.
