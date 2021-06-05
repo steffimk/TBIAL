@@ -63,6 +63,7 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -247,6 +248,10 @@ public class Game implements Serializable {
    */
   public boolean checkIfLastPlayer() {
     return getCurrentNumberOfPlayers() == 1;
+  }
+
+  public List<Player> getInGamePlayersList() {
+    return new ArrayList<Player>(getPlayers().values());
   }
 
   public String getName() {

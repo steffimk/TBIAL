@@ -324,7 +324,7 @@ div.footer p a {
 	height: 31px;
 	text-align: center;
 	line-height: 25px;
-	color:#F4731D;
+	color: #F4731D;
 	font-size: 1em;
 	font-weight: bold;
 }
@@ -412,6 +412,6 @@ pre.boxed {
   animation: blinker 2s linear infinite;
 }
 
-@keyframes blinker {  
+@keyframes blinker {
   50% { opacity: 0; }
 }

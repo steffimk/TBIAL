@@ -30,7 +30,7 @@ public class GameLobbyTest extends PageTestBase {
   public void lobbyPageHasEmptyForm() {
     tester.startPage(GameLobby.class);
     tester.assertComponent("isHostLabel", Label.class);
-    tester.assertComponent("startGameLink", Link.class);
+    tester.assertComponent("startGameForm:startGameLink", Link.class);
     tester.assertComponent("currentStatusLabel", Label.class);
   }
 
@@ -64,9 +64,8 @@ public class GameLobbyTest extends PageTestBase {
   private void attemptStartGame() {
     // start and render the test page
     tester.startPage(GameLobby.class);
-
     // assert rendered page class
     tester.assertRenderedPage(GameLobby.class);
-    tester.clickLink("startGameLink");
+    tester.clickLink("startGameForm:startGameLink");
   }
 }
