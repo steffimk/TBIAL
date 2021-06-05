@@ -21,4 +21,13 @@ public class StackImageResourceReferences {
 
   public static PackageResourceReference heapEmptyImage =
       new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/HeapEmpty.png");
+
+  public static PackageResourceReference bigHeapImage =
+      new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/HeapBig.png");
+
+  public static PackageResourceReference mediumHeapImage =
+      new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/HeapMedium.png");
+
+  public static PackageResourceReference smallHeapImage =
+      new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/HeapSmall.png");
 }

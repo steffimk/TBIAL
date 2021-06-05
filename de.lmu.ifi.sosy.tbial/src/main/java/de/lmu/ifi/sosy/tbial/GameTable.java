@@ -33,7 +33,7 @@ public class GameTable extends BasePage {
   private static final long serialVersionUID = 1L;
 
   private WebMarkupContainer table;
-  
+
   public GameTable() {
 
     table = new WebMarkupContainer("table");
@@ -104,8 +104,8 @@ public class GameTable extends BasePage {
           @Override
           protected void onEvent(AjaxRequestTarget target) {
             System.out.println("Clicked on stack");
-            // TODO: currentGame.drawCardFromStack(basePlayer); it is possible to draw cards from
-            // the stack
+
+            currentGame.drawCardFromStack(basePlayer);
 
             Image image = (Image) this.getComponent().get("stackCard");
             updateStackImage(image, currentGame);
@@ -116,9 +116,9 @@ public class GameTable extends BasePage {
           // stack image changes depending on amount of cards left on stack
           public void updateStackImage(Image image, Game currentGame) {
             int currentStackSize = currentGame.getStackAndHeap().getStack().size();
-            int StackSizeAtStart = currentGame.getStackAndHeap().getStackSizeAtStart();
-            float remainingCardsPercentage = (float) currentStackSize / (float) StackSizeAtStart;
-
+            int stackSizeAtStart = currentGame.getStackAndHeap().getStackSizeAtStart();
+            float remainingCardsPercentage = (float) currentStackSize / (float) stackSizeAtStart;
+            
             if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
               image.setImageResourceReference(StackImageResourceReferences.smallStackImage);
 
@@ -182,7 +182,28 @@ public class GameTable extends BasePage {
           protected void onEvent(AjaxRequestTarget target) {
             boolean success = currentGame.clickedOnHeap(basePlayer);
             if (!success) return;
+            updateHeapImage(heapImage, currentGame);
             target.add(table);
+          }
+
+          // heap image changes depending on amount of cards left on the heap
+          public void updateHeapImage(Image image, Game currentGame) {
+            int currentHeapSize = currentGame.getStackAndHeap().getHeap().size();
+            int heapMaxSize = currentGame.getStackAndHeap().getHeapMaxSize();
+            float remainingCardsPercentage = (float) currentHeapSize / (float) heapMaxSize;
+
+            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+              image.setImageResourceReference(StackImageResourceReferences.smallHeapImage);;
+
+            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
+              image.setImageResourceReference(StackImageResourceReferences.mediumHeapImage);;
+
+            } else if (remainingCardsPercentage >= 0.66) {
+              image.setImageResourceReference(StackImageResourceReferences.bigHeapImage);
+
+            } else {
+              image.setImageResourceReference(StackImageResourceReferences.heapEmptyImage);
+            }
           }
         });
 

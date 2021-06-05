@@ -396,4 +396,12 @@ public class Game implements Serializable {
     // TODO: Check whether player has drawn cards from stack
     turn.setStage(TurnStage.PLAYING_CARDS);
   }
+
+  public void drawCardFromStack(Player basePlayer) {
+	if (stackAndHeap.getStack().size() == 0) {
+      stackAndHeap.refillStack();
+    }
+    StackCard drawnCard = stackAndHeap.drawCard();
+    basePlayer.addToHandCards(drawnCard);
+  }
 }

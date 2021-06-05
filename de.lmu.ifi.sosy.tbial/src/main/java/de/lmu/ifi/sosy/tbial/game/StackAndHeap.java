@@ -20,6 +20,7 @@ public class StackAndHeap implements Serializable {
   private List<StackCard> stack;
   private List<StackCard> heap;
   public static final int STACK_SIZE_AT_START = 80;
+  public static final int HEAP_MAX_SIZE = 80;
   /** The last player to add a card to the heap. Needed for the animation of the discard */
   private Player lastPlayerToDiscardCard;
 
@@ -62,6 +63,17 @@ public class StackAndHeap implements Serializable {
     return stack.remove(0);
   }
 
+  /** Refills empty Stack with cards from heap. */
+  public void refillStack() {
+    for (StackCard card : heap) {
+      stack.add(card);
+    }
+    
+    heap.clear();
+    
+    Collections.shuffle(stack);
+  }
+
   /**
    * Adds the card to the heap
    *
@@ -101,5 +113,9 @@ public class StackAndHeap implements Serializable {
 
   public int getStackSizeAtStart() {
     return STACK_SIZE_AT_START;
+  }
+
+  public int getHeapMaxSize() {
+    return HEAP_MAX_SIZE;
   }
 }
