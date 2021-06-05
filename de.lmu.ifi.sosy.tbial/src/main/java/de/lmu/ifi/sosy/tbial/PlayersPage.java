@@ -78,7 +78,9 @@ public class PlayersPage extends BasePage {
 
                   @Override
                   public void onSubmit() {
-                    // TODO send invitiation
+                    listItem
+                        .getModelObject()
+                        .invite(new Invitation(((TBIALSession) getSession()).getUser().getName()));
                   }
 
                   @Override

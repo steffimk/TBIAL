@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -32,6 +33,7 @@ public abstract class BasePage extends WebPage {
 
   private Label users;
   private Label loggedInUsername;
+  private Label numberOfMessages;
 
   protected Database getDatabase() {
     return TBIALApplication.getDatabase();
@@ -51,6 +53,8 @@ public abstract class BasePage extends WebPage {
   }
 
   public BasePage() {
+    Session currentSession = super.getSession();
+
     link =
         new Link<Void>("signout") {
 
@@ -59,12 +63,11 @@ public abstract class BasePage extends WebPage {
 
           @Override
           public void onClick() {
-            Session session = super.getSession();
-            if (session instanceof AuthenticatedWebSession) {
-              ((AuthenticatedWebSession) session).signOut();
+            if (currentSession instanceof AuthenticatedWebSession) {
+              ((AuthenticatedWebSession) currentSession).signOut();
             }
-            
-            session.invalidate();
+
+            currentSession.invalidate();
           }
         };
 
@@ -80,7 +83,7 @@ public abstract class BasePage extends WebPage {
     add(loggedInUsername);
 
     // show invitation messages
-    Form<?> messageForm = new Form<>("messageForm");
+    WebMarkupContainer messageContainer = new WebMarkupContainer("messageContainer");
     Link<Void> message =
         new Link<Void>("message") {
 
@@ -92,21 +95,23 @@ public abstract class BasePage extends WebPage {
             // TODO open message in modal window?
           }
         };
-    // TODO add correct number of messages; add blinking
-    Label numberOfMessages = new Label("numberOfMessages", "1");
-    messageForm.add(numberOfMessages);
-    messageForm.add(message);
 
-    messageForm.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
-    messageForm.setVisible(false);
-    add(messageForm);
+    // TODO add blinking (just number or whole container?)
+    messageContainer.add(message);
+    numberOfMessages = new Label("numberOfMessages", "");
+    numberOfMessages.setOutputMarkupId(true);
+    messageContainer.add(numberOfMessages);
+    // TODO doesn't update properly.. only when loading new page
+    numberOfMessages.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
+    messageContainer.setVisible(false);
+    add(messageContainer);
 
-    Session currentSession = super.getSession();
     if (currentSession instanceof TBIALSession
         && ((TBIALSession) currentSession).getUser() != null) {
       loggedInUsername.setDefaultModelObject(((TBIALSession) currentSession).getUser().getName());
-      add(loggedInUsername);
-      messageForm.setVisible(true);
+      numberOfMessages.setDefaultModelObject(
+          ((TBIALSession) currentSession).getUser().getInvitations().size());
+      messageContainer.setVisible(true);
     }
 
     if (!getSession().isSignedIn()) {
