@@ -63,6 +63,7 @@ public class GameLobby extends BasePage {
     currentStatusLabel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
     Form startGameForm = new Form("startGameForm");
+
     startGameLink =
         new Link<Void>("startGameLink") {
           private String customCSS = null;
