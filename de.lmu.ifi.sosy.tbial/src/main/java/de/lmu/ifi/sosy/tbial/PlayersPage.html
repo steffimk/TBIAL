@@ -32,9 +32,10 @@
 				<tr wicket:id="loggedInUsers">
 					<td wicket:id="name"></td>
 					<td>
-						<form wicket:id="invitationForm">
+						<form wicket:id="invitationForm" class="tooltip">
+						
 							<input type="submit" wicket:id="inviteButton"
-								value="Send invitation" />
+								value="Send invitation" > <span wicket:id="tooltip" class="tooltiptext" ></span> 
 						</form>
 					</td>
 				</tr>
