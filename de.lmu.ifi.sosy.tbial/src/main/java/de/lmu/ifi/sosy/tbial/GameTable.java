@@ -23,6 +23,7 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
+import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 
 /** Game Table */
@@ -107,34 +108,38 @@ public class GameTable extends BasePage {
 
             currentGame.drawCardFromStack(basePlayer);
 
-            Image image = (Image) this.getComponent().get("stackCard");
-            updateStackImage(image, currentGame);
-
             target.add(table);
-          }
-
-          // stack image changes depending on amount of cards left on stack
-          public void updateStackImage(Image image, Game currentGame) {
-            int currentStackSize = currentGame.getStackAndHeap().getStack().size();
-            int stackSizeAtStart = currentGame.getStackAndHeap().getStackSizeAtStart();
-            float remainingCardsPercentage = (float) currentStackSize / (float) stackSizeAtStart;
-            
-            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
-              image.setImageResourceReference(StackImageResourceReferences.smallStackImage);
-
-            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
-              image.setImageResourceReference(StackImageResourceReferences.mediumStackImage);
-
-            } else if (remainingCardsPercentage >= 0.66) {
-              image.setImageResourceReference(StackImageResourceReferences.bigStackImage);
-
-            } else {
-              image.setImageResourceReference(StackImageResourceReferences.stackEmptyImage);
-            }
           }
         });
 
-    Image stackImage = new Image("stackCard", StackImageResourceReferences.bigStackImage);
+    Image stackImage =
+        new Image("stackCard", () -> currentGame.getStackAndHeap().getStack().size()) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected ResourceReference getImageResourceReference() {
+
+            int currentStackSize = (int) this.getDefaultModelObject();
+            float remainingCardsPercentage =
+                (float) currentStackSize / (float) StackAndHeap.STACK_SIZE_AT_START;
+
+            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+              return StackImageResourceReferences.smallStackImage;
+
+            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
+              return StackImageResourceReferences.mediumStackImage;
+
+            } else if (remainingCardsPercentage >= 0.66) {
+              return StackImageResourceReferences.bigStackImage;
+
+            } else {
+              return StackImageResourceReferences.stackEmptyImage;
+            }
+          }
+        };
+
+    stackImage.setOutputMarkupId(true);
     stackContainer.add(stackImage);
 
     WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
