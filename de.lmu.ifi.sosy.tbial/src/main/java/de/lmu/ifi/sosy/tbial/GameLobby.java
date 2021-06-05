@@ -242,7 +242,6 @@ public class GameLobby extends BasePage {
     add(currentStatusLabel);
     add(isHostLabel);
     add(startGameForm);
-    //add(startGameLink);
     add(chatForm);
   }
 
