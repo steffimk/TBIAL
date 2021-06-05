@@ -1,5 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
@@ -29,6 +30,8 @@ public abstract class BasePage extends WebPage {
   private Label users;
   private Label loggedInUsername;
   private Label numberOfMessages;
+
+  private int counter;
 
   protected Database getDatabase() {
     return TBIALApplication.getDatabase();
@@ -87,6 +90,21 @@ public abstract class BasePage extends WebPage {
           public boolean isVisible() {
             return ((TBIALSession) currentSession).getUser() != null;
           }
+
+          @Override
+          protected void onBeforeRender() {
+            User currentUser = ((TBIALSession) currentSession).getUser();
+            if (currentUser != null
+                && currentUser.getInvitations().size() != 0
+                && currentUser.getInvitations().size() != counter) {
+              this.add(new AttributeModifier("class", "blink"));
+              counter = currentUser.getInvitations().size();
+            } else {
+              this.add(new AttributeModifier("class", "noBlinking"));
+            }
+
+            super.onBeforeRender();
+          }
         };
     Link<Void> message =
         new Link<Void>("message") {
@@ -100,7 +118,6 @@ public abstract class BasePage extends WebPage {
           }
         };
 
-    // TODO add blinking (just number or whole container?)
     messageContainer.add(message);
     numberOfMessages =
         new Label(
@@ -113,8 +130,7 @@ public abstract class BasePage extends WebPage {
             });
     numberOfMessages.setOutputMarkupId(true);
     messageContainer.add(numberOfMessages);
-    // TODO doesn't update properly.. only when loading new page
-    numberOfMessages.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
+    messageContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)));
     add(messageContainer);
 
     if (currentSession instanceof TBIALSession

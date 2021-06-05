@@ -409,7 +409,8 @@ pre.boxed {
 }
 
 .blink {
-  animation: blinker 2s linear infinite;
+  animation: blinker 2s linear;
+  animation-iteration-count: 4;
 }
 
 @keyframes blinker {
