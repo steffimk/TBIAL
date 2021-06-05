@@ -47,6 +47,7 @@ public class GameLobby extends BasePage {
     }
 
     isHostLabel = new Label("isHostLabel", () -> currentHostMessage());
+    isHostLabel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
     currentStatusLabel = new Label("currentStatusLabel", () -> getCurrentStatusMessage());
     currentStatusLabel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
