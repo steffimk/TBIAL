@@ -162,10 +162,7 @@ public class GamesPage extends BasePage {
   }
 
   public boolean isInGame() {
-    if (getSession().getCurrentGame() == null) {
-      return false;
-    }
-    return true;
+    return getSession().getCurrentGame() != null;
   }
 
   public void returnToGameLobby() {
