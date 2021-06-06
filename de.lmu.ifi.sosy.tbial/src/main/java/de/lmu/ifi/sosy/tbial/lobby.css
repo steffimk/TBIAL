@@ -1,0 +1,36 @@
+.disabledStyle {
+	display: block;
+	margin-top: 14px;
+	padding-top: 4px;
+	border-radius: 20px;
+	border: 2px solid grey;
+	text-decoration: none;
+	width: 100px;
+	height: 31px;
+	text-align: center;
+	line-height: 25px;
+	color: grey;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+.disabledStyle:hover {
+	color: grey;
+}
+
+.gameStyle {
+	color: #ff6600;
+	font-size: 1,5em;
+}
+
+.buttonStyle {
+	background-color: #e8e8e8;
+	border: 1px solid #ff6600;
+	font-size: 1em;
+	color: black;
+}
+
+.buttonStyle:hover {
+	background-color: #ff6600;
+	color: white;
+}

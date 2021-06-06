@@ -78,14 +78,12 @@ public class PlayerAreaPanel extends Panel {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            LOGGER.info(basePlayer.getUserName() + " clicked on play ability button");
-            game.clickedOnPlayAbility(basePlayer);
+            LOGGER.info(
+                basePlayer.getUserName()
+                    + " clicked on play ability button of "
+                    + player.getObject().getUserName());
+            game.clickedOnPlayAbility(basePlayer, player.getObject());
             target.add(table);
-          }
-
-          @Override
-          public boolean isVisible() {
-            return player.getObject().equals(basePlayer);
           }
         };
     add(playAbilityButton);

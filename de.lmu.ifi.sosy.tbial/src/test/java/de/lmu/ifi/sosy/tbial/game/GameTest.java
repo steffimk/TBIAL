@@ -197,6 +197,15 @@ public class GameTest {
   }
 
   @Test
+  public void putCardToPlayer_returnsFalseIfNotTurnOfPlayer() {
+    Game game = getNewGameThatHasStarted();
+    StackCard testCard = new AbilityCard(Ability.GOOGLE);
+    assertThat(
+        game.putCardToPlayer(testCard, game.getPlayers().get("B"), game.getPlayers().get("A")),
+        is(false));
+  }
+
+  @Test
   public void putCardToPlayer_addsCardToReceivedCardsOfReceivingPlayer() {
     Game game = getNewGameThatHasStarted();
 

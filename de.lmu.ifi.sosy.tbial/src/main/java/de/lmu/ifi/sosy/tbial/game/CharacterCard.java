@@ -29,6 +29,11 @@ public class CharacterCard extends Card {
     return character.fileName;
   }
 
+  @Override
+  public String toString() {
+    return character.toString();
+  }
+
   /**
    * Returns a list of count random character cards
    *

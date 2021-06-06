@@ -16,9 +16,22 @@ public class ActionCard extends Card implements StackCard {
     return action;
   }
 
+  public boolean isBug() {
+    return action.actionType == ActionType.BUG;
+  }
+
+  public ActionType getActionType() {
+    return action.actionType;
+  }
+
   @Override
   public String getResourceFileName() {
     return action.fileName;
+  }
+
+  @Override
+  public String toString() {
+    return action.toString();
   }
 
   /** Enum containing information about the specific action cards. */

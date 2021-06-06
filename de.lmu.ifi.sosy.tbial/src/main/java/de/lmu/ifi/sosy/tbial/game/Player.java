@@ -1,10 +1,12 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * A player of a game.
@@ -28,7 +30,7 @@ public class Player implements Serializable {
   private Set<StackCard> handCards;
   /** The ability cards the player played. */
   private Set<AbilityCard> playedAbilityCards;
-
+  
   private Set<StackCard> receivedCards;
 
   /** The last card the player has clicked on. Is <code>null</code> if no card is selected. */
@@ -215,5 +217,17 @@ public class Player implements Serializable {
    */
   public boolean canEndTurn() {
     return mentalHealth >= handCards.size();
+  }
+
+  /**
+   * Checks whether player has the bug delegation card. If he does, there's a 25% chance this method
+   * returns true.
+   *
+   * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
+   */
+  public boolean bugGetsBlockedByBugDelegationCard() {
+    Stream<AbilityCard> bugDelCards =
+        playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
+    return bugDelCards.count() > 0 && Math.random() < 0.25;
   }
 }
