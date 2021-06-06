@@ -447,6 +447,7 @@ public class Game implements Serializable {
       stackAndHeap.refillStack();
     }
     StackCard drawnCard = stackAndHeap.drawCard();
+    turn.incrementDrawnCardsInDrawingStage();
     player.addToHandCards(drawnCard);
   }
 }
