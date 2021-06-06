@@ -63,6 +63,9 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    addNewPlayer("A");
+    addNewPlayer("D");
+    addNewPlayer("G");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {

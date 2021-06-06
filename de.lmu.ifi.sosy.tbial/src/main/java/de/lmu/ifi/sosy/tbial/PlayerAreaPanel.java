@@ -9,6 +9,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -21,6 +22,10 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
+
+import com.googlecode.wicket.jquery.core.resource.StyleSheetPackageHeaderItem;
+import com.googlecode.wicket.jquery.core.utils.RequestCycleUtils;
+import com.googlecode.wicket.jquery.ui.interaction.draggable.Draggable;
 
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -164,6 +169,35 @@ public class PlayerAreaPanel extends Panel {
             final StackCard handCard = listItem.getModelObject();
 
             if (player.getObject().equals(basePlayer)) {
+              Draggable<Void> draggable =
+                  new Draggable<Void>("draggable") {
+
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public boolean isStopEventEnabled() {
+                      return true;
+                    }
+
+                    @Override
+                    public void onDragStart(AjaxRequestTarget target, int top, int left) {
+                      LOGGER.info(String.format("Drag started - position: {%s, %s}", top, left));
+                    }
+
+                    @Override
+                    public void onDragStop(AjaxRequestTarget target, int top, int left) {
+                      double offsetTop =
+                          RequestCycleUtils.getQueryParameterValue("offsetTop").toDouble(-1);
+                      double offsetLeft =
+                          RequestCycleUtils.getQueryParameterValue("offsetLeft").toDouble(-1);
+
+                      this.info(
+                          String.format(
+                              "Drag stoped - position: {%d, %d}, offset: {%.1f, %.1f}",
+                              top, left, offsetTop, offsetLeft));
+                    }
+                  };
+              listItem.add(draggable);
               listItem.add(
                   new AjaxEventBehavior("click") {
                     private static final long serialVersionUID = 1L;
@@ -179,12 +213,14 @@ public class PlayerAreaPanel extends Panel {
                   new Image(
                       "handCard",
                       new PackageResourceReference(getClass(), handCard.getResourceFileName()));
-              listItem.add(card);
+              draggable.add(card);
               if (player.getObject().getSelectedHandCard() == handCard) {
                 card.add(new AttributeModifier("class", "handcard selected"));
               }
             } else {
-              listItem.add(new Image("handCard", cardBackSideImage));
+              WebMarkupContainer notDraggable = new WebMarkupContainer("draggable");
+              notDraggable.add(new Image("handCard", cardBackSideImage));
+              listItem.add(notDraggable);
             }
           }
         };
@@ -193,4 +229,10 @@ public class PlayerAreaPanel extends Panel {
     add(handCardContainer);
   }
 
+  @Override
+  public void renderHead(IHeaderResponse response) {
+    super.renderHead(response);
+
+    response.render(new StyleSheetPackageHeaderItem(GameTable.class));
+  }
 }
