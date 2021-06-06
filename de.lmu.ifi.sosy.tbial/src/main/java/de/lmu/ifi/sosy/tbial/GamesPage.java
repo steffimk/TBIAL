@@ -20,6 +20,8 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 /** This page shows a list of all current games and provides the option to join one of them. */
 public class GamesPage extends BasePage {
 
+  final String userName = getSession().getUser().getName();
+
   private static final long serialVersionUID = 1L;
 
   public GamesPage() {
@@ -92,9 +94,13 @@ public class GamesPage extends BasePage {
                     return !isInGame();
                   }
                 };
-
             joinGameForm.add(joinGamePw);
             joinGameForm.add(joinGameButton);
+            if (game.getPlayers().containsKey(userName)) {
+              listItem.add(new Label("currentGame", "X"));
+            } else {
+              listItem.add(new Label("currentGame", " "));
+            }
             listItem.add(
                 new Label(
                     "numberOfPlayers",

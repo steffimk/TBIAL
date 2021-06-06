@@ -33,9 +33,6 @@ public class PlayerAreaPanel extends Panel {
 
   private static final Logger LOGGER = LogManager.getLogger(PlayerAreaPanel.class);
 
-  public static PackageResourceReference cardBackSideImage =
-      new PackageResourceReference(PlayerAreaPanel.class, "imgs/cards/backSide.png");
-
   public PlayerAreaPanel(
       String id, IModel<Player> player, Game game, Player basePlayer, WebMarkupContainer table) {
     super(id, new CompoundPropertyModel<Player>(player));
@@ -184,7 +181,7 @@ public class PlayerAreaPanel extends Panel {
                 card.add(new AttributeModifier("class", "handcard selected"));
               }
             } else {
-              listItem.add(new Image("handCard", cardBackSideImage));
+              listItem.add(new Image("handCard", StackImageResourceReferences.cardBackImage));
             }
           }
         };
