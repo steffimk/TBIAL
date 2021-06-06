@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 /** Tests referring to the Game class. */
 public class GameTest {
@@ -198,8 +199,15 @@ public class GameTest {
   @Test
   public void putCardToPlayer_addsCardToReceivedCardsOfReceivingPlayer() {
     Game game = getNewGameThatHasStarted();
-    Player player = game.getPlayers().get("A");
-    Player receivingPlayer = game.getPlayers().get("B");
+
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
     game.putCardToPlayer(testCard, player, receivingPlayer);
@@ -209,10 +217,16 @@ public class GameTest {
   @Test
   public void putCardToPlayer_removesCardFromPlayersHandCards() {
     Game game = getNewGameThatHasStarted();
-    Player player = game.getPlayers().get("A");
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
-    game.putCardToPlayer(testCard, player, game.getPlayers().get("B"));
+    game.putCardToPlayer(testCard, player, receivingPlayer);
     assertThat(player.getHandCards().contains(testCard), is(false));
   }
 
