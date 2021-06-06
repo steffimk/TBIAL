@@ -14,17 +14,20 @@ public class Turn implements Serializable {
   private static final Logger LOGGER = LogManager.getLogger(Game.class);
 
   public static final int DRAW_LIMIT_IN_DRAWING_STAGE = 2;
+  public static final int MAX_BUG_CARDS_PER_TURN = 1;
 
   private List<Player> players;
   private int currentPlayerIndex;
   private TurnStage stage;
   private int drawnCardsInDrawingStage;
+  private int bugsPlayedThisTurn;
 
   public Turn(List<Player> players) {
     this.players = players;
     this.currentPlayerIndex = 0;
     this.stage = TurnStage.DRAWING_CARDS;
     this.drawnCardsInDrawingStage = 0;
+    this.bugsPlayedThisTurn = 0;
   }
 
   /**
@@ -52,6 +55,7 @@ public class Turn implements Serializable {
   public void switchToNextPlayer() {
     stage = TurnStage.DRAWING_CARDS;
     this.drawnCardsInDrawingStage = 0;
+    this.bugsPlayedThisTurn = 0;
     currentPlayerIndex++;
     if (currentPlayerIndex == players.size()) {
       currentPlayerIndex = 0;
@@ -98,6 +102,13 @@ public class Turn implements Serializable {
             + TurnStage.DRAWING_CARDS.toString());
   }
 
+  /** Increases the counter for already played bug cars in this turn by 1. */
+  public void incrementPlayedBugCardsThisTurn() {
+    this.bugsPlayedThisTurn++;
+
+    LOGGER.info(players.get(currentPlayerIndex).getUserName() + " has played a bug card");
+  }
+
   /**
    * Returns the number of cards the current player has already drawn in the drawing stage.
    *
@@ -107,6 +118,14 @@ public class Turn implements Serializable {
     return this.drawnCardsInDrawingStage;
   }
 
+  /**
+   * Returns the number of played bug cards this turn.
+   *
+   * @return the number of played bug cards this turn.
+   */
+  public int getPlayedBugCardsInThisTurn() {
+    return this.bugsPlayedThisTurn;
+  }
   /**
    * For testing only.
    *
