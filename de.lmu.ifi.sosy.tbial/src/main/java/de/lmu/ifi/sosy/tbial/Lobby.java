@@ -39,6 +39,8 @@ public class Lobby extends BasePage {
 
   public Lobby() {
 
+    boolean isInGame = getSession().isInGame();
+
     Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
@@ -48,11 +50,6 @@ public class Lobby extends BasePage {
 
           public void onSubmit() {
             setResponsePage(getTbialApplication().getHomePage());
-          }
-
-          @Override
-          public boolean isEnabled() {
-            return !isInGame();
           }
         };
 
@@ -95,6 +92,11 @@ public class Lobby extends BasePage {
             boolean isPrivate = isPrivateCheckBox.getModelObject();
             String password = newGamePwField.getModelObject();
             createNewGame(gameName, maxPlayers, isPrivate, password);
+          }
+
+          @Override
+          public boolean isEnabled() {
+            return !isInGame;
           }
         };
 
@@ -152,7 +154,6 @@ public class Lobby extends BasePage {
 
     passwordContainer.add(newGamePwField);
 
-
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
         .add(newGameNameField)
@@ -193,13 +194,4 @@ public class Lobby extends BasePage {
         ? "Name already taken."
         : " ";
   }
-
-
-  public boolean isInGame() {
-    if (getSession().getCurrentGame() == null) {
-      return false;
-    }
-    return true;
-  }
 }
-

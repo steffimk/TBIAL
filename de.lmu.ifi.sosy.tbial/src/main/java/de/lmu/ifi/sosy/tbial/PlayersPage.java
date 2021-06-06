@@ -32,11 +32,6 @@ public class PlayersPage extends BasePage {
           public void onSubmit() {
             setResponsePage(getTbialApplication().getHomePage());
           }
-
-          @Override
-          public boolean isEnabled() {
-            return !isInGame();
-          }
         };
     menuForm.add(createGameButton);
 
@@ -83,12 +78,5 @@ public class PlayersPage extends BasePage {
     playerListContainer.setOutputMarkupId(true);
 
     add(playerListContainer);
-  }
-
-  public boolean isInGame() {
-    if (getSession().getCurrentGame() == null) {
-      return false;
-    }
-    return true;
   }
 }

@@ -26,6 +26,8 @@ public class GamesPage extends BasePage {
 
   public GamesPage() {
 
+    boolean isInGame = getSession().isInGame();
+
     Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
@@ -35,11 +37,6 @@ public class GamesPage extends BasePage {
 
           public void onSubmit() {
             setResponsePage(getTbialApplication().getHomePage());
-          }
-
-          @Override
-          public boolean isEnabled() {
-            return !isInGame();
           }
         };
     menuForm.add(createGameButton);
@@ -91,7 +88,7 @@ public class GamesPage extends BasePage {
 
                   @Override
                   public boolean isVisible() {
-                    return !isInGame();
+                    return !isInGame;
                   }
                 };
             joinGameForm.add(joinGamePw);
@@ -138,7 +135,7 @@ public class GamesPage extends BasePage {
 
           @Override
           public boolean isVisible() {
-            return isInGame();
+            return isInGame;
           }
         };
     returnForm.add(returnToGameLobbyButton);
@@ -159,10 +156,6 @@ public class GamesPage extends BasePage {
       getSession().setCurrentGame(game);
       setResponsePage(getTbialApplication().getGameLobbyPage());
     }
-  }
-
-  public boolean isInGame() {
-    return getSession().getCurrentGame() != null;
   }
 
   public void returnToGameLobby() {
