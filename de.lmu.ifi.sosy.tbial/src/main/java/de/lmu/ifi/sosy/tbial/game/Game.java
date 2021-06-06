@@ -442,15 +442,11 @@ public class Game implements Serializable {
     turn.setStage(TurnStage.PLAYING_CARDS);
   }
 
-  /**
-   * A player draws a card from the stack to his hand.
-   *
-   * @param basePlayer The player who draws a card.
-   */
-  public void drawCardFromStack(Player basePlayer) {
-
+  public void drawCardFromStack(Player player) {
+	if (stackAndHeap.getStack().size() == 0) {
+      stackAndHeap.refillStack();
+    }
     StackCard drawnCard = stackAndHeap.drawCard();
-    turn.incrementDrawnCardsInDrawingStage();
-    basePlayer.addToHandCards(drawnCard);
+    player.addToHandCards(drawnCard);
   }
 }
