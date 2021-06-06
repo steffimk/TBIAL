@@ -17,6 +17,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -58,7 +59,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -111,6 +111,7 @@ public class Game implements Serializable {
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
     turn = new Turn(new ArrayList<Player>(players.values()));
+    turn.determineStartingPlayer();
     distributeInitialHandCards();
   }
 
@@ -360,8 +361,7 @@ public class Game implements Serializable {
    * @param player The player who clicked on the button.
    */
   public void clickedOnDiscardButton(Player player) {
-    //	TODO: if (turn.getStage() != TurnStage.PLAYING_CARDS) return;
-    if (turn.getCurrentPlayer() != player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) {
       LOGGER.debug("Player clicked on discard button but not his turn or not in the right stage");
       return;
     }
@@ -389,19 +389,26 @@ public class Game implements Serializable {
    * @param player The player who clicked on the button.
    */
   public void clickedOnPlayCardsButton(Player player) {
+    if (turn.getDrawnCardsInDrawingStage() != Turn.DRAW_LIMIT_IN_DRAWING_STAGE) {
+      LOGGER.debug("Player hasn't drawn enough cards from stack.");
+      return;
+    }
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
       LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
       return;
     }
-    // TODO: Check whether player has drawn cards from stack
     turn.setStage(TurnStage.PLAYING_CARDS);
   }
 
+  /**
+   * A player draws a card from the stack to his hand.
+   *
+   * @param basePlayer The player who draws a card.
+   */
   public void drawCardFromStack(Player basePlayer) {
-	if (stackAndHeap.getStack().size() == 0) {
-      stackAndHeap.refillStack();
-    }
+
     StackCard drawnCard = stackAndHeap.drawCard();
+    turn.incrementDrawnCardsInDrawingStage();
     basePlayer.addToHandCards(drawnCard);
   }
 }

@@ -25,6 +25,7 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
+import de.lmu.ifi.sosy.tbial.game.Turn;
 
 /** Game Table */
 @AuthenticationRequired
@@ -106,7 +107,16 @@ public class GameTable extends BasePage {
           protected void onEvent(AjaxRequestTarget target) {
             System.out.println("Clicked on stack");
 
-            currentGame.drawCardFromStack(basePlayer);
+            if (currentGame.getStackAndHeap().getStack().size() == 0) {
+              currentGame.getStackAndHeap().refillStack();
+            }
+
+            int alreadyDrawnCards = currentGame.getTurn().getDrawnCardsInDrawingStage();
+            if (alreadyDrawnCards < Turn.DRAW_LIMIT_IN_DRAWING_STAGE
+                && currentGame.getTurn().getCurrentPlayer() == basePlayer) {
+
+              currentGame.drawCardFromStack(basePlayer);
+            }
 
             target.add(table);
           }
