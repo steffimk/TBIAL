@@ -27,6 +27,7 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
+import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 public class GameTableTest extends PageTestBase {
@@ -327,9 +328,14 @@ public class GameTableTest extends PageTestBase {
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.DRAWING_CARDS);
 
+    for (int i = 0; i < Turn.DRAW_LIMIT_IN_DRAWING_STAGE; i++) {
+      game.getTurn().incrementDrawnCardsInDrawingStage();
+    }
+
     tester.clickLink(tester.getComponentFromLastRenderedPage("playCardsButton"));
 
     assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
+    
   }
 
   @Test
