@@ -73,7 +73,6 @@ public class TBIALApplication extends WebApplication {
   private void initMarkupSettings() {
     if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
       getMarkupSettings().setStripWicketTags(true);
-      super.getMarkupSettings().setStripWicketTags(true);
       getMarkupSettings().setStripComments(true);
       getMarkupSettings().setCompressWhitespace(true);
     }

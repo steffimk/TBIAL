@@ -169,35 +169,6 @@ public class PlayerAreaPanel extends Panel {
             final StackCard handCard = listItem.getModelObject();
 
             if (player.getObject().equals(basePlayer)) {
-              Draggable<Void> draggable =
-                  new Draggable<Void>("draggable") {
-
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public boolean isStopEventEnabled() {
-                      return true;
-                    }
-
-                    @Override
-                    public void onDragStart(AjaxRequestTarget target, int top, int left) {
-                      LOGGER.info(String.format("Drag started - position: {%s, %s}", top, left));
-                    }
-
-                    @Override
-                    public void onDragStop(AjaxRequestTarget target, int top, int left) {
-                      double offsetTop =
-                          RequestCycleUtils.getQueryParameterValue("offsetTop").toDouble(-1);
-                      double offsetLeft =
-                          RequestCycleUtils.getQueryParameterValue("offsetLeft").toDouble(-1);
-
-                      this.info(
-                          String.format(
-                              "Drag stoped - position: {%d, %d}, offset: {%.1f, %.1f}",
-                              top, left, offsetTop, offsetLeft));
-                    }
-                  };
-              listItem.add(draggable);
               listItem.add(
                   new AjaxEventBehavior("click") {
                     private static final long serialVersionUID = 1L;
@@ -213,9 +184,15 @@ public class PlayerAreaPanel extends Panel {
                   new Image(
                       "handCard",
                       new PackageResourceReference(getClass(), handCard.getResourceFileName()));
-              draggable.add(card);
               if (player.getObject().getSelectedHandCard() == handCard) {
                 card.add(new AttributeModifier("class", "handcard selected"));
+                Draggable<Void> draggable = newDraggable();
+                draggable.add(card);
+                listItem.add(draggable);
+              } else {
+                WebMarkupContainer notDraggable = new WebMarkupContainer("draggable");
+                notDraggable.add(card);
+                listItem.add(notDraggable);
               }
             } else {
               WebMarkupContainer notDraggable = new WebMarkupContainer("draggable");
@@ -232,7 +209,40 @@ public class PlayerAreaPanel extends Panel {
   @Override
   public void renderHead(IHeaderResponse response) {
     super.renderHead(response);
+    // TODO: Is this necessary?
+    // response.render(new StyleSheetPackageHeaderItem(GameTable.class));
+  }
 
-    response.render(new StyleSheetPackageHeaderItem(GameTable.class));
+  /**
+   * Returns a new draggable component for a handcard
+   *
+   * @return The new draggable component
+   */
+  private Draggable<Void> newDraggable() {
+    return new Draggable<Void>("draggable") {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public boolean isStopEventEnabled() {
+        return true;
+      }
+
+      @Override
+      public void onDragStart(AjaxRequestTarget target, int top, int left) {
+        LOGGER.info(String.format("Drag started - position: {%s, %s}", top, left));
+      }
+
+      @Override
+      public void onDragStop(AjaxRequestTarget target, int top, int left) {
+        double offsetTop = RequestCycleUtils.getQueryParameterValue("offsetTop").toDouble(-1);
+        double offsetLeft = RequestCycleUtils.getQueryParameterValue("offsetLeft").toDouble(-1);
+
+        this.info(
+            String.format(
+                "Drag stoped - position: {%d, %d}, offset: {%.1f, %.1f}",
+                top, left, offsetTop, offsetLeft));
+      }
+    };
   }
 }
