@@ -143,7 +143,9 @@ public class GameLobby extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
-            listItem.add(new Label("playerName", player.getUserName()));
+            if (player.getUserName() != null) {
+              listItem.add(new Label("playerName", player.getUserName()));
+            }
           }
         };
 
@@ -214,7 +216,10 @@ public class GameLobby extends BasePage {
   private boolean isHost() {
     TBIALSession session = getSession();
     String hostName = game.getHost();
-    return session.getUser().getName().equals(hostName);
+    if (getSession().getUser() != null) {
+      return session.getUser().getName().equals(hostName);
+    }
+    return false;
   }
 
   /**
