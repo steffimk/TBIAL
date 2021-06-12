@@ -372,6 +372,8 @@ public class Game implements Serializable {
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isBug()) {
         turn.incrementPlayedBugCardsThisTurn();
+        int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
+        receiverOfCard.setMentalHealth(decreasedMentalHealthPoints);
       }
     }
 
