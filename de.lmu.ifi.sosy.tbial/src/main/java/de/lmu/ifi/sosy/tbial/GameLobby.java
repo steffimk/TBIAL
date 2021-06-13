@@ -20,6 +20,7 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
 import de.lmu.ifi.sosy.tbial.game.Player;
 
 /** The Lobby of a specific game in which the players wait for the game to start. */
@@ -231,7 +232,7 @@ public class GameLobby extends BasePage {
       getGame().changeHost();
     }
     if (getGame().checkIfLastPlayer()) {
-      getGameManager().removeGame(game);
+      GameManager.removeGame(game);
     }
     getGame().getPlayers().remove(getSession().getUser().getName());
     getSession().setCurrentGameNull();
