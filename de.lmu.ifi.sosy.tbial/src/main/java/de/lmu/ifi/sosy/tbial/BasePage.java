@@ -57,8 +57,9 @@ public abstract class BasePage extends WebPage {
             if (session instanceof AuthenticatedWebSession) {
               ((AuthenticatedWebSession) session).signOut();
             }
-            
+
             session.invalidate();
+            setResponsePage(getTbialApplication().getHomePage());
           }
         };
 
@@ -70,15 +71,16 @@ public abstract class BasePage extends WebPage {
 
     // Show user name in navigation bar next to Logout
     loggedInUsername = new Label("loggedInUsername", "");
-	loggedInUsername.setOutputMarkupId(true);
+    loggedInUsername.setOutputMarkupId(true);
     add(loggedInUsername);
-    
+
     Session currentSession = super.getSession();
-    if (currentSession instanceof TBIALSession && ((TBIALSession)currentSession).getUser() != null) {
-    	loggedInUsername.setDefaultModelObject(((TBIALSession)currentSession).getUser().getName());
-    	add(loggedInUsername);
+    if (currentSession instanceof TBIALSession
+        && ((TBIALSession) currentSession).getUser() != null) {
+      loggedInUsername.setDefaultModelObject(((TBIALSession) currentSession).getUser().getName());
+      add(loggedInUsername);
     }
-    
+
     if (!getSession().isSignedIn()) {
       link.setVisible(false);
       link.setEnabled(false);
