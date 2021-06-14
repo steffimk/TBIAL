@@ -23,7 +23,9 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
+import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
+import de.lmu.ifi.sosy.tbial.game.Turn;
 
 /** Game Table */
 @AuthenticationRequired
@@ -104,12 +106,50 @@ public class GameTable extends BasePage {
           @Override
           protected void onEvent(AjaxRequestTarget target) {
             System.out.println("Clicked on stack");
-            // TODO: currentGame.drawCardFromStack(basePlayer);
+
+            if (currentGame.getStackAndHeap().getStack().size() == 0) {
+              currentGame.getStackAndHeap().refillStack();
+            }
+
+            int alreadyDrawnCards = currentGame.getTurn().getDrawnCardsInDrawingStage();
+            if (alreadyDrawnCards < Turn.DRAW_LIMIT_IN_DRAWING_STAGE
+                && currentGame.getTurn().getCurrentPlayer() == basePlayer) {
+
+              currentGame.drawCardFromStack(basePlayer);
+            }
+
             target.add(table);
           }
         });
 
-    Image stackImage = new Image("stackCard", PlayerAreaPanel.cardBackSideImage);
+    Image stackImage =
+        new Image("stackCard", () -> currentGame.getStackAndHeap().getStack().size()) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected ResourceReference getImageResourceReference() {
+
+            int currentStackSize = (int) this.getDefaultModelObject();
+            float remainingCardsPercentage =
+                (float) currentStackSize / (float) StackAndHeap.STACK_SIZE_AT_START;
+
+            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+              return StackImageResourceReferences.smallStackImage;
+
+            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
+              return StackImageResourceReferences.mediumStackImage;
+
+            } else if (remainingCardsPercentage >= 0.66) {
+              return StackImageResourceReferences.bigStackImage;
+
+            } else {
+              return StackImageResourceReferences.stackEmptyImage;
+            }
+          }
+        };
+
+    stackImage.setOutputMarkupId(true);
     stackContainer.add(stackImage);
 
     WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
@@ -118,6 +158,16 @@ public class GameTable extends BasePage {
 
           private static final long serialVersionUID = 1L;
           private StackCard previousUppermostHeapCard = null;
+
+          @Override
+          public void onConfigure() {
+            if (this.getDefaultModelObject() == null) {
+              this.setVisible(false);
+            } else {
+              this.setVisible(true);
+            }
+            super.onConfigure();
+          }
 
           @Override
           protected void onBeforeRender() {
@@ -139,7 +189,7 @@ public class GameTable extends BasePage {
           @Override
           protected ResourceReference getImageResourceReference() {
             if (this.getDefaultModelObject() == null) {
-              return PlayerAreaPanel.cardBackSideImage; // TODO: add placeholder when stack is empty
+              return StackImageResourceReferences.heapEmptyImage;
             }
             return new PackageResourceReference(
                 getClass(), ((StackCard) this.getDefaultModelObject()).getResourceFileName());
@@ -148,6 +198,46 @@ public class GameTable extends BasePage {
 
     heapImage.setOutputMarkupId(true);
     heapContainer.add(heapImage);
+
+    Image heapBackgroundImage =
+        new Image("heapBackground", () -> currentGame.getStackAndHeap().getHeap().size()) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onBeforeRender() {
+            double remainingCardsPercentage =
+                (double) ((int) this.getDefaultModelObject()) / (double) StackAndHeap.HEAP_MAX_SIZE;
+            if (remainingCardsPercentage > 0.66) {
+              this.add(new AttributeModifier("style", "top: -1vh; left: -0.4vw;"));
+            } else if (remainingCardsPercentage > 0.33) {
+              this.add(new AttributeModifier("style", "top: -0.6vh; left: -0.3vw;"));
+            } else {
+              this.add(new AttributeModifier("style", "top: auto; left: auto;"));
+            }
+            super.onBeforeRender();
+          }
+
+          @Override
+          protected ResourceReference getImageResourceReference() {
+            // heap image changes depending on amount of cards left on the heap
+            int currentHeapSize = (int) this.getDefaultModelObject();
+            double remainingCardsPercentage =
+                (double) currentHeapSize / (double) StackAndHeap.HEAP_MAX_SIZE;
+
+            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+              return StackImageResourceReferences.smallHeapImage;
+            } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
+              return StackImageResourceReferences.mediumHeapImage;
+            } else if (remainingCardsPercentage >= 0.66) {
+              return StackImageResourceReferences.bigHeapImage;
+            } else {
+              return StackImageResourceReferences.heapEmptyImage;
+            }
+          }
+        };
+    heapBackgroundImage.setOutputMarkupId(true);
+    heapContainer.add(heapBackgroundImage);
 
     heapContainer.add(
         new AjaxEventBehavior("click") {
@@ -159,6 +249,7 @@ public class GameTable extends BasePage {
             if (!success) return;
             target.add(table);
           }
+
         });
 
     AjaxLink<Void> playCardsButton =

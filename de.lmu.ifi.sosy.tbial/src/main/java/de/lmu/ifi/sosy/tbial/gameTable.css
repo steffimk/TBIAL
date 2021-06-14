@@ -1194,14 +1194,25 @@
 	width: 30%;
 	display: inline-block;
 	margin-left: 5%;
+	position: relative;
 }
 
-.heapcard, .stackcard {
+.heapbackground {
+	position: absolute;
+	z-index: -1;
+	height: 100%;
+}
+
+.stackcard {
 	height: 100%;
 	border-radius: 10%;
 }
 
 .heapcard {
+	height: 90%;
+  	left: 0.8vw;
+  	top: 1vh;
+	border-radius: 10%;
 	animation-duration: 1s;
 	position: relative;
 	animation-timing-function: ease-in;

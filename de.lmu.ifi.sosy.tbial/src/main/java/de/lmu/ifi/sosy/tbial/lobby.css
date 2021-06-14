@@ -35,6 +35,13 @@
 	color: white;
 }
 
+.fontStyle {
+	font-size: 1.5em;
+	color: #ff6600;
+	text-align: center;
+
+}
+
 /* https://www.w3schools.com/css/css_tooltip.asp */
 
 .tooltip .tooltiptext {
