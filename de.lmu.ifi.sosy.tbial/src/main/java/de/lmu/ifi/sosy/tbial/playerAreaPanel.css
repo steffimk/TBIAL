@@ -47,10 +47,6 @@ li {
 	top: 33%;
 }
 
-.playedCardWrapper {
-	margin: 0 3% 0 0;
-}
-
 .handcards {
 	top: 68%;
 }
@@ -91,18 +87,36 @@ li {
 }
 
 .linkstyle {
-	display: flex;
+	display: table;
 	padding: 0;
 	height: 95%;
 	width: 27%;
 	margin-top: 0;
-	display: table;
 	background: #F4731D;
 	text-decoration: none;
 	text-align: center;
 	color: white;
 	font-size: 1em;
 	font-weight: bold;
+}
+
+.droppable {
+	display: flex;
+	height: 100%;
+	width: 30%;
+	border-radius: 10%;
+	background: #F4731D;
+}
+
+.addCardLink {
+	display: table;
+	padding: 0;
+	text-decoration: none;
+	text-align: center;
+	color: white;
+	font-size: 1em;
+	font-weight: bold;
+	margin: 0 3% 0 0;
 }
 
 

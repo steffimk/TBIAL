@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -26,6 +28,7 @@ import org.apache.wicket.util.time.Duration;
 import com.googlecode.wicket.jquery.core.resource.StyleSheetPackageHeaderItem;
 import com.googlecode.wicket.jquery.core.utils.RequestCycleUtils;
 import com.googlecode.wicket.jquery.ui.interaction.draggable.Draggable;
+import com.googlecode.wicket.jquery.ui.interaction.droppable.Droppable;
 
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -94,7 +97,9 @@ public class PlayerAreaPanel extends Panel {
             target.add(table);
           }
         };
-    add(playAbilityButton);
+    Droppable<Void> playAbilityDropBox = this.newDroppable("playAbilityDropBox");
+    playAbilityDropBox.add(playAbilityButton);
+    add(playAbilityDropBox);
 
     IModel<List<StackCard>> playedAbilityCardsModel =
         (IModel<List<StackCard>>)
@@ -130,8 +135,9 @@ public class PlayerAreaPanel extends Panel {
             target.add(table);
           }
         };
-
-    add(addCardButton);
+    Droppable<Void> addCardDropBox = this.newDroppable("addCardDropBox");
+    addCardDropBox.add(addCardButton);
+    add(addCardDropBox);
 
     IModel<List<StackCard>> blockCardModel =
         (IModel<List<StackCard>>)
@@ -242,6 +248,30 @@ public class PlayerAreaPanel extends Panel {
             String.format(
                 "Drag stoped - position: {%d, %d}, offset: {%.1f, %.1f}",
                 top, left, offsetTop, offsetLeft));
+      }
+    };
+  }
+
+  /**
+   * Gets a new Droppable.<br>
+   * By default 'drag-enter' and 'drag-leave' events are disabled to minimize client/server
+   * round-trips.
+   */
+  private Droppable<Void> newDroppable(String id) {
+    return new Droppable<>(id) {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void onDrop(AjaxRequestTarget target, Component component) {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public MarkupContainer setDefaultModel(IModel<?> model) {
+        // TODO Auto-generated method stub
+        return null;
       }
     };
   }
