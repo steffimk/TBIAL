@@ -8,17 +8,26 @@
 	background: transparent;
 }
 
-.points {
+.prestigePoints {
 	list-style: none !important;
+	position: absolute;
 	padding: 0;
 	margin: 0;
-	position: absolute;
 	top: 88%;
-	left: 17%;
+	left: 25%;
+ 	font-size: 1.6vw;
+	font-weight: bold;
 }
 
-li {
-	font-size: 1vw;
+.mentalPoints {
+	list-style: none !important;
+	position: absolute;
+	padding: 0;
+	margin: 0;
+	top: 92%;
+	left: 25%;
+ 	font-size: 1.6vw;
+	font-weight: bold;
 }
 
 .wrapper {

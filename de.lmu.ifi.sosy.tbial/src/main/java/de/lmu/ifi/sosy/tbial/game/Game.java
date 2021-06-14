@@ -63,6 +63,9 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    addNewPlayer("Johann");
+    addNewPlayer("Klaus");
+    addNewPlayer("Sven");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -443,7 +446,7 @@ public class Game implements Serializable {
   }
 
   public void drawCardFromStack(Player player) {
-	if (stackAndHeap.getStack().size() == 0) {
+    if (stackAndHeap.getStack().size() == 0) {
       stackAndHeap.refillStack();
     }
     StackCard drawnCard = stackAndHeap.drawCard();
