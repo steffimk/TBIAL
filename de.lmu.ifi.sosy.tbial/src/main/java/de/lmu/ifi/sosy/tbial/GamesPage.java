@@ -81,7 +81,8 @@ public class GamesPage extends BasePage {
 
                   @Override
                   public void onSubmit() {
-                    joinGame(game, joinGamePw.getModelObject());
+                    ((TBIALSession) getSession()).joinGame(game, joinGamePw.getModelObject());
+                    setResponsePage(getTbialApplication().getGameLobbyPage());
                   }
                 };
             joinGameForm.add(joinGamePw);
@@ -114,21 +115,5 @@ public class GamesPage extends BasePage {
     gameListContainer.setOutputMarkupId(true);
 
     add(gameListContainer);
-  }
-
-  /**
-   * Method to join a game, adding to the games player list, setting the current game and being
-   * directed to its GameLobby
-   *
-   * @param game
-   * @param password
-   */
-  public void joinGame(Game game, String password) {
-    String username = getSession().getUser().getName();
-    if (game.checkIfYouCanJoin(username, password)) {
-      game.addNewPlayer(getSession().getUser().getName());
-      getSession().setCurrentGame(game);
-      setResponsePage(getTbialApplication().getGameLobbyPage());
-    }
   }
 }

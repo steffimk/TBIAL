@@ -99,7 +99,10 @@ public class PlayersPage extends BasePage {
                   public void onSubmit() {
                     listItem
                         .getModelObject()
-                        .invite(new Invitation(((TBIALSession) getSession()).getUser().getName()));
+                        .invite(
+                            new Invitation(
+                                ((TBIALSession) getSession()).getUser().getName(),
+                                "has invited you to join a game."));
                   }
 
                   @Override

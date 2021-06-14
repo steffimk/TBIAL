@@ -8,18 +8,18 @@ public class Invitation implements Serializable {
   private String sender;
   private String textMessage;
 
-  public Invitation(String sender) {
+  public Invitation(String sender, String textMessage) {
     super();
     this.sender = sender;
-    this.textMessage = "has invited you to join his/her game.";
+    this.textMessage = textMessage;
   }
 
   public String getSender() {
-    return sender + " ";
+    return sender;
   }
 
   public String getTextMessage() {
-    return textMessage;
+    return " " + textMessage;
   }
 
 }

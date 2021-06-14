@@ -2,8 +2,11 @@ package de.lmu.ifi.sosy.tbial;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -14,6 +17,7 @@ import org.apache.wicket.util.time.Duration;
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
+import de.lmu.ifi.sosy.tbial.NotificationPanel;
 
 /**
  * Basic page with style template as well as access to {@link TBIALSession} and {@link Database}.
@@ -81,6 +85,18 @@ public abstract class BasePage extends WebPage {
     add(loggedInUsername);
 
     // show invitation messages
+    final ModalWindow modal;
+    add(modal = new ModalWindow("modal"));
+    modal.setTitle("Your Notifications");
+    if (((TBIALSession) currentSession).getUser() != null) {
+      modal.setContent(
+          new NotificationPanel(modal.getContentId(), ((TBIALSession) currentSession).getUser()));
+    }
+    modal.setCloseButtonCallback(
+        target -> {
+          return true;
+        });
+
     WebMarkupContainer messageContainer =
         new WebMarkupContainer("messageContainer") {
 
@@ -106,15 +122,15 @@ public abstract class BasePage extends WebPage {
             super.onBeforeRender();
           }
         };
-    Link<Void> message =
-        new Link<Void>("message") {
+    AjaxLink<Void> message =
+        new AjaxLink<Void>("message") {
 
           /** UID for serialization. */
           private static final long serialVersionUID = 1L;
 
           @Override
-          public void onClick() {
-            // TODO open message in modal window?
+          public void onClick(AjaxRequestTarget target) {
+            modal.show(target);
           }
         };
 

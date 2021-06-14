@@ -109,4 +109,18 @@ public class TBIALSession extends AuthenticatedWebSession {
   public void setCurrentGameNull() {
     this.currentGame = null;
   }
+
+  /**
+   * Method to join a game, adding to the games player list and setting the current game
+   *
+   * @param game
+   * @param password
+   */
+  public void joinGame(Game game, String password) {
+    String username = getUser().getName();
+    if (game.checkIfYouCanJoin(username, password)) {
+      game.addNewPlayer(username);
+      setCurrentGame(game);
+    }
+  }
 }

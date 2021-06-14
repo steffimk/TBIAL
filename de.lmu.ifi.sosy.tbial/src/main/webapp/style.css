@@ -416,3 +416,13 @@ pre.boxed {
 @keyframes blinker {
   50% { opacity: 0; }
 }
+
+.notificationContainer {
+	width: 93%;
+    padding: 2%;
+    margin: 1%;
+	border: 1px solid #ff6600;
+	display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
