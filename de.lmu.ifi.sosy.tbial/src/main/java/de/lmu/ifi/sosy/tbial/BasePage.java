@@ -84,6 +84,8 @@ public abstract class BasePage extends WebPage {
       link.setEnabled(false);
       loggedInUsername.setVisible(false);
     }
+
+    setFreezePageId(true);
   }
 
   public String getUsersString() {
