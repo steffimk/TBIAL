@@ -21,6 +21,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
 
+import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
@@ -37,6 +38,9 @@ public class GameTable extends BasePage {
   private WebMarkupContainer table;
 
   public GameTable() {
+
+    getTbialApplication().getMarkupSettings().setStripWicketTags(true);
+    getApplication().getMarkupSettings().setStripWicketTags(true);
 
     table = new WebMarkupContainer("table");
     table.setOutputMarkupId(true);
@@ -152,7 +156,9 @@ public class GameTable extends BasePage {
     stackImage.setOutputMarkupId(true);
     stackContainer.add(stackImage);
 
-    WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
+    DroppableArea heapContainer =
+        new DroppableArea(
+            "heapContainer", DroppableType.HEAP, currentGame, basePlayer, null, table);
     Image heapImage =
         new Image("heapCard", () -> currentGame.getStackAndHeap().getUppermostCardOfHeap()) {
 
@@ -225,7 +231,7 @@ public class GameTable extends BasePage {
             double remainingCardsPercentage =
                 (double) currentHeapSize / (double) StackAndHeap.HEAP_MAX_SIZE;
 
-            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+            if (remainingCardsPercentage > 0.02 && remainingCardsPercentage < 0.33) {
               return StackImageResourceReferences.smallHeapImage;
             } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
               return StackImageResourceReferences.mediumHeapImage;
@@ -238,19 +244,19 @@ public class GameTable extends BasePage {
         };
     heapBackgroundImage.setOutputMarkupId(true);
     heapContainer.add(heapBackgroundImage);
-
-    heapContainer.add(
-        new AjaxEventBehavior("click") {
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          protected void onEvent(AjaxRequestTarget target) {
-            boolean success = currentGame.clickedOnHeap(basePlayer);
-            if (!success) return;
-            target.add(table);
-          }
-
-        });
+    // TODO: Do we want to keep the click behavior?
+    //    heapContainer.add(
+    //        new AjaxEventBehavior("click") {
+    //          private static final long serialVersionUID = 1L;
+    //
+    //          @Override
+    //          protected void onEvent(AjaxRequestTarget target) {
+    //            boolean success = currentGame.clickedOnHeap(basePlayer);
+    //            if (!success) return;
+    //            target.add(table);
+    //          }
+    //
+    //        });
 
     AjaxLink<Void> playCardsButton =
         new AjaxLink<>("playCardsButton") {
@@ -305,7 +311,7 @@ public class GameTable extends BasePage {
     int playerIndex = 2 + otherPlayers.indexOf(player);
     // If basePlayer
     if (playerIndex == 1) {
-      return new AttributeModifier("style", "animation-name: discardAnimation");
+      return new AttributeModifier("style", "animation-name: none;");
     }
     return new AttributeModifier(
         "style", "animation-name: discardAnimation" + numberOfPlayers + "-" + playerIndex);
