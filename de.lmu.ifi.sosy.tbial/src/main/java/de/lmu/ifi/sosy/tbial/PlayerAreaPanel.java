@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -22,11 +21,11 @@ import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
 
 import com.googlecode.wicket.jquery.core.resource.StyleSheetPackageHeaderItem;
-import com.googlecode.wicket.jquery.core.utils.RequestCycleUtils;
 import com.googlecode.wicket.jquery.ui.interaction.draggable.Draggable;
 import com.googlecode.wicket.jquery.ui.interaction.droppable.Droppable;
 
@@ -41,9 +40,18 @@ public class PlayerAreaPanel extends Panel {
 
   private static final Logger LOGGER = LogManager.getLogger(PlayerAreaPanel.class);
 
+  private Player playerOfPanel;
+  private Game game;
+  private Player basePlayer;
+  private WebMarkupContainer table;
+
   public PlayerAreaPanel(
       String id, IModel<Player> player, Game game, Player basePlayer, WebMarkupContainer table) {
     super(id, new CompoundPropertyModel<Player>(player));
+    this.playerOfPanel = player.getObject();
+    this.game = game;
+    this.basePlayer = basePlayer;
+    this.table = table;
 
     add(new Label("userName"));
     Label role = new Label("roleName");
@@ -94,7 +102,8 @@ public class PlayerAreaPanel extends Panel {
             target.add(table);
           }
         };
-    Droppable<Void> playAbilityDropBox = this.newDroppable("playAbilityDropBox");
+    Droppable<Void> playAbilityDropBox =
+        this.newDroppable("playAbilityDropBox", DroppableType.PLAY_ABILITY);
     playAbilityDropBox.add(playAbilityButton);
     add(playAbilityDropBox);
 
@@ -132,7 +141,7 @@ public class PlayerAreaPanel extends Panel {
             target.add(table);
           }
         };
-    Droppable<Void> addCardDropBox = this.newDroppable("addCardDropBox");
+    Droppable<Void> addCardDropBox = this.newDroppable("addCardDropBox", DroppableType.ADD_CARD);
     addCardDropBox.add(addCardButton);
     add(addCardDropBox);
 
@@ -189,7 +198,8 @@ public class PlayerAreaPanel extends Panel {
                       new PackageResourceReference(getClass(), handCard.getResourceFileName()));
               if (player.getObject().getSelectedHandCard() == handCard) {
                 card.add(new AttributeModifier("class", "handcard selected"));
-                Draggable<Void> draggable = newDraggable();
+                Draggable<Void> draggable =
+                    new Draggable<Void>("draggable").setContainment("#wrapper-panel-frame");
                 draggable.add(card);
                 listItem.add(draggable);
               } else {
@@ -212,41 +222,7 @@ public class PlayerAreaPanel extends Panel {
   @Override
   public void renderHead(IHeaderResponse response) {
     super.renderHead(response);
-    // TODO: Is this necessary?
-    // response.render(new StyleSheetPackageHeaderItem(GameTable.class));
-  }
-
-  /**
-   * Returns a new draggable component for a handcard
-   *
-   * @return The new draggable component
-   */
-  private Draggable<Void> newDraggable() {
-    return new Draggable<Void>("draggable") {
-
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public boolean isStopEventEnabled() {
-        return true;
-      }
-
-      @Override
-      public void onDragStart(AjaxRequestTarget target, int top, int left) {
-        LOGGER.info(String.format("Drag started - position: {%s, %s}", top, left));
-      }
-
-      @Override
-      public void onDragStop(AjaxRequestTarget target, int top, int left) {
-        double offsetTop = RequestCycleUtils.getQueryParameterValue("offsetTop").toDouble(-1);
-        double offsetLeft = RequestCycleUtils.getQueryParameterValue("offsetLeft").toDouble(-1);
-
-        this.info(
-            String.format(
-                "Drag stoped - position: {%d, %d}, offset: {%.1f, %.1f}",
-                top, left, offsetTop, offsetLeft));
-      }
-    };
+    response.render(new StyleSheetPackageHeaderItem(GameTable.class));
   }
 
   /**
@@ -254,22 +230,64 @@ public class PlayerAreaPanel extends Panel {
    * By default 'drag-enter' and 'drag-leave' events are disabled to minimize client/server
    * round-trips.
    */
-  private Droppable<Void> newDroppable(String id) {
+  private Droppable<Void> newDroppable(String id, DroppableType dropType) {
     return new Droppable<>(id) {
 
       private static final long serialVersionUID = 1L;
+      private final DroppableType type = dropType;
 
       @Override
       public void onDrop(AjaxRequestTarget target, Component component) {
-        // TODO Auto-generated method stub
-
+        System.out.println("Droppeed sth somewhere");
+        switch (type) {
+          case ADD_CARD:
+            LOGGER.info(
+                basePlayer.getUserName()
+                    + " dropped card on add card area of "
+                    + playerOfPanel.getUserName());
+            game.clickedOnAddCardToPlayer(basePlayer, playerOfPanel);
+            break;
+          case PLAY_ABILITY:
+            LOGGER.info(
+                basePlayer.getUserName()
+                    + " clicked on play ability button of "
+                    + playerOfPanel.getUserName());
+            game.clickedOnPlayAbility(basePlayer, playerOfPanel);
+            break;
+          case HEAP:
+            break; // TODO
+        }
+        target.add(table);
       }
 
       @Override
-      public MarkupContainer setDefaultModel(IModel<?> model) {
-        // TODO Auto-generated method stub
-        return null;
+      public void onOver(AjaxRequestTarget target, Component component) {
+        this.add(new AttributeModifier("style", "background: #000000 !important;"));
+        target.add(this);
+      }
+
+      @Override
+      public void onExit(AjaxRequestTarget target, Component component) {
+        this.add(new AttributeModifier("style", "background: #F4731D !important;"));
+        System.out.println("Hiii");
+        target.add(this);
+      }
+
+      @Override
+      public boolean isOverEventEnabled() {
+        return true;
+      }
+
+      @Override
+      public boolean isExitEventEnabled() {
+        return true;
       }
     };
+  }
+
+  private enum DroppableType {
+    PLAY_ABILITY,
+    ADD_CARD,
+    HEAP
   }
 }
