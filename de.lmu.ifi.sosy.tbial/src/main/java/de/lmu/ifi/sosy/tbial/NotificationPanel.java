@@ -78,13 +78,14 @@ public class NotificationPanel extends Panel {
 
                   @Override
                   public void onSubmit() {
-                    // delete invitation
-                    user.getInvitations().remove(invitation);
-                    remove(notificationForm);
-                    // send message in game lobby that invitation was rejected
+
                     List<Game> games = getGameManager().getCurrentGamesAsList();
                     for (Game game : games) {
                       if (game.getHost() == invitation.getSender()) {
+                        // delete invitation
+                        user.getInvitations().remove(invitation);
+                        remove(notificationForm);
+                        // send message in game lobby that invitation was rejected
                         game.getChatMessages()
                             .add(
                                 new ChatMessage(

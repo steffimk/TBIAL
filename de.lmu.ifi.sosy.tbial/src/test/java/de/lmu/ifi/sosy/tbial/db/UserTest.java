@@ -3,8 +3,12 @@ package de.lmu.ifi.sosy.tbial.db;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.LinkedList;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import de.lmu.ifi.sosy.tbial.Invitation;
 
 public class UserTest {
 
@@ -16,12 +20,15 @@ public class UserTest {
 
   private int id;
 
+  private Invitation invitation;
+
   @Before
   public void init() {
     password = "pass";
     name = "name";
     id = 42;
     user = new User("", "");
+    invitation = new Invitation("sender", "sending message");
   }
 
   @Test(expected = NullPointerException.class)
@@ -50,6 +57,12 @@ public class UserTest {
   public void getId_returnsId() {
     user.setId(id);
     assertThat(user.getId(), is(id));
+  }
+
+  @Test
+  public void getInvitations_returnsInvitations() {
+    user.invite(invitation);
+    assertThat(user.getInvitations().get(0), is(invitation));
   }
 
   @Test(expected = NullPointerException.class)
