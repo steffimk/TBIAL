@@ -369,14 +369,14 @@ public class Game implements Serializable {
    */
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
-    StackCard selectedCard = player.getSelectedHandCard();
 
     if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) return;
 
+    StackCard selectedCard = player.getSelectedHandCard();
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isBug()) {
         turn.incrementPlayedBugCardsThisTurn();
-
+        
         for (StackCard card : receiverOfCard.getHandCards()) {
           if (card.isLameExcuse()) {}
         }
