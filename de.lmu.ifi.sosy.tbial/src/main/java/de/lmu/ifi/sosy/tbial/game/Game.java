@@ -395,10 +395,14 @@ public class Game implements Serializable {
     StackCard selectedCard = player.getSelectedHandCard();
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
+        System.out.println(selectedCard.toString() + " | " + clickedCard.toString());
+
         discardHandCard(player, selectedCard);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
         player.addToMentalHealth(1);
+        
+
       }
     }
   }

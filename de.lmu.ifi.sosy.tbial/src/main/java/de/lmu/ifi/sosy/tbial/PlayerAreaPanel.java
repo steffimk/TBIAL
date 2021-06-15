@@ -171,10 +171,8 @@ public class PlayerAreaPanel extends Panel {
 
                   @Override
                   protected void onEvent(AjaxRequestTarget target) {
-
-                    game.clickedOnReceivedCard(basePlayer, blockCard);
-
                     System.out.println("Clicked on " + item.getModelObject().toString());
+                    game.clickedOnReceivedCard(basePlayer, blockCard);
                   }
                 });
           }
