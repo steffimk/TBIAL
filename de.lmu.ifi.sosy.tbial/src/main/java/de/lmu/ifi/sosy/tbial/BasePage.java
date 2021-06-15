@@ -57,8 +57,9 @@ public abstract class BasePage extends WebPage {
             if (session instanceof AuthenticatedWebSession) {
               ((AuthenticatedWebSession) session).signOut();
             }
-            
+
             session.invalidate();
+            setResponsePage(getTbialApplication().getHomePage());
           }
         };
 

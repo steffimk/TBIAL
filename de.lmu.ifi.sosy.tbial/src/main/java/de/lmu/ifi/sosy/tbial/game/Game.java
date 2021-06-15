@@ -172,6 +172,10 @@ public class Game implements Serializable {
     return false;
   }
 
+  public void putCardOnHeap(Player player, StackCard card) {
+    stackAndHeap.addToHeap(card, player);
+  }
+
   /**
    * Removes the card from the player's hand cards and adds it to the receiver's received cards. If
    * the card is a bug and the receiver owns a bug delegation card, there's a 25% chance the card
@@ -372,6 +376,11 @@ public class Game implements Serializable {
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isBug()) {
         turn.incrementPlayedBugCardsThisTurn();
+
+        for (StackCard card : receiverOfCard.getHandCards()) {
+          if (card.isLameExcuse()) {}
+        }
+
         int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
         receiverOfCard.setMentalHealth(decreasedMentalHealthPoints);
       }
@@ -379,6 +388,18 @@ public class Game implements Serializable {
 
     if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
+    }
+  }
+
+  public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
+    StackCard selectedCard = player.getSelectedHandCard();
+    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+      if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
+        discardHandCard(player, selectedCard);
+        putCardOnHeap(player, clickedCard);
+        player.getReceivedCards().remove(clickedCard);
+        player.addToMentalHealth(1);
+      }
     }
   }
 

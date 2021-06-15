@@ -9,16 +9,19 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
 
@@ -51,7 +54,19 @@ public class PlayerAreaPanel extends Panel {
     add(mentalHealth);
     add(new Label("prestige"));
 
-    // update mental health; if mental health == 0 (-> fire player) -> show role of player on game table
+    final ModalWindow modal;
+    add(modal = new ModalWindow("modal"));
+
+    modal.setOutputMarkupPlaceholderTag(true);
+    modal.setResizable(false);
+    modal.setInitialWidth(30);
+    modal.setInitialHeight(15);
+    modal.setWidthUnit("em");
+    modal.setHeightUnit("em");
+    modal.setPageCreator(() -> new GameLobby());
+
+    // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
+    // table
     mentalHealth.add(
         new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
 
@@ -65,6 +80,11 @@ public class PlayerAreaPanel extends Panel {
               target.add(role);
               stop(target);
             }
+
+            /*if (player.getObject().getReceivedCards().size() > 0 && !modal.isShown()) {
+              modal.show(target);
+            }*/
+
             // TODO maybe this update should be triggered somewhere else in the future
             target.add(mentalHealth);
           }
@@ -102,6 +122,8 @@ public class PlayerAreaPanel extends Panel {
                 new Image(
                     "playedCard",
                     new PackageResourceReference(getClass(), abilityCard.getResourceFileName())));
+
+           
           }
         };
     add(playedAbilityCards);
@@ -119,8 +141,11 @@ public class PlayerAreaPanel extends Panel {
                     + " clicked on add card button of "
                     + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
+
             target.add(table);
+
           }
+          
         };
 
     add(addCardButton);
@@ -139,6 +164,19 @@ public class PlayerAreaPanel extends Panel {
                 new Image(
                     "blockCard",
                     new PackageResourceReference(getClass(), blockCard.getResourceFileName())));
+
+            item.add(
+                new AjaxEventBehavior("click") {
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  protected void onEvent(AjaxRequestTarget target) {
+
+                    game.clickedOnReceivedCard(basePlayer, blockCard);
+
+                    System.out.println("Clicked on " + item.getModelObject().toString());
+                  }
+                });
           }
         };
     add(blockCards);

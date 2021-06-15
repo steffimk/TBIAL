@@ -20,6 +20,14 @@ public class ActionCard extends Card implements StackCard {
     return action.actionType == ActionType.BUG;
   }
 
+  public boolean isLameExcuse() {
+    return action.actionType == ActionType.LAME_EXCUSE;
+  }
+
+  public boolean isSolution() {
+    return action.actionType == ActionType.SOLUTION;
+  }
+
   public ActionType getActionType() {
     return action.actionType;
   }
