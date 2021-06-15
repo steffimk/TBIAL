@@ -29,7 +29,7 @@
 			<table style="width: 100%">
 				<thead>
 					<tr>
-						<th></th>
+						<th>Current Game</th>
 						<th>Game Name</th>
 						<th>Players</th>
 						<th>Privacy</th>
@@ -38,7 +38,7 @@
 				</thead>
 				<tbody wicket:id="gameListContainer">
 					<tr wicket:id="openGames">
-						<td></td>
+						<td><b><span wicket:id="currentGame" class="fontStyle">marker for the current game</span></b></td>
 						<td><span wicket:id="gamename">gamename</span></td>
 						<td><span wicket:id="numberOfPlayers">players</span></td>
 						<td><div wicket:id="lockedIcon" class=centered ><i class="fas fa-lock"></i></div>

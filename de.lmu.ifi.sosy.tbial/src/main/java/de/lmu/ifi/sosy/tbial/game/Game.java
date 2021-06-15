@@ -121,6 +121,7 @@ public class Game implements Serializable {
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
     turn = new Turn(new ArrayList<Player>(players.values()));
+    turn.determineStartingPlayer();
     distributeInitialHandCards();
   }
 
@@ -192,17 +193,17 @@ public class Game implements Serializable {
       if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
         // Receiver moves card to heap immediately without having to react
         stackAndHeap.addToHeap(card, receiver);
-        // TODO: Add System Chat Message
+        chatMessages.add(
+            new ChatMessage(
+                receiver.getUserName()
+                    + " blocked \""
+                    + card.toString()
+                    + "\" with a bug delegation card."));
         LOGGER.info(
             receiver.getUserName()
                 + " blocked "
                 + card.toString()
                 + " with his bug delegation card.");
-        System.out.println(
-            receiver.getUserName()
-                + " blocked \""
-                + card.toString()
-                + "\" with a bug delegation card.");
         return true;
       }
       receiver.receiveCard(card);
@@ -370,6 +371,15 @@ public class Game implements Serializable {
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
+
+    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) return;
+
+    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+      if (((ActionCard) selectedCard).isBug()) {
+        turn.incrementPlayedBugCardsThisTurn();
+      }
+    }
+
     if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
@@ -398,8 +408,7 @@ public class Game implements Serializable {
    * @param player The player who clicked on the button.
    */
   public void clickedOnDiscardButton(Player player) {
-    //	TODO: if (turn.getStage() != TurnStage.PLAYING_CARDS) return;
-    if (turn.getCurrentPlayer() != player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) {
       LOGGER.debug("Player clicked on discard button but not his turn or not in the right stage");
       return;
     }
@@ -427,11 +436,23 @@ public class Game implements Serializable {
    * @param player The player who clicked on the button.
    */
   public void clickedOnPlayCardsButton(Player player) {
+    if (turn.getDrawnCardsInDrawingStage() != Turn.DRAW_LIMIT_IN_DRAWING_STAGE) {
+      LOGGER.debug("Player hasn't drawn enough cards from stack.");
+      return;
+    }
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
       LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
       return;
     }
-    // TODO: Check whether player has drawn cards from stack
     turn.setStage(TurnStage.PLAYING_CARDS);
+  }
+
+  public void drawCardFromStack(Player player) {
+	if (stackAndHeap.getStack().size() == 0) {
+      stackAndHeap.refillStack();
+    }
+    StackCard drawnCard = stackAndHeap.drawCard();
+    turn.incrementDrawnCardsInDrawingStage();
+    player.addToHandCards(drawnCard);
   }
 }
