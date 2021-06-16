@@ -376,10 +376,10 @@ public class Game implements Serializable {
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isBug()) {
         turn.incrementPlayedBugCardsThisTurn();
-        
-        for (StackCard card : receiverOfCard.getHandCards()) {
+
+        /*for (StackCard card : receiverOfCard.getHandCards()) {
           if (card.isLameExcuse()) {}
-        }
+        }*/
 
         int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
         receiverOfCard.setMentalHealth(decreasedMentalHealthPoints);
@@ -393,16 +393,16 @@ public class Game implements Serializable {
 
   public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
     StackCard selectedCard = player.getSelectedHandCard();
+    LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        System.out.println(selectedCard.toString() + " | " + clickedCard.toString());
-
+        
         discardHandCard(player, selectedCard);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
-        player.addToMentalHealth(1);
-        
-
+        if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
+          player.addToMentalHealth(1);
+        }
       }
     }
   }

@@ -9,7 +9,6 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -21,7 +20,6 @@ import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
 
@@ -55,15 +53,20 @@ public class PlayerAreaPanel extends Panel {
     add(new Label("prestige"));
 
     final ModalWindow modal;
-    add(modal = new ModalWindow("modal"));
+    add(modal = new ModalWindow("blockBugModal"));
+    modal.setTitle("Bug played against you!");
+    
+    TBIALSession currentSession = (TBIALSession) getSession();
+    if ((currentSession.getUser() != null)) {
+      modal.setContent(
+          new BugBlockPanel(
+              modal.getContentId(), currentSession.getUser(), game, player, basePlayer));
+    }
 
-    modal.setOutputMarkupPlaceholderTag(true);
-    modal.setResizable(false);
-    modal.setInitialWidth(30);
-    modal.setInitialHeight(15);
-    modal.setWidthUnit("em");
-    modal.setHeightUnit("em");
-    modal.setPageCreator(() -> new GameLobby());
+    modal.setCloseButtonCallback(
+        target -> {
+          return true;
+        });
 
     // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
     // table
@@ -141,11 +144,9 @@ public class PlayerAreaPanel extends Panel {
                     + " clicked on add card button of "
                     + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
-
+            modal.show(target);
             target.add(table);
-
           }
-          
         };
 
     add(addCardButton);
@@ -171,7 +172,6 @@ public class PlayerAreaPanel extends Panel {
 
                   @Override
                   protected void onEvent(AjaxRequestTarget target) {
-                    System.out.println("Clicked on " + item.getModelObject().toString());
                     game.clickedOnReceivedCard(basePlayer, blockCard);
                   }
                 });

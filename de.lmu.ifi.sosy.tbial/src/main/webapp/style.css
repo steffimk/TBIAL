@@ -409,3 +409,13 @@ pre.boxed {
 	border: solid 2px #ff6600;
 }
 
+
+.bugBlocksContainer {
+	width: 93%;
+    padding: 2%;
+    margin: 1%;
+	border: 1px solid #ff6600;
+	display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

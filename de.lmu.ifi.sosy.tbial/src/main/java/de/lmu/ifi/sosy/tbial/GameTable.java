@@ -9,7 +9,6 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -106,7 +105,6 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            System.out.println("Clicked on stack");
 
             if (currentGame.getStackAndHeap().getStack().size() == 0) {
               currentGame.getStackAndHeap().refillStack();
@@ -286,51 +284,6 @@ public class GameTable extends BasePage {
           }
         };
 
-    /*
-       AjaxLink<Void> link =
-           new AjaxLink<>("testDialog") {
-             private static final long serialVersionUID = 1L;
-
-             @Override
-             public void onClick(AjaxRequestTarget target) {
-               ModalWindow dialog = new ModalWindow("Test");
-
-               dialog.setTitle("TEEST");
-               dialog.setInitialWidth(550);
-               dialog.setUseInitialHeight(false);
-               dialog.setContent(endTurnButton);
-               dialog.show(target);
-             }
-           };
-    */
-    /*
-       final ModalWindow modal;
-       add(modal = new ModalWindow("modal"));
-
-       modal.setResizable(false);
-       modal.setInitialWidth(30);
-       modal.setInitialHeight(15);
-       modal.setWidthUnit("em");
-       modal.setHeightUnit("em");
-       modal.setPageCreator(() -> new GameLobby());
-
-       add(
-           new AjaxLink<Void>("open") {
-             private static final long serialVersionUID = 1L;
-             Player receiver;
-
-             @Override
-             public void onClick(AjaxRequestTarget target) {
-               for (Player player : otherPlayers) {
-                 if (player == receiver) {
-                   Model<Player> model = Model.of(player);
-                   modal.show(model);
-                 }
-               }
-             }
-
-           });
-    */
     table.add(stackContainer);
     table.add(heapContainer);
     table.add(player1);

@@ -87,7 +87,8 @@ public class Turn implements Serializable {
   public enum TurnStage {
     DRAWING_CARDS,
     PLAYING_CARDS,
-    DISCARDING_CARDS
+    DISCARDING_CARDS,
+    WAITING_FOR_PLAYER_RESPONSE
   }
 
   /*
