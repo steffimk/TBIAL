@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -198,6 +197,16 @@ public class PlayerAreaPanel extends Panel {
               if (player.getObject().getSelectedHandCard() == handCard) {
                 card.add(new AttributeModifier("class", "handcard selected"));
                 Draggable<Void> draggable = new Draggable<Void>("draggable");
+                card.add(
+                    new AjaxEventBehavior("mousedown") {
+
+                      private static final long serialVersionUID = 1L;
+
+                      @Override
+                      protected void onEvent(AjaxRequestTarget target) {
+                        getApplication().getMarkupSettings().setStripWicketTags(true);
+                      }
+                    });
                 draggable.add(card);
                 listItem.add(draggable);
               } else {

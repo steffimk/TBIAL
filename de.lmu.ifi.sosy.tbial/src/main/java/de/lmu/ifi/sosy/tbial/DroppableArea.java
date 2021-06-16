@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 
@@ -50,6 +51,39 @@ public class DroppableArea extends Droppable<Void> {
     this.basePlayer = basePlayer;
     this.playerOfPanel = playerOfPanel;
     this.table = table;
+
+    this.add(
+        new AjaxEventBehavior("dragleave") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onEvent(AjaxRequestTarget target) {
+            System.out.println("dragleave");
+          }
+        });
+
+    this.add(
+        new AjaxEventBehavior("dragexit") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onEvent(AjaxRequestTarget target) {
+            System.out.println("dragexit");
+          }
+        });
+
+    this.add(
+        new AjaxEventBehavior("mouseover") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onEvent(AjaxRequestTarget target) {
+            System.out.println("Mouse over");
+          }
+        });
   }
 
   @Override
@@ -88,6 +122,7 @@ public class DroppableArea extends Droppable<Void> {
   @Override
   public void onExit(AjaxRequestTarget target, Component component) {
     this.add(new AttributeModifier("style", "background: #F4731D !important;"));
+    System.out.println("Exit event triggered");
     target.add(this);
   }
 

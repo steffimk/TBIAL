@@ -39,9 +39,7 @@ public class GameTable extends BasePage {
 
   public GameTable() {
 
-    getTbialApplication().getMarkupSettings().setStripWicketTags(true);
     getApplication().getMarkupSettings().setStripWicketTags(true);
-
     table = new WebMarkupContainer("table");
     table.setOutputMarkupId(true);
     // get current game
