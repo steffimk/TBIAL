@@ -188,17 +188,17 @@ public class Game implements Serializable {
       if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
         // Receiver moves card to heap immediately without having to react
         stackAndHeap.addToHeap(card, receiver);
-        // TODO: Add System Chat Message
+        chatMessages.add(
+            new ChatMessage(
+                receiver.getUserName()
+                    + " blocked \""
+                    + card.toString()
+                    + "\" with a bug delegation card."));
         LOGGER.info(
             receiver.getUserName()
                 + " blocked "
                 + card.toString()
                 + " with his bug delegation card.");
-        System.out.println(
-            receiver.getUserName()
-                + " blocked \""
-                + card.toString()
-                + "\" with a bug delegation card.");
         return true;
       }
       receiver.receiveCard(card);
