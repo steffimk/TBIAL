@@ -48,6 +48,19 @@ public class PlayerAreaPanel extends Panel {
     role.setOutputMarkupPlaceholderTag(true);
     add(role);
     Label mentalHealth = new Label("mentalHealth");
+
+    // just for testing
+    mentalHealth.add(
+        new AjaxEventBehavior("click") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onEvent(AjaxRequestTarget target) {
+            player.getObject().addToMentalHealth(-1);
+          }
+        });
     add(mentalHealth);
     add(new Label("prestige"));
 
@@ -63,6 +76,7 @@ public class PlayerAreaPanel extends Panel {
               player.getObject().fire(true);
               role.setVisible(true);
               target.add(role);
+              target.add(getParent().add(new AttributeModifier("style", "opacity: 0.4;")));
               stop(target);
             }
             // TODO maybe this update should be triggered somewhere else in the future

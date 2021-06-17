@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -44,12 +45,21 @@ public class Game implements Serializable {
   private byte[] salt;
 
   private boolean hasStarted;
+  
+  private boolean hasEnded;
 
   private StackAndHeap stackAndHeap;
 
   private Turn turn;
 
   private LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
+
+  private Player manager;
+  private Player consultant;
+  private List<Player> monkeys = new ArrayList<Player>();
+  private List<Player> developers = new ArrayList<Player>();
+
+  private String winners = "";
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -63,6 +73,8 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    //    addNewPlayer("A");
+    //    addNewPlayer("B");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -114,6 +126,10 @@ public class Game implements Serializable {
     hasStarted = true;
     chatMessages.clear();
     distributeRoleCards();
+    setManager(getInGamePlayersList());
+    setConsultant(getInGamePlayersList());
+    setEvilCodeMonkeys(getInGamePlayersList());
+    setHonestDevelopers(getInGamePlayersList());
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
     turn = new Turn(new ArrayList<Player>(players.values()));
@@ -275,6 +291,10 @@ public class Game implements Serializable {
     return chatMessages;
   }
 
+  public String getWinners() {
+    return winners;
+  }
+
   public int getCurrentNumberOfPlayers() {
     return players.size();
   }
@@ -318,6 +338,10 @@ public class Game implements Serializable {
 
   public boolean hasStarted() {
     return hasStarted;
+  }
+
+  public boolean hasEnded() {
+    return hasEnded;
   }
 
   public void setHasStarted(boolean hasStarted) {
@@ -450,4 +474,143 @@ public class Game implements Serializable {
     turn.incrementDrawnCardsInDrawingStage();
     player.addToHandCards(drawnCard);
   }
+
+  /**
+   * Update mental health and fire if mental health=0
+   *
+   * @param mentalHealth The amount of mental health to add or substract from the current mental
+   *     health
+   * @param player The player who loses mental health
+   */
+  public void updateMentalHealth(Player player, int mentalHealth) {
+
+    player.addToMentalHealth(mentalHealth);
+
+    if (player.getMentalHealthInt() == 0) {
+      // fire player
+      player.fire(true);
+      // add all player's cards to heap
+      for (StackCard handCard : player.getHandCards()) {
+        stackAndHeap.addToHeap(handCard, player);
+      }
+    }
+  }
+
+  public boolean allMonkeysFired(List<Player> monkeys) {
+    for (Player monkey : monkeys) {
+      if (!monkey.isFired()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public void setManager(List<Player> players) {
+    for (Player player : players) {
+      if (player.getRole() == Role.MANAGER) {
+        manager = player;
+      }
+    }
+  }
+
+  public Player getManager() {
+    return manager;
+  }
+
+  public void setConsultant(List<Player> players) {
+    for (Player player : players) {
+      if (player.getRole() == Role.CONSULTANT) {
+        consultant = player;
+      }
+    }
+  }
+
+  public Player getConsultant() {
+    return consultant;
+  }
+
+  public void setEvilCodeMonkeys(List<Player> players) {
+    for (Player player : players) {
+      if (player.getRole() == Role.EVIL_CODE_MONKEY) {
+        monkeys.add(player);
+      }
+    }
+  }
+
+  public List<Player> getEvilCodeMonkeys() {
+    return monkeys;
+  }
+
+  public void setHonestDevelopers(List<Player> players) {
+    for (Player player : players) {
+      if (player.getRole() == Role.HONEST_DEVELOPER) {
+        developers.add(player);
+      }
+    }
+  }
+
+  public List<Player> getHonestDevelopers() {
+    return developers;
+  }
+
+  /**
+   * Update mental health and fire if mental health=0
+   *
+   * @param mentalHealth The amount of mental health to add or substract from the current mental
+   *     health
+   * @param player The player who loses mental health
+   */
+  public synchronized void endGame() {
+    if (hasEnded) {
+      return;
+    }
+    hasEnded = true;
+
+
+    // Consultant wins
+    if (manager.isFired() && allMonkeysFired(monkeys)) {
+      consultant.win(true);
+      manager.win(false);
+      for (Player monkey : monkeys) {
+        monkey.win(false);
+      }
+      for (Player developer : developers) {
+        developer.win(false);
+      }
+      winners = consultant.getUserName() + " has won.";
+
+    }
+    // Evil Code Monkeys and Consultant win
+    else if (manager.isFired() && !allMonkeysFired(monkeys)) {
+      for (Player monkey : monkeys) {
+        monkey.win(true);
+        winners += monkey.getUserName() + ", ";
+      }
+      manager.win(false);
+      consultant.win(true);
+      for (Player developer : developers) {
+        developer.win(false);
+      }
+      winners += "& " + consultant.getUserName() + " have won.";
+      System.out.println(winners);
+    }
+    // Manager and Honest Developers win
+    else if (consultant.isFired() && allMonkeysFired(monkeys)) {
+      manager.win(true);
+      for (Player developer : developers) {
+        developer.win(true);
+        winners += developer.getUserName() + ", ";
+      }
+      consultant.win(false);
+      for (Player monkey : monkeys) {
+        monkey.win(false);
+      }
+      if (developers.isEmpty()) {
+        winners = manager.getUserName() + " has won.";
+      } else {
+      winners += "& " + manager.getUserName() + " have won.";
+      }
+    }
+  }
+  
 }

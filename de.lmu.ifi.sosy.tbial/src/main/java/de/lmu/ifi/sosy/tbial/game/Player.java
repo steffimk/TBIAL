@@ -38,6 +38,8 @@ public class Player implements Serializable {
 
   private boolean fired;
 
+  private boolean won;
+
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
@@ -88,6 +90,10 @@ public class Player implements Serializable {
     return fired;
   }
 
+  public boolean hasWon() {
+    return won;
+  }
+
   public void setCharacterCard(CharacterCard characterCard) {
     this.characterCard = characterCard;
   }
@@ -98,6 +104,10 @@ public class Player implements Serializable {
 
   public void fire(boolean fired) {
     this.fired = fired;
+  }
+
+  public void win(boolean win) {
+    this.won = win;
   }
 
   /**
