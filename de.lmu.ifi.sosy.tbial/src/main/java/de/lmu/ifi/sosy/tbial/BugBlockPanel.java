@@ -84,7 +84,6 @@ public class BugBlockPanel extends Panel {
           }
         };
 
-    add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
     add(bugBlocks);
   }
 }
