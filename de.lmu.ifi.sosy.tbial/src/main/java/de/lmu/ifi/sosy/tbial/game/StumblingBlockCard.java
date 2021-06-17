@@ -52,4 +52,8 @@ public class StumblingBlockCard extends Card implements StackCard {
     }
   }
 
+  @Override
+  public boolean isLameExcuse() {
+    return false;
+  }
 }

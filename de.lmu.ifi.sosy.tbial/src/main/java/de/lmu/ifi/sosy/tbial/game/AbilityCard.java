@@ -64,4 +64,9 @@ public class AbilityCard extends Card implements StackCard {
     GARMENT,
     OTHER;
   }
+
+  @Override
+  public boolean isLameExcuse() {
+    return false;
+  }
 }
