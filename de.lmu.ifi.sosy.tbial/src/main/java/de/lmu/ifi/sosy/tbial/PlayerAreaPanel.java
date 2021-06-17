@@ -101,7 +101,6 @@ public class PlayerAreaPanel extends Panel {
             player.getObject(),
             table);
     playAbilityDropBox.add(playAbilityButton);
-    add(playAbilityDropBox);
 
     IModel<List<StackCard>> playedAbilityCardsModel =
         (IModel<List<StackCard>>)
@@ -119,7 +118,9 @@ public class PlayerAreaPanel extends Panel {
                     new PackageResourceReference(getClass(), abilityCard.getResourceFileName())));
           }
         };
-    add(playedAbilityCards);
+    playAbilityDropBox.add(playedAbilityCards);
+
+    add(playAbilityDropBox);
 
     // --------------------------- The block cards ---------------------------
     AjaxLink<Void> addCardButton =
@@ -141,7 +142,6 @@ public class PlayerAreaPanel extends Panel {
         new DroppableArea(
             "addCardDropBox", DroppableType.ADD_CARD, game, basePlayer, player.getObject(), table);
     addCardDropBox.add(addCardButton);
-    add(addCardDropBox);
 
     IModel<List<StackCard>> blockCardModel =
         (IModel<List<StackCard>>)
@@ -159,7 +159,9 @@ public class PlayerAreaPanel extends Panel {
                     new PackageResourceReference(getClass(), blockCard.getResourceFileName())));
           }
         };
-    add(blockCards);
+    addCardDropBox.add(blockCards);
+
+    add(addCardDropBox);
 
     // --------------------------- The hand cards ---------------------------
 
@@ -196,17 +198,32 @@ public class PlayerAreaPanel extends Panel {
                       new PackageResourceReference(getClass(), handCard.getResourceFileName()));
               if (player.getObject().getSelectedHandCard() == handCard) {
                 card.add(new AttributeModifier("class", "handcard selected"));
-                Draggable<Void> draggable = new Draggable<Void>("draggable");
-                card.add(
-                    new AjaxEventBehavior("mousedown") {
-
+                card.setOutputMarkupId(true);
+                Draggable<Void> draggable =
+                    new Draggable<Void>("draggable") {
                       private static final long serialVersionUID = 1L;
 
                       @Override
-                      protected void onEvent(AjaxRequestTarget target) {
-                        getApplication().getMarkupSettings().setStripWicketTags(true);
+                      public boolean isStopEventEnabled() {
+                        return true;
                       }
-                    });
+
+                      @Override
+                      public void onDragStart(AjaxRequestTarget target, int top, int left) {
+                        System.out.println("Drag started");
+                        getApplication().getMarkupSettings().setStripWicketTags(true);
+                        //                        card.add(new AttributeModifier("style", "z-index:
+                        // 1 !important;"));
+                        //                        target.add(card);
+                      }
+
+                      @Override
+                      public void onDragStop(AjaxRequestTarget target, int top, int left) {
+                        //                        card.add(new AttributeModifier("style", "z-index:
+                        // 9 !important;"));
+                        //                        target.add(card);
+                      }
+                    };
                 draggable.add(card);
                 listItem.add(draggable);
               } else {

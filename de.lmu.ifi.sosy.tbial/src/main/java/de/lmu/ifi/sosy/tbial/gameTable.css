@@ -768,7 +768,6 @@
 
 .player-1:before {
 	content: '';
-	clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
 	background-image: url("table.png");
 	opacity: 0.5;
 	display: block;
@@ -1194,6 +1193,12 @@
 	display: inline-block;
 	margin-left: 5%;
 	position: relative;
+	z-index: 3;
+}
+
+.heapcardContainer {
+	position: absolute;
+	height: 100%;
 }
 
 .heapbackground {
@@ -1215,6 +1220,7 @@
 	animation-duration: 1s;
 	position: relative;
 	animation-timing-function: ease-in;
+	z-index: 0;
 }
 
 @keyframes discardAnimation {

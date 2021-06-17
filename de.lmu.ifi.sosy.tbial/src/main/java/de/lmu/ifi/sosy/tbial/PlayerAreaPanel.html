@@ -19,25 +19,21 @@
 		</ul>
 		<div class="wrapper">
 			<div class="cards">
-				<div class="blocked">
-					<div wicket:id="addCardDropBox" class="droppable">
-						<a wicket:id="addCardButton" class="addCardLink"><span>Add Card</span></a>
-					</div>
-					<div wicket:id="blockCards" class="handCardWrapper">
+				<div wicket:id="addCardDropBox" class="droppable blocked">
+					<a wicket:id="addCardButton" class="addCardLink"><span>Blocking Cards</span></a>
+					<div wicket:id="blockCards" class="cardWrapper">
 						<img wicket:id="blockCard" class="handcard" />
 					</div>
 				</div>
-				<div class="played">
-					<div wicket:id="playAbilityDropBox" class="droppable">
-						<a wicket:id="playAbilityButton" class="addCardLink"><span>Play Ability</span></a>
-					</div>
-					<div wicket:id="playedCards" class="handCardWrapper">
+				<div wicket:id="playAbilityDropBox" class="droppable played">
+					<a wicket:id="playAbilityButton" class="addCardLink"><span>Ability Cards</span></a>
+					<div wicket:id="playedCards" class="cardWrapper">
 						<img wicket:id="playedCard" class="handcard" />
-					</div>
+					</div>				
 				</div>
 				<div wicket:id="handCardContainer" class="handcards">
 					<div wicket:id="handcards" class="handCardWrapper">
-						<div wicket:id="draggable" class="handcard">
+						<div wicket:id="draggable" class=handcard>
 							<img wicket:id="handCard" class="handcard" />
 						</div>
 					</div>

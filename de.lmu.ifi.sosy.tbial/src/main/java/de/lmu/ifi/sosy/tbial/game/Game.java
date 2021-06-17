@@ -373,7 +373,9 @@ public class Game implements Serializable {
     StackCard selectedCard = player.getSelectedHandCard();
 
     if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) {
-      chatMessages.add(new ChatMessage("You cannot play another bug.")); // TODO
+      chatMessages.add(
+          new ChatMessage(
+              "You cannot play another bug.")); // TODO: Only show player who played card?
       return;
     }
 
