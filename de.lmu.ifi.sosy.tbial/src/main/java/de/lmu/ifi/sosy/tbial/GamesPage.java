@@ -84,15 +84,14 @@ public class GamesPage extends BasePage {
                 };
             joinGameForm.add(joinGamePw);
             joinGameForm.add(joinGameButton);
-            if (!isUserNull()) {
-              if (game.getPlayers().containsKey(getUserName())) {
-                listItem.add(new Label("currentGame", "X"));
-              } else {
-                listItem.add(new Label("currentGame", " "));
-              }
+            if (isUserNull()) throw new NullPointerException("Player is null!");
+
+            if (game.getPlayers().containsKey(getUserName())) {
+              listItem.add(new Label("currentGame", "X"));
             } else {
               listItem.add(new Label("currentGame", " "));
             }
+
             listItem.add(
                 new Label(
                     "numberOfPlayers",

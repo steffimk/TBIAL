@@ -20,7 +20,6 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
-import de.lmu.ifi.sosy.tbial.game.GameManager;
 import de.lmu.ifi.sosy.tbial.game.Player;
 
 /** The Lobby of a specific game in which the players wait for the game to start. */
@@ -144,9 +143,8 @@ public class GameLobby extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
-            if (player.getUserName() != null) {
-              listItem.add(new Label("playerName", player.getUserName()));
-            }
+            if (player.getUserName() == null) throw new NullPointerException("Player is null!");
+            listItem.add(new Label("playerName", player.getUserName()));
           }
         };
 
@@ -217,10 +215,9 @@ public class GameLobby extends BasePage {
   private boolean isHost() {
     TBIALSession session = getSession();
     String hostName = game.getHost();
-    if (getSession().getUser() != null) {
-      return session.getUser().getName().equals(hostName);
-    }
-    return false;
+
+    if (getSession().getUser() == null) throw new NullPointerException("Player is null!");
+    return session.getUser().getName().equals(hostName);
   }
 
   /**
@@ -232,7 +229,7 @@ public class GameLobby extends BasePage {
       getGame().changeHost();
     }
     if (getGame().checkIfLastPlayer()) {
-      GameManager.removeGame(game);
+      getGameManager().removeGame(game);
     }
     getGame().getPlayers().remove(getSession().getUser().getName());
     getSession().setCurrentGameNull();

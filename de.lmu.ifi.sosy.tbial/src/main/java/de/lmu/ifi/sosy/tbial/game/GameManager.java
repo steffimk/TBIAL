@@ -11,10 +11,10 @@ import java.util.Map;
 /** Manages the current games. */
 public class GameManager {
 
-  private static Map<String, Game> currentGames;
+  private Map<String, Game> currentGames;
 
   public GameManager() {
-    GameManager.currentGames = Collections.synchronizedMap(new HashMap<String, Game>());
+    this.currentGames = Collections.synchronizedMap(new HashMap<String, Game>());
   }
 
   public Map<String, Game> getCurrentGames() {
@@ -24,14 +24,14 @@ public class GameManager {
   public synchronized void addGame(Game game) {
     requireNonNull(game);
     if (!gameNameTaken(game.getName())) {
-      GameManager.currentGames.put(game.getName(), game);
+      this.currentGames.put(game.getName(), game);
     }
   }
 
-  public static synchronized void removeGame(Game game) {
+  public synchronized void removeGame(Game game) {
     requireNonNull(game);
     game.getChatMessages().clear();
-    GameManager.currentGames.remove(game.getName());
+    this.currentGames.remove(game.getName());
   }
 
   public boolean gameNameTaken(String name) {
