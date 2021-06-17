@@ -79,6 +79,21 @@ public class Lobby extends BasePage {
     menuForm.add(showPlayersButton);
     add(menuForm);
 
+    Label newGameTooltip =
+        new Label("newGameTooltip", "Leave your current game first.") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public boolean isVisible() {
+            if (isInGame) {
+              return true;
+            }
+            return false;
+          }
+        };
+
     newGameButton =
         new Button("newGameButton") {
 
@@ -96,7 +111,10 @@ public class Lobby extends BasePage {
 
           @Override
           public boolean isEnabled() {
-            return !isInGame;
+            if (isInGame) {
+              return false;
+            }
+            return true;
           }
         };
 
@@ -156,6 +174,7 @@ public class Lobby extends BasePage {
 
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
+        .add(newGameTooltip)
         .add(newGameNameField)
         .add(nameFeedbackLabel)
         .add(maxPlayersField)
