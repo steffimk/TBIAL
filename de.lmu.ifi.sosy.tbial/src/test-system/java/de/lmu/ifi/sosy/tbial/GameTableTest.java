@@ -28,6 +28,7 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -383,6 +384,28 @@ public class GameTableTest extends PageTestBase {
     tester.clickLink(tester.getComponentFromLastRenderedPage("discardButton"));
 
     assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+  }
+
+  @Test
+  public void drawCardsFromStackWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DRAWING_CARDS);
+
+    ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
+    int handSizeBefore = handCards.size();
+
+    List<StackCard> stack = game.getStackAndHeap().getStack();
+    int stackSizeBefore = stack.size();
+
+    // Draw two cards from stack
+    tester.executeAjaxEvent("table:stackContainer", "click");
+    tester.executeAjaxEvent("table:stackContainer", "click");
+
+    // stack size should be decreased by two
+    assertEquals(stackSizeBefore - 2, stack.size());
+    // hand size should be increased by two
+    assertEquals(handSizeBefore + 2, basePlayer.getHandCards().size());
   }
 
   @Test
