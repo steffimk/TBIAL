@@ -243,7 +243,6 @@ public class PlayerAreaPanel extends Panel {
 
       @Override
       public void onDragStart(AjaxRequestTarget target, int top, int left) {
-        System.out.println("Drag started");
         game.clickedOnHandCard(player, card);
         getApplication().getMarkupSettings().setStripWicketTags(true);
       }

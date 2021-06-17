@@ -291,9 +291,19 @@ public class GameTable extends BasePage {
     table.add(heapContainer);
     table.add(player1);
     table.add(playerList);
-    // Update the table every 20 seconds so that other players can see progress
+    // Update the table every 5 seconds so that other players can see progress
     // -> Is there a better way for this?
-    table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
+    table.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected boolean shouldTrigger() {
+            // Don't update when it's the baseplayer's turn
+            return currentGame.getTurn().getCurrentPlayer() != basePlayer;
+          }
+        });
 
     add(table);
     add(playCardsButton);
