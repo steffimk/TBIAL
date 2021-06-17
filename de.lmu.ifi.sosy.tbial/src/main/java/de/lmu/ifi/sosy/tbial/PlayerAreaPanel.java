@@ -196,34 +196,14 @@ public class PlayerAreaPanel extends Panel {
                   new Image(
                       "handCard",
                       new PackageResourceReference(getClass(), handCard.getResourceFileName()));
-              if (player.getObject().getSelectedHandCard() == handCard) {
-                card.add(new AttributeModifier("class", "handcard selected"));
-                card.setOutputMarkupId(true);
-                Draggable<Void> draggable =
-                    new Draggable<Void>("draggable") {
-                      private static final long serialVersionUID = 1L;
-
-                      @Override
-                      public boolean isStopEventEnabled() {
-                        return true;
-                      }
-
-                      @Override
-                      public void onDragStart(AjaxRequestTarget target, int top, int left) {
-                        System.out.println("Drag started");
-                        getApplication().getMarkupSettings().setStripWicketTags(true);
-                        //                        card.add(new AttributeModifier("style", "z-index:
-                        // 1 !important;"));
-                        //                        target.add(card);
-                      }
-
-                      @Override
-                      public void onDragStop(AjaxRequestTarget target, int top, int left) {
-                        //                        card.add(new AttributeModifier("style", "z-index:
-                        // 9 !important;"));
-                        //                        target.add(card);
-                      }
-                    };
+              card.setOutputMarkupId(true);
+              // If it is the turn of the player: Cards are draggable
+              if (game.getTurn().getCurrentPlayer() == player.getObject()) {
+                if (player.getObject().getSelectedHandCard() == handCard) {
+                  card.add(new AttributeModifier("class", "handcard selected"));
+                }
+                Draggable<StackCard> draggable =
+                    getNewDraggableInstance(handCard, game, player.getObject());
                 draggable.add(card);
                 listItem.add(draggable);
               } else {
@@ -248,4 +228,26 @@ public class PlayerAreaPanel extends Panel {
     super.renderHead(response);
     response.render(new StyleSheetPackageHeaderItem(GameTable.class));
   }
+
+  /**
+   * Returns a new instance of a draggable
+   *
+   * @param card The card which the draggable contains
+   * @param game The current game
+   * @param player The player whose card it is
+   * @return
+   */
+  private Draggable<StackCard> getNewDraggableInstance(StackCard card, Game game, Player player) {
+    return new Draggable<StackCard>("draggable", () -> card) {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void onDragStart(AjaxRequestTarget target, int top, int left) {
+        System.out.println("Drag started");
+        game.clickedOnHandCard(player, card);
+        getApplication().getMarkupSettings().setStripWicketTags(true);
+      }
+    };
+  }
 }
+

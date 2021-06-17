@@ -107,8 +107,7 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            System.out.println("Clicked on stack");
-
+        	  
             if (currentGame.getStackAndHeap().getStack().size() == 0) {
               currentGame.getStackAndHeap().refillStack();
             }
@@ -242,19 +241,18 @@ public class GameTable extends BasePage {
         };
     heapBackgroundImage.setOutputMarkupId(true);
     heapContainer.add(heapBackgroundImage);
-    // TODO: Do we want to keep the click behavior?
-    //    heapContainer.add(
-    //        new AjaxEventBehavior("click") {
-    //          private static final long serialVersionUID = 1L;
-    //
-    //          @Override
-    //          protected void onEvent(AjaxRequestTarget target) {
-    //            boolean success = currentGame.clickedOnHeap(basePlayer);
-    //            if (!success) return;
-    //            target.add(table);
-    //          }
-    //
-    //        });
+    
+    heapContainer.add(
+        new AjaxEventBehavior("click") {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onEvent(AjaxRequestTarget target) {
+            boolean success = currentGame.clickedOnHeap(basePlayer);
+            if (!success) return;
+            target.add(table);
+          }
+        });
 
     AjaxLink<Void> playCardsButton =
         new AjaxLink<>("playCardsButton") {

@@ -1193,12 +1193,12 @@
 	display: inline-block;
 	margin-left: 5%;
 	position: relative;
-	z-index: 3;
 }
 
 .heapcardContainer {
 	position: absolute;
 	height: 100%;
+	pointer-events: none;
 }
 
 .heapbackground {
@@ -1220,7 +1220,7 @@
 	animation-duration: 1s;
 	position: relative;
 	animation-timing-function: ease-in;
-	z-index: 0;
+	pointer-events: none;
 }
 
 @keyframes discardAnimation {

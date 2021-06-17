@@ -64,6 +64,7 @@ public class TBIALApplication extends WebApplication {
 
   @Override
   protected void init() {
+    super.init();
     initMarkupSettings();
     initPageMounts();
     initAuthorization();

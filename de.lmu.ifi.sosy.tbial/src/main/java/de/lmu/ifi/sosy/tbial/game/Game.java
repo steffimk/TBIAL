@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -64,9 +63,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-    addNewPlayer("A");
-    addNewPlayer("D");
-    addNewPlayer("G");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -130,8 +126,7 @@ public class Game implements Serializable {
     List<RoleCard> roleCards = RoleCard.getRoleCards(players.size());
     int i = 0;
     for (Player player : players.values()) {
-      //      player.setRoleCard(roleCards.get(i));
-      player.setRoleCard(new RoleCard(Role.MANAGER));
+      player.setRoleCard(roleCards.get(i));
       i++;
     }
   }
