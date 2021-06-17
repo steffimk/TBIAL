@@ -35,6 +35,14 @@ public class GameLobbyTest extends PageTestBase {
   }
 
   @Test
+  public void leaveGameOk() {
+    tester.startPage(GameLobby.class);
+    tester.assertRenderedPage(GameLobby.class);
+    tester.submitForm("leaveForm");
+    tester.assertRenderedPage(Lobby.class);
+  }
+
+  @Test
   public void startGameOk() {
     GameLobby gameLobby = tester.startPage(GameLobby.class);
     attemptStartGame();
