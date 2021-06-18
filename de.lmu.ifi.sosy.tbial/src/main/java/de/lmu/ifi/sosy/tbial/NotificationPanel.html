@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
 	<div wicket:id="notificationContainer">
-		<form wicket:id="notificationForm" class="notificationContainer">
+		<div wicket:id="notificationForm" class="notificationContainer">
 			<div>
 				<span wicket:id="notificationSender"></span>
 				<span wicket:id="notificationMessage"></span>
 			</div>
-			<div>
-				<input type=submit value="Accept" wicket:id="acceptButton" class="buttonStyle"/>
-				<input type=submit value="Reject" wicket:id="rejectButton" class="buttonStyle"/>
+			<div style="display: flex;">
+				<form wicket:id="accept" class="tooltip" style="margin-right: 5px;">
+					<input type=submit value="Accept" wicket:id="acceptButton" class="buttonStyle" />
+					<span wicket:id="tooltip" class="notificationTooltiptext"></span>
+					<span wicket:id="tooltipFull" class="notificationTooltiptext"></span>
+				</form>
+				<form wicket:id="reject">
+					<input type=submit value="Reject" wicket:id="rejectButton" class="buttonStyle" />
+				</form>
 			</div>
-		</form>
+		</div>
 	</div>
 </wicket:panel>

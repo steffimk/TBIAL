@@ -17,7 +17,6 @@ import org.apache.wicket.util.time.Duration;
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
-import de.lmu.ifi.sosy.tbial.NotificationPanel;
 
 /**
  * Basic page with style template as well as access to {@link TBIALSession} and {@link Database}.
@@ -35,7 +34,7 @@ public abstract class BasePage extends WebPage {
   private Label loggedInUsername;
   private Label numberOfMessages;
 
-  private int counter;
+  private int displayedInvitationCounter;
 
   protected Database getDatabase() {
     return TBIALApplication.getDatabase();
@@ -112,9 +111,9 @@ public abstract class BasePage extends WebPage {
             User currentUser = ((TBIALSession) currentSession).getUser();
             if (currentUser != null
                 && currentUser.getInvitations().size() != 0
-                && currentUser.getInvitations().size() != counter) {
+                && currentUser.getInvitations().size() != displayedInvitationCounter) {
               this.add(new AttributeModifier("class", "blink"));
-              counter = currentUser.getInvitations().size();
+              displayedInvitationCounter = currentUser.getInvitations().size();
             } else {
               this.add(new AttributeModifier("class", "noBlinking"));
             }

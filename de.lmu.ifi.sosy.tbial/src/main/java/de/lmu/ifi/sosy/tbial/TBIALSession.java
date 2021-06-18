@@ -116,11 +116,13 @@ public class TBIALSession extends AuthenticatedWebSession {
    * @param game
    * @param password
    */
-  public void joinGame(Game game, String password) {
+  public boolean joinGame(Game game, String password) {
     String username = getUser().getName();
     if (game.checkIfYouCanJoin(username, password)) {
       game.addNewPlayer(username);
       setCurrentGame(game);
+      return true;
     }
+    return false;
   }
 }

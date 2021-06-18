@@ -8,10 +8,13 @@ public class Invitation implements Serializable {
   private String sender;
   private String textMessage;
 
-  public Invitation(String sender, String textMessage) {
+  private String gameName;
+
+  public Invitation(String sender, String textMessage, String gameName) {
     super();
     this.sender = sender;
     this.textMessage = textMessage;
+    this.gameName = gameName;
   }
 
   public String getSender() {
@@ -22,4 +25,7 @@ public class Invitation implements Serializable {
     return " " + textMessage;
   }
 
+  public String getGameName() {
+    return gameName;
+  }
 }

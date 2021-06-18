@@ -97,12 +97,15 @@ public class PlayersPage extends BasePage {
 
                   @Override
                   public void onSubmit() {
-                    listItem
-                        .getModelObject()
-                        .invite(
-                            new Invitation(
-                                ((TBIALSession) getSession()).getUser().getName(),
-                                "has invited you to join a game."));
+                    synchronized (listItem.getModelObject().getInvitations()) {
+                      listItem
+                          .getModelObject()
+                          .invite(
+                              new Invitation(
+                                  ((TBIALSession) getSession()).getUser().getName(),
+                                  "has invited you to join a game.",
+                                  ((TBIALSession) getSession()).getCurrentGame().getName()));
+                    }
                   }
 
                   @Override

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -43,36 +45,105 @@ public class NotificationPanel extends Panel {
 
           @Override
           protected void populateItem(ListItem<Invitation> item) {
-            Form<?> notificationForm = new Form<>("notificationForm");
+            WebMarkupContainer notificationForm = new WebMarkupContainer("notificationForm");
             final Invitation invitation = item.getModelObject();
             notificationForm.add(new Label("notificationSender", invitation.getSender()));
             notificationForm.add(new Label("notificationMessage", invitation.getTextMessage()));
-            Button accept =
+            Form<?> accept = new Form<>("accept");
+            Form<?> reject = new Form<>("reject");
+            Label tooltip =
+                new Label("tooltip", "You cannot accept as long as you are in a game.") {
+
+                  /** */
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  public boolean isVisible() {
+                    if (((TBIALSession) getSession()).getCurrentGame() != null
+                        && (((TBIALSession) getSession())
+                            .getCurrentGame()
+                            .getPlayers()
+                            .containsKey(user.getName()))) {
+                      return true;
+                    }
+                    return false;
+                  }
+                };
+            Label tooltipFull =
+                new Label("tooltipFull", "The game is already full.") {
+
+                  /** */
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  public boolean isVisible() {
+                    Game invitedGame =
+                        getGameManager().getCurrentGames().get(item.getModelObject().getGameName());
+                    if (invitedGame != null
+                        && (invitedGame.getPlayers().size() == (invitedGame.getMaxPlayers()))) {
+                      return true;
+                    }
+                    return false;
+                  }
+                };
+            Button acceptButton =
                 new Button("acceptButton") {
                   private static final long serialVersionUID = 1L;
+                  private String customCSS = null;
 
                   @Override
                   public void onSubmit() {
                     List<Game> games = getGameManager().getCurrentGamesAsList();
                     for (Game game : games) {
                       if (game.getHost() == invitation.getSender()) {
-                        // add player to game
-                        ((TBIALSession) getSession()).joinGame(game, game.getHash());
                         // delete invitation
-                        user.getInvitations().remove(invitation);
+                        synchronized (user.getInvitations()) {
+                          user.getInvitations().remove(invitation);
+                        }
                         remove(notificationForm);
-                        // send message in game lobby that invitation was accepted
-                        game.getChatMessages()
-                            .add(
-                                new ChatMessage(
-                                    "Update", user.getName() + " accepted the game invitation."));
-                        // redirect to game lobby
-                        setResponsePage(getTbialApplication().getGameLobbyPage());
+                        // add player to game
+                        if (((TBIALSession) getSession()).joinGame(game, game.getHash())) {
+
+                          // send message in game lobby that invitation was accepted
+                          game.getChatMessages()
+                              .add(
+                                  new ChatMessage(
+                                      user.getName() + " accepted the game invitation."));
+                          // redirect to game lobby
+                          setResponsePage(getTbialApplication().getGameLobbyPage());
+                        }
                       }
                     }
                   }
+
+                  @Override
+                  public boolean isEnabled() {
+                    if (((TBIALSession) getSession()).getCurrentGame() != null) {
+                      if (((TBIALSession) getSession())
+                              .getCurrentGame()
+                              .getPlayers()
+                              .containsKey(user.getName())
+                          || (((TBIALSession) getSession()).getCurrentGame().getPlayers().size()
+                              == ((TBIALSession) getSession()).getCurrentGame().getMaxPlayers())) {
+                        return false;
+                      }
+                    }
+                    return true;
+                  }
+
+                  @Override
+                  protected void onComponentTag(ComponentTag tag) {
+                    if (isEnabled()) {
+                      customCSS = "buttonStyle";
+
+                    } else {
+                      customCSS = null;
+                    }
+                    super.onComponentTag(tag);
+                    tag.put("class", customCSS);
+                  }
                 };
-            Button reject =
+            Button rejectButton =
                 new Button("rejectButton") {
                   private static final long serialVersionUID = 1L;
 
@@ -83,18 +154,24 @@ public class NotificationPanel extends Panel {
                     for (Game game : games) {
                       if (game.getHost() == invitation.getSender()) {
                         // delete invitation
-                        user.getInvitations().remove(invitation);
+                        synchronized (user.getInvitations()) {
+                          user.getInvitations().remove(invitation);
+                        }
                         remove(notificationForm);
                         // send message in game lobby that invitation was rejected
                         game.getChatMessages()
                             .add(
-                                new ChatMessage(
-                                    "Update", user.getName() + " rejected the game invitation."));
+                                new ChatMessage(user.getName() + " rejected the game invitation."));
+
                         setResponsePage(getTbialApplication().getHomePage());
                       }
                     }
                   }
                 };
+            accept.add(tooltip);
+            accept.add(tooltipFull);
+            accept.add(acceptButton);
+            reject.add(rejectButton);
             notificationForm.add(accept);
             notificationForm.add(reject);
             item.add(notificationForm);

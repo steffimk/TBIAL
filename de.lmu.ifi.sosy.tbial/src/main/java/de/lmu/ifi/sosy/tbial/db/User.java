@@ -56,7 +56,7 @@ public class User implements Serializable {
     return invitations;
   }
 
-  public void invite(Invitation invitation) {
+  public synchronized void invite(Invitation invitation) {
     invitations.add(invitation);
   }
 
