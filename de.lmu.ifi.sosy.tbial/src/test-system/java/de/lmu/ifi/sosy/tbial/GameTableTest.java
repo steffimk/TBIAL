@@ -21,6 +21,8 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.googlecode.wicket.jquery.ui.interaction.draggable.Draggable;
+
 import de.lmu.ifi.sosy.tbial.game.AbilityCard;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard;
@@ -42,6 +44,8 @@ public class GameTableTest extends PageTestBase {
 
   private StackCard clickedOnHandCard;
   private Player receivingPlayer;
+
+  private String pathToPanelOfPlayer1 = "table:player1:panel1";
 
   @Before
   public void setUp() {
@@ -68,24 +72,29 @@ public class GameTableTest extends PageTestBase {
     tester.assertModelValue("gameName", game.getName());
 
     // basePlayer
-    tester.assertComponent("table:player1:panel1", PlayerAreaPanel.class);
-    tester.assertModelValue("table:player1:panel1", basePlayer);
-    tester.assertComponent("table:player1:panel1:playAbilityButton", AjaxLink.class);
+    tester.assertComponent(pathToPanelOfPlayer1, PlayerAreaPanel.class);
+    tester.assertModelValue(pathToPanelOfPlayer1, basePlayer);
+    tester.assertComponent(pathToPanelOfPlayer1 + ":playAbilityDropBox", DroppableArea.class);
+    tester.assertComponent(
+        pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton", AjaxLink.class);
 
-    tester.assertComponent("table:player1:panel1:userName", Label.class);
-    tester.assertModelValue("table:player1:panel1:userName", "testuser");
-    tester.assertComponent("table:player1:panel1:mentalHealth", Label.class);
-    tester.assertModelValue("table:player1:panel1:mentalHealth", basePlayer.getMentalHealth());
-    tester.assertComponent("table:player1:panel1:prestige", Label.class);
-    tester.assertModelValue("table:player1:panel1:prestige", basePlayer.getPrestige());
-    tester.assertComponent("table:player1:panel1:roleName", Label.class);
-    tester.assertModelValue("table:player1:panel1:roleName", basePlayer.getRoleName());
+    tester.assertComponent(pathToPanelOfPlayer1 + ":addCardDropBox", DroppableArea.class);
+    tester.assertComponent(pathToPanelOfPlayer1 + ":addCardDropBox:addCardButton", AjaxLink.class);
+
+    tester.assertComponent(pathToPanelOfPlayer1 + ":userName", Label.class);
+    tester.assertModelValue(pathToPanelOfPlayer1 + ":userName", "testuser");
+    tester.assertComponent(pathToPanelOfPlayer1 + ":mentalHealth", Label.class);
+    tester.assertModelValue(pathToPanelOfPlayer1 + ":mentalHealth", basePlayer.getMentalHealth());
+    tester.assertComponent(pathToPanelOfPlayer1 + ":prestige", Label.class);
+    tester.assertModelValue(pathToPanelOfPlayer1 + ":prestige", basePlayer.getPrestige());
+    tester.assertComponent(pathToPanelOfPlayer1 + ":roleName", Label.class);
+    tester.assertModelValue(pathToPanelOfPlayer1 + ":roleName", basePlayer.getRoleName());
 
     @SuppressWarnings("unchecked")
     ListView<StackCard> handCardsListViewBase =
         (ListView<StackCard>)
             tester.getComponentFromLastRenderedPage(
-                "table:player1:panel1:handCardContainer:handcards");
+                pathToPanelOfPlayer1 + ":handCardContainer:handcards");
     // Check if the hand cards of the base player and hand cards in panel1 contain the same cards
     assertTrue(handCardsListViewBase.getModelObject().containsAll(basePlayer.getHandCards()));
     assertTrue(basePlayer.getHandCards().containsAll(handCardsListViewBase.getModelObject()));
@@ -96,7 +105,14 @@ public class GameTableTest extends PageTestBase {
 
           @Override
           public void component(ListItem<StackCard> card, IVisit<Void> visit) {
-            tester.assertComponent(card.getPath().substring(2) + ":handCard", Image.class);
+            if (game.getTurn().getCurrentPlayer() == basePlayer) {
+              tester.assertComponent(card.getPath().substring(2) + ":draggable", Draggable.class);
+            } else {
+              tester.assertComponent(
+                  card.getPath().substring(2) + ":draggable", WebMarkupContainer.class);
+            }
+            tester.assertComponent(
+                card.getPath().substring(2) + ":draggable:handCard", Image.class);
             tester.assertContains(
                 card.getModelObject()
                     .getResourceFileName()
@@ -132,6 +148,16 @@ public class GameTableTest extends PageTestBase {
             tester.assertModelValue(
                 player.getPath().substring(2) + ":panel:prestige",
                 player.getModelObject().getPrestige());
+            tester.assertComponent(
+                player.getPath().substring(2) + ":panel:addCardDropBox", DroppableArea.class);
+            tester.assertComponent(
+                player.getPath().substring(2) + ":panel:addCardDropBox:addCardButton",
+                AjaxLink.class);
+            tester.assertComponent(
+                player.getPath().substring(2) + ":panel:playAbilityDropBox", DroppableArea.class);
+            tester.assertComponent(
+                player.getPath().substring(2) + ":panel:playAbilityDropBox:playAbilityButton",
+                AjaxLink.class);
             // only visible if role = manager
             if (player.getModelObject().getRole() == Role.MANAGER) {
               tester.assertComponent(
@@ -162,7 +188,8 @@ public class GameTableTest extends PageTestBase {
 
                   @Override
                   public void component(ListItem<StackCard> card, IVisit<Void> visit) {
-                    tester.assertComponent(card.getPath().substring(2) + ":handCard", Image.class);
+                    tester.assertComponent(
+                        card.getPath().substring(2) + ":draggable:handCard", Image.class);
                     tester.assertContains("imgs/cards/backSide");
                   }
                 });
@@ -247,7 +274,7 @@ public class GameTableTest extends PageTestBase {
     ListView<StackCard> handCardsListView =
         (ListView<StackCard>)
             tester.getComponentFromLastRenderedPage(
-                "table:player1:panel1:handCardContainer:handcards");
+                pathToPanelOfPlayer1 + ":handCardContainer:handcards");
     // Check if the hand cards of the base player and hand cards in panel1 contain the same cards
     assertTrue(handCardsListView.getModelObject().containsAll(basePlayer.getHandCards()));
     assertTrue(basePlayer.getHandCards().containsAll(handCardsListView.getModelObject()));
@@ -279,7 +306,7 @@ public class GameTableTest extends PageTestBase {
     basePlayer.addToHandCards(testCard);
     basePlayer.setSelectedHandCard(testCard);
 
-    tester.clickLink("table:player1:panel1:playAbilityButton");
+    tester.clickLink(pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton");
 
     assertTrue(basePlayer.getPlayedAbilityCards().contains(testCard));
     assertNull(basePlayer.getSelectedHandCard());
@@ -288,7 +315,7 @@ public class GameTableTest extends PageTestBase {
     basePlayer.addToHandCards(testCardShouldFail);
     basePlayer.setSelectedHandCard(testCardShouldFail);
 
-    tester.clickLink("table:player1:panel1:playAbilityButton");
+    tester.clickLink(pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton");
 
     assertFalse(basePlayer.getPlayedAbilityCards().contains(testCardShouldFail));
     assertEquals(basePlayer.getSelectedHandCard(), testCardShouldFail);
@@ -297,7 +324,7 @@ public class GameTableTest extends PageTestBase {
     basePlayer.addToHandCards(bugDelegationCard);
     basePlayer.setSelectedHandCard(bugDelegationCard);
 
-    tester.clickLink("table:container:0:panel:playAbilityButton");
+    tester.clickLink("table:container:0:panel:playAbilityDropBox:playAbilityButton");
 
     receivingPlayer =
         (Player)
@@ -333,7 +360,7 @@ public class GameTableTest extends PageTestBase {
           @Override
           public void component(ListItem<Player> item, IVisit<Void> visit) {
             receivingPlayer = item.getModelObject();
-            AjaxLink<Void> link = (AjaxLink<Void>) item.get("panel:addCardButton");
+            AjaxLink<Void> link = (AjaxLink<Void>) item.get("panel:addCardDropBox:addCardButton");
             tester.clickLink(link);
             visit.dontGoDeeper();
           }
@@ -347,7 +374,7 @@ public class GameTableTest extends PageTestBase {
     basePlayer.addToHandCards(testCardShouldFail);
     basePlayer.setSelectedHandCard(testCardShouldFail);
 
-    tester.clickLink("table:container:0:panel:addCardButton");
+    tester.clickLink("table:container:0:panel:addCardDropBox:addCardButton");
 
     receivingPlayer =
         (Player)
