@@ -91,6 +91,7 @@ public class DroppableArea extends Droppable<Void> {
 
   @Override
   public void onDrop(AjaxRequestTarget target, Component component) {
+    System.out.println("DROP + " + this.type.toString() + " + " + this.getPageRelativePath());
     switch (type) {
       case ADD_CARD:
         LOGGER.info(
