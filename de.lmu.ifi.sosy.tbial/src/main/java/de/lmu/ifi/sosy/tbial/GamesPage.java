@@ -18,6 +18,7 @@ import org.apache.wicket.util.time.Duration;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 /** This page shows a list of all current games and provides the option to join one of them. */
+@AuthenticationRequired
 public class GamesPage extends BasePage {
 
   private static final long serialVersionUID = 1L;
