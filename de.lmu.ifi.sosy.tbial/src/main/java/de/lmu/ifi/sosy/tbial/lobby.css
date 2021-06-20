@@ -48,7 +48,9 @@
 	text-align: center;
 }
 
-.inGameTooltip .inGameTooltiptext {
+/* https://www.w3schools.com/css/css_tooltip.asp */
+
+.tooltip .tooltiptext, .notificationTooltiptext {
   visibility: hidden;
   width: 120px;
   background-color: black;
@@ -62,7 +64,22 @@
   z-index: 1;
 }
 
+
 .inGameTooltip:hover .inGameTooltiptext {
+  visibility: visible;
+}
+
+.notificationTooltiptext {
+	width: 120px;
+	margin-left: -80px;
+	margin-top: 35px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip:hover .notificationTooltiptext {
   visibility: visible;
 }
 

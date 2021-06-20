@@ -29,6 +29,7 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
+import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 public class GameTableTest extends PageTestBase {
@@ -194,6 +195,9 @@ public class GameTableTest extends PageTestBase {
     playerA.setMentalHealth(0);
     playerB.setMentalHealth(0);
     playerC.setMentalHealth(0);
+    // need to click on message container in order for it to be initialized because of executing all
+    // timer behaviors
+    tester.clickLink("messageContainer:message");
     tester.executeAllTimerBehaviors(tester.getLastRenderedPage());
 
     // Player A
@@ -363,9 +367,14 @@ public class GameTableTest extends PageTestBase {
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.DRAWING_CARDS);
 
+    for (int i = 0; i < Turn.DRAW_LIMIT_IN_DRAWING_STAGE; i++) {
+      game.getTurn().incrementDrawnCardsInDrawingStage();
+    }
+
     tester.clickLink(tester.getComponentFromLastRenderedPage("playCardsButton"));
 
     assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
+    
   }
 
   @Test

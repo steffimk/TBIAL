@@ -216,7 +216,7 @@ public class Player implements Serializable {
    * @return <code>true</code> if the turn can be ended <code>false</code> otherwise
    */
   public boolean canEndTurn() {
-    return mentalHealth > handCards.size();
+    return mentalHealth >= handCards.size();
   }
 
   /**
