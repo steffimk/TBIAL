@@ -64,9 +64,8 @@
   z-index: 1;
 }
 
-
-.inGameTooltip:hover .inGameTooltiptext {
-  visibility: visible;
+.tooltip:hover .tooltiptext {
+	visibility: visible;
 }
 
 .notificationTooltiptext {
@@ -75,11 +74,33 @@
 	margin-top: 35px;
 }
 
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-
 .tooltip:hover .notificationTooltiptext {
-  visibility: visible;
+	visibility: visible;
 }
 
+.inGameTooltip .inGameTooltiptext, .inCreateGameTooltiptext {
+	visibility: hidden; width : 120px;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px 0;
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+	width: 120px;
+}
+
+.inCreateGameTooltiptext {
+	visibility: hidden; 
+	margin-left: -80px;
+	margin-top: 120px;
+}
+
+.inGameTooltip:hover .inGameTooltiptext {
+	visibility: visible;
+}
+
+.inGameTooltip:hover .inCreateGameTooltiptext {
+	visibility: visible;
+}
