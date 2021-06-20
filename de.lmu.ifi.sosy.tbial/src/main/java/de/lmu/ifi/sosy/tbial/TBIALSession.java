@@ -57,6 +57,10 @@ public class TBIALSession extends AuthenticatedWebSession {
     return true;
   }
 
+  public boolean isInGame() {
+    return getCurrentGame() != null;
+  }
+
   private Database getDatabase() {
     return TBIALApplication.getDatabase();
   }
@@ -119,5 +123,21 @@ public class TBIALSession extends AuthenticatedWebSession {
 
   public void setCurrentGameNull() {
     this.currentGame = null;
+  }
+
+  /**
+   * Method to join a game, adding to the games player list and setting the current game
+   *
+   * @param game
+   * @param password
+   */
+  public boolean joinGame(Game game, String password) {
+    String username = getUser().getName();
+    if (game.checkIfYouCanJoin(username, password)) {
+      game.addNewPlayer(username);
+      setCurrentGame(game);
+      return true;
+    }
+    return false;
   }
 }
