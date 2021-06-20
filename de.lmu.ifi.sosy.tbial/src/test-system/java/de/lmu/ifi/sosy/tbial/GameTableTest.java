@@ -195,6 +195,9 @@ public class GameTableTest extends PageTestBase {
     playerA.setMentalHealth(0);
     playerB.setMentalHealth(0);
     playerC.setMentalHealth(0);
+    // need to click on message container in order for it to be initialized because of executing all
+    // timer behaviors
+    tester.clickLink("messageContainer:message");
     tester.executeAllTimerBehaviors(tester.getLastRenderedPage());
 
     // Player A

@@ -3,7 +3,10 @@ package de.lmu.ifi.sosy.tbial.db;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.Objects;
+
+import de.lmu.ifi.sosy.tbial.Invitation;
 
 /**
  * A user with a user name and a plain-text password.
@@ -20,6 +23,8 @@ public class User implements Serializable {
   private String name;
 
   private String password;
+
+  private LinkedList<Invitation> invitations = new LinkedList<Invitation>();
 
   public User(String name, String password) {
     this(-1, name, password);
@@ -45,6 +50,14 @@ public class User implements Serializable {
 
   public void setPassword(String password) {
     this.password = requireNonNull(password);
+  }
+
+  public LinkedList<Invitation> getInvitations() {
+    return invitations;
+  }
+
+  public synchronized void invite(Invitation invitation) {
+    invitations.add(invitation);
   }
 
   /**
