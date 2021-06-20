@@ -53,7 +53,6 @@ public class BugBlockPanel extends Panel {
             Form<?> block = new Form<>("block");
             Form<?> reject = new Form<>("reject");
 
-            System.out.println("BugBlockPanel Constructor");
             final BugBlock bugBlock = item.getModelObject();
             bugBlockForm.add(new Label("bugBlockSender", bugBlock.getSender()));
             bugBlockForm.add(new Label("bugBlockMessage", bugBlock.getTextMessage()));
@@ -65,10 +64,11 @@ public class BugBlockPanel extends Panel {
 
                   @Override
                   public void onSubmit() {
-                    for (StackCard card : player.getObject().getHandCards()) { // casten?
+                    for (StackCard card : player.getObject().getHandCards()) {
                       if (((Card) card).getCardType() == CardType.ACTION) {
                         if (((ActionCard) card).isLameExcuse()) {
-                          currentGame.clickedOnReceivedCard(player.getObject(), card);
+                          ActionCard lameExcuseCard = (ActionCard) card;
+                          currentGame.defendBugImmediately(player.getObject(), lameExcuseCard);
                         }
                       }
                     }

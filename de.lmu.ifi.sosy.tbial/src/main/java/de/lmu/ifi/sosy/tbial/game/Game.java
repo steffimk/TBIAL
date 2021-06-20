@@ -377,12 +377,10 @@ public class Game implements Serializable {
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isBug()) {
         turn.incrementPlayedBugCardsThisTurn();
+        turn.setLastPlayedBugCard((ActionCard) selectedCard);
+        turn.setLastPlayedBugCardBy(player);
+        LOGGER.info(player.getUserName() + " played bug card " + selectedCard.toString());
 
-        /*for (StackCard card : receiverOfCard.getHandCards()) {
-          if (card.isLameExcuse()) {}
-        }*/
-
-        System.out.println("selectedCard is bug");
         receiverOfCard.blockBug(new BugBlock(player.getUserName()));
 
         int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
@@ -400,7 +398,6 @@ public class Game implements Serializable {
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        
         discardHandCard(player, selectedCard);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
@@ -408,6 +405,20 @@ public class Game implements Serializable {
           player.addToMentalHealth(1);
         }
       }
+    }
+  }
+
+  public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
+    ActionCard bugCard = turn.getLastPlayedBugCard();
+    Player basePlayer = turn.getLastPlayedBugCardBy();
+
+    putCardOnHeap(player, lameExcuseCard);
+    putCardOnHeap(basePlayer, bugCard);
+    player.getReceivedCards().remove(lameExcuseCard);
+    player.getReceivedCards().remove(bugCard);
+
+    if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
+      player.addToMentalHealth(1);
     }
   }
 

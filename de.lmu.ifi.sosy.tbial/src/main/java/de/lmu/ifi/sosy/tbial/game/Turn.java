@@ -22,6 +22,9 @@ public class Turn implements Serializable {
   private int drawnCardsInDrawingStage;
   private int bugsPlayedThisTurn;
 
+  private Player lastPlayedBugCardBy;
+  private ActionCard lastPlayedBugCard;
+
   public Turn(List<Player> players) {
     this.players = players;
     this.currentPlayerIndex = 0;
@@ -134,5 +137,22 @@ public class Turn implements Serializable {
    */
   public void setTurnPlayerUseForTestingOnly(Player basePlayer) {
     currentPlayerIndex = players.indexOf(basePlayer);
+  }
+
+  public Player getLastPlayedBugCardBy() {
+	  return lastPlayedBugCardBy;
+  }
+  
+  public void setLastPlayedBugCardBy(Player player)
+  {
+	  lastPlayedBugCardBy = player;
+  }
+  
+  public ActionCard getLastPlayedBugCard() {
+    return lastPlayedBugCard;
+  }
+
+  public void setLastPlayedBugCard(ActionCard bugCard) {
+    lastPlayedBugCard = bugCard;
   }
 }

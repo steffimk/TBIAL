@@ -66,7 +66,7 @@ public class PlayerAreaPanel extends Panel {
     // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
     // table
     mentalHealth.add(
-        new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+        new AbstractAjaxTimerBehavior(Duration.seconds(10)) {
 
           private static final long serialVersionUID = 1L;
 
@@ -78,10 +78,6 @@ public class PlayerAreaPanel extends Panel {
               target.add(role);
               stop(target);
             }
-
-            /*if (player.getObject().getReceivedCards().size() > 0 && !modal.isShown()) {
-              modal.show(target);
-            }*/
 
             if (!basePlayer.getBugBlocks().isEmpty()) {
               modal.show(target);
@@ -145,13 +141,6 @@ public class PlayerAreaPanel extends Panel {
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
 
             System.out.println("addCardButton");
-
-            // get last card from received cards
-            // if card is lameExcuse, modal.show(target);
-            // Google: Get last element of set
-            // player.getObject().getReceivedCards().toArray()[player.getObject().getReceivedCards().size()-1]
-            modal.show(target);
-
             target.add(table);
           }
         };
