@@ -28,7 +28,7 @@ public class UserTest {
     name = "name";
     id = 42;
     user = new User("", "");
-    invitation = new Invitation("sender", "sending message");
+    invitation = new Invitation("sender", "sending message", "game");
   }
 
   @Test(expected = NullPointerException.class)

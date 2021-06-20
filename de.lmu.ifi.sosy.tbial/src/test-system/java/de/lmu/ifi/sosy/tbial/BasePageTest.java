@@ -27,8 +27,8 @@ public class BasePageTest extends PageTestBase {
     database.register("testuser2", "testpassword2");
     getSession().authenticate("testuser2", "testpassword2");
     testuser2 = database.getUser("testuser2");
-    testuser2.invite(new Invitation("testuser", "has invited you to join a game."));
     Game game = new Game("gamename", 4, true, "123456", "testuser");
+    testuser2.invite(new Invitation("testuser", "has invited you to join a game.", game.getName()));
     getSession().setCurrentGame(game);
     getSession().getTbialApplication().getGameManager().addGame(game);
   }
@@ -51,7 +51,7 @@ public class BasePageTest extends PageTestBase {
   @Test
   public void receiveMessage() {
     displayMessageContainer();
-    testuser.invite(new Invitation("testuser2", "has invited you to join a game."));
+    testuser.invite(new Invitation("testuser2", "has invited you to join a game.", "game2"));
     tester.assertModelValue("messageContainer:numberOfMessages", 1);
   }
 
@@ -64,16 +64,16 @@ public class BasePageTest extends PageTestBase {
 
     tester.clickLink("messageContainer:message");
     tester.assertComponent("modal:content", NotificationPanel.class);
-    FormTester form =
-        tester.newFormTester("modal:content:notificationContainer:0:notificationForm");
+    FormTester acceptForm =
+        tester.newFormTester("modal:content:notificationContainer:0:notificationForm:accept");
     tester.assertModelValue(
         "modal:content:notificationContainer:0:notificationForm:notificationSender", "testuser");
     tester.assertModelValue(
         "modal:content:notificationContainer:0:notificationForm:notificationMessage",
         " has invited you to join a game.");
-    form.submit("acceptButton");
+    acceptForm.submit("acceptButton");
     assertEquals(testuser2.getInvitations().size(), 0);
-    assertEquals(game.getChatMessages().get(0).getSender(), "Update: ");
+    assertEquals(game.getChatMessages().get(0).getSender(), "GAME UPDATE: ");
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(), "testuser2 accepted the game invitation.");
     tester.assertRenderedPage(GameLobby.class);
@@ -88,16 +88,16 @@ public class BasePageTest extends PageTestBase {
 
     tester.clickLink("messageContainer:message");
     tester.assertComponent("modal:content", NotificationPanel.class);
-    FormTester form =
-        tester.newFormTester("modal:content:notificationContainer:0:notificationForm");
+    FormTester rejectForm =
+        tester.newFormTester("modal:content:notificationContainer:0:notificationForm:reject");
     tester.assertModelValue(
         "modal:content:notificationContainer:0:notificationForm:notificationSender", "testuser");
     tester.assertModelValue(
         "modal:content:notificationContainer:0:notificationForm:notificationMessage",
         " has invited you to join a game.");
-    form.submit("rejectButton");
+    rejectForm.submit("rejectButton");
     assertEquals(testuser2.getInvitations().size(), 0);
-    assertEquals(game.getChatMessages().get(0).getSender(), "Update: ");
+    assertEquals(game.getChatMessages().get(0).getSender(), "GAME UPDATE: ");
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(), "testuser2 rejected the game invitation.");
     tester.assertRenderedPage(Lobby.class);
