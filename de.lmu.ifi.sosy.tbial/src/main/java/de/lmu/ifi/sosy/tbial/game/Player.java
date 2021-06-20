@@ -1,10 +1,12 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -38,6 +40,8 @@ public class Player implements Serializable {
 
   private boolean fired;
 
+  private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
+
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
@@ -46,6 +50,14 @@ public class Player implements Serializable {
     this.handCards = new HashSet<>();
     this.playedAbilityCards = new HashSet<>();
     this.receivedCards = new HashSet<>();
+  }
+
+  public LinkedList<BugBlock> getBugBlocks() {
+    return bugBlocks;
+  }
+
+  public void blockBug(BugBlock bugBlock) {
+    bugBlocks.add(bugBlock);
   }
 
   public String getUserName() {

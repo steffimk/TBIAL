@@ -1,0 +1,23 @@
+<html xmlns:wicket="http://wicket.apache.org">
+<body>
+<?xml version="1.0" encoding="UTF-8" ?>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+	<div wicket:id="bugBlockContainer">
+		<div wicket:id="bugBlockForm">
+			<div>
+				<span wicket:id="bugBlockSender"></span>
+				<span wicket:id="bugBlockMessage"></span>
+			</div>
+			<div style="display: flex;">
+				<form wicket:id="block" style="margin-right: 5px;">
+					<input type=submit value="Block" wicket:id="blockButton" class="buttonStyle" />
+				</form>
+				<form wicket:id="reject" style="margin-left: 5px;">
+					<input type=submit value="Reject" wicket:id="rejectButton" class="buttonStyle" />
+				</form>
+			</div>
+		</div>
+	</div>
+</wicket:panel>
+</body>
+</html>

@@ -24,8 +24,6 @@ public class User implements Serializable {
 
   private String password;
 
-  private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
-
   public User(String name, String password) {
     this(-1, name, password);
   }
@@ -50,14 +48,6 @@ public class User implements Serializable {
 
   public void setPassword(String password) {
     this.password = requireNonNull(password);
-  }
-
-  public LinkedList<BugBlock> getBugBlocks() {
-    return bugBlocks;
-  }
-
-  public void blockBug(BugBlock bugBlock) {
-    bugBlocks.add(bugBlock);
   }
 
   /**

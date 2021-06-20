@@ -18,6 +18,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -380,6 +381,9 @@ public class Game implements Serializable {
         /*for (StackCard card : receiverOfCard.getHandCards()) {
           if (card.isLameExcuse()) {}
         }*/
+
+        System.out.println("selectedCard is bug");
+        receiverOfCard.blockBug(new BugBlock(player.getUserName()));
 
         int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
         receiverOfCard.setMentalHealth(decreasedMentalHealthPoints);

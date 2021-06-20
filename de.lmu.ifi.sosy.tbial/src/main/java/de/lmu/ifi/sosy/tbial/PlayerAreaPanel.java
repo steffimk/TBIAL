@@ -55,13 +55,8 @@ public class PlayerAreaPanel extends Panel {
     final ModalWindow modal;
     add(modal = new ModalWindow("blockBugModal"));
     modal.setTitle("Bug played against you!");
-    
-    TBIALSession currentSession = (TBIALSession) getSession();
-    if ((currentSession.getUser() != null)) {
-      modal.setContent(
-          new BugBlockPanel(
-              modal.getContentId(), currentSession.getUser(), game, player, basePlayer));
-    }
+
+    modal.setContent(new BugBlockPanel(modal.getContentId(), game, player, basePlayer));
 
     modal.setCloseButtonCallback(
         target -> {
@@ -87,6 +82,10 @@ public class PlayerAreaPanel extends Panel {
             /*if (player.getObject().getReceivedCards().size() > 0 && !modal.isShown()) {
               modal.show(target);
             }*/
+
+            if (!basePlayer.getBugBlocks().isEmpty()) {
+              modal.show(target);
+            }
 
             // TODO maybe this update should be triggered somewhere else in the future
             target.add(mentalHealth);
@@ -144,7 +143,15 @@ public class PlayerAreaPanel extends Panel {
                     + " clicked on add card button of "
                     + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
+
+            System.out.println("addCardButton");
+
+            // get last card from received cards
+            // if card is lameExcuse, modal.show(target);
+            // Google: Get last element of set
+            // player.getObject().getReceivedCards().toArray()[player.getObject().getReceivedCards().size()-1]
             modal.show(target);
+
             target.add(table);
           }
         };
