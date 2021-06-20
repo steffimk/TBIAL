@@ -23,6 +23,13 @@
 	font-size: 1,5em;
 }
 
+.disabledButtonStyle {
+	background-color: #e8e8e8;
+	border: 1px solid #ff6600;
+	font-size: 1em;
+	color: black;
+}
+
 .buttonStyle {
 	background-color: #e8e8e8;
 	border: 1px solid #ff6600;
@@ -39,7 +46,6 @@
 	font-size: 1.5em;
 	color: #ff6600;
 	text-align: center;
-
 }
 
 /* https://www.w3schools.com/css/css_tooltip.asp */
@@ -58,16 +64,43 @@
   z-index: 1;
 }
 
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
 .notificationTooltiptext {
 	width: 120px;
 	margin-left: -80px;
 	margin-top: 35px;
 }
 
-.tooltip:hover .tooltiptext {
-  visibility: visible;
+.tooltip:hover .notificationTooltiptext {
+	visibility: visible;
 }
 
-.tooltip:hover .notificationTooltiptext {
-  visibility: visible;
+.inGameTooltip .inGameTooltiptext, .inCreateGameTooltiptext {
+	visibility: hidden; width : 120px;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px 0;
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+	width: 120px;
+}
+
+.inCreateGameTooltiptext {
+	visibility: hidden; 
+	margin-left: -80px;
+	margin-top: 120px;
+}
+
+.inGameTooltip:hover .inGameTooltiptext {
+	visibility: visible;
+}
+
+.inGameTooltip:hover .inCreateGameTooltiptext {
+	visibility: visible;
 }

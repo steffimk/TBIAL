@@ -57,6 +57,10 @@ public class TBIALSession extends AuthenticatedWebSession {
     return true;
   }
 
+  public boolean isInGame() {
+    return getCurrentGame() != null;
+  }
+
   private Database getDatabase() {
     return TBIALApplication.getDatabase();
   }
