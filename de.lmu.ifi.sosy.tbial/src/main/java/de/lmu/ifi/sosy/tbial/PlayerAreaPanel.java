@@ -73,7 +73,7 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected void onTimer(AjaxRequestTarget target) {
             if (player.getObject().getMentalHealthInt() == 0) {
-              player.getObject().fire(true);
+              game.firePlayer(player.getObject(), player.getObject().getHandCards());
               role.setVisible(true);
               target.add(role);
               target.add(getParent().add(new AttributeModifier("style", "opacity: 0.4;")));

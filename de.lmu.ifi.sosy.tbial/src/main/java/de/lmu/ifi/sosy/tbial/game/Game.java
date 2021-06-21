@@ -475,25 +475,10 @@ public class Game implements Serializable {
     player.addToHandCards(drawnCard);
   }
 
-  /**
-   * Update mental health and fire if mental health=0
-   *
-   * @param mentalHealth The amount of mental health to add or substract from the current mental
-   *     health
-   * @param player The player who loses mental health
-   */
-  public void updateMentalHealth(Player player, int mentalHealth) {
-
-    player.addToMentalHealth(mentalHealth);
-
-    if (player.getMentalHealthInt() == 0) {
-      // fire player
-      player.fire(true);
-      // add all player's cards to heap
-      for (StackCard handCard : player.getHandCards()) {
-        stackAndHeap.addToHeap(handCard, player);
-      }
-    }
+  public void firePlayer(Player player, Set<StackCard> handCards) {
+    stackAndHeap.addAllToHeap(handCards, player);
+    handCards.removeAll(handCards);
+    player.fire(true);
   }
 
   public boolean allMonkeysFired(List<Player> monkeys) {
