@@ -241,7 +241,9 @@ public class Game implements Serializable {
     if (getPlayers().containsKey(username)) {
       return false;
     }
-    if (isPrivate() && !getHash().equals(Game.getHashedPassword(password, getSalt()))) {
+    if (isPrivate()
+        && !getHash().equals(Game.getHashedPassword(password, getSalt()))
+        && !getHash().equals(password)) {
       return false;
     }
     return true;

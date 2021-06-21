@@ -44,8 +44,9 @@
 						<td><div wicket:id="lockedIcon" class=centered ><i class="fas fa-lock"></i></div>
 							<div wicket:id="unlockedIcon" class=centered ><i class="fas fa-unlock"></i></div>
 						</td>
-						<td><form wicket:id="joinGameForm"><input wicket:id="joinGamePw" type="password"/>
-							<input type="submit" wicket:id="joinGameButton" class="buttonStyle" value="Join Game"/></form></td>
+						<td><form wicket:id="joinGameForm" class="inGameTooltip"><input wicket:id="joinGamePw" type="password"/>
+							<input type="submit" wicket:id="joinGameButton">
+							<span wicket:id="joinTooltip" class="inGameTooltiptext" ></span></form></td>
 					</tr>
 				</tbody>
 			</table>
