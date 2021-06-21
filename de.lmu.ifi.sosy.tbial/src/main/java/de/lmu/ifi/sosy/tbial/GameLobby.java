@@ -132,6 +132,8 @@ public class GameLobby extends BasePage {
     add(leaveForm);
     add(menuForm);
 
+    startGameLink.setOutputMarkupId(true);
+
     IModel<List<Player>> gameInfoModel =
         (IModel<List<Player>>) () -> getGame().getInGamePlayersList();
 

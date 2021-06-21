@@ -33,12 +33,25 @@
 						<li><a href="TBIAL_Spielanleitung.pdf">About the game</a></li>
 						<li><a wicket:id="signout">Logout</a></li>
 						<li><span wicket:id="loggedInUsername">Username</span></li>
+						<li style="float: right; margin-right: 2%;">
+							<div wicket:id="messageContainer"
+								style="display: flex; margin-top: 10%;">
+								<div wicket:id="message">
+									<i class="fas fa-envelope fa-border"
+										style="font-size: xx-large; color: white; border-color: transparent;">
+									</i>
+								</div>
+								<div wicket:id="numberOfMessages"
+									style="margin-left: -10%; margin-top: -5%; color: white;"></div>
+							</div>
+						</li>
 					</wicket:link>
 					<!-- END MENU -->
 				</ul>
 			</div>
 		</div>
 	</div>
+	<div wicket:id="modal"></div>
 	<div class="pagewidth">
 		<div class="page-wrap">
 			<div class="content">
