@@ -17,6 +17,6 @@ public class BugBlock implements Serializable {
   }
 
   public String getTextMessage() {
-    return sender + " played a bug against you!";
+    return " played a bug against you!";
   }
 }

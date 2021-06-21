@@ -3,10 +3,7 @@ package de.lmu.ifi.sosy.tbial.db;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.Objects;
-
-import de.lmu.ifi.sosy.tbial.BugBlock;
 
 /**
  * A user with a user name and a plain-text password.

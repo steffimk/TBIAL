@@ -13,7 +13,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
@@ -52,17 +51,6 @@ public class PlayerAreaPanel extends Panel {
     add(mentalHealth);
     add(new Label("prestige"));
 
-    final ModalWindow modal;
-    add(modal = new ModalWindow("blockBugModal"));
-    modal.setTitle("Bug played against you!");
-
-    modal.setContent(new BugBlockPanel(modal.getContentId(), game, player, basePlayer));
-
-    modal.setCloseButtonCallback(
-        target -> {
-          return true;
-        });
-
     // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
     // table
     mentalHealth.add(
@@ -77,10 +65,6 @@ public class PlayerAreaPanel extends Panel {
               role.setVisible(true);
               target.add(role);
               stop(target);
-            }
-
-            if (!basePlayer.getBugBlocks().isEmpty()) {
-              modal.show(target);
             }
 
             // TODO maybe this update should be triggered somewhere else in the future
@@ -140,7 +124,6 @@ public class PlayerAreaPanel extends Panel {
                     + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
 
-            System.out.println("addCardButton");
             target.add(table);
           }
         };
