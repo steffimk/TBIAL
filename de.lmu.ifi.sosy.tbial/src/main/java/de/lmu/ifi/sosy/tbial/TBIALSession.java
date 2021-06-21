@@ -12,7 +12,6 @@ import org.apache.wicket.request.Request;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.User;
-import de.lmu.ifi.sosy.tbial.game.Game;
 
 /**
  * An authenticated TBIAL session.
@@ -27,8 +26,6 @@ public class TBIALSession extends AuthenticatedWebSession {
   private static final Logger LOGGER = LogManager.getLogger(TBIALSession.class);
 
   private User user;
-
-  private Game currentGame = null;
 
   public TBIALSession(Request request) {
     super(request);
@@ -58,7 +55,7 @@ public class TBIALSession extends AuthenticatedWebSession {
   }
 
   public boolean isInGame() {
-    return getCurrentGame() != null;
+    return getTbialApplication().getGameManager().getGameOfUser(user.getName()) != null;
   }
 
   private Database getDatabase() {
@@ -101,32 +98,5 @@ public class TBIALSession extends AuthenticatedWebSession {
   public void setUser(User user) {
     this.user = user;
   }
-
-  public Game getCurrentGame() {
-    return currentGame;
-  }
-
-  public void setCurrentGame(Game game) {
-    this.currentGame = game;
-  }
-
-  public void setCurrentGameNull() {
-    this.currentGame = null;
-  }
-
-  /**
-   * Method to join a game, adding to the games player list and setting the current game
-   *
-   * @param game
-   * @param password
-   */
-  public boolean joinGame(Game game, String password) {
-    String username = getUser().getName();
-    if (game.checkIfYouCanJoin(username, password)) {
-      game.addNewPlayer(username);
-      setCurrentGame(game);
-      return true;
-    }
-    return false;
-  }
+  
 }

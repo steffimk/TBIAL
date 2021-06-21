@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
@@ -165,5 +166,13 @@ public abstract class BasePage extends WebPage {
   public String getUsersString() {
     int users = getTbialApplication().getUsersLoggedInCount();
     return users == 1 ? "1 player online." : users + " players online.";
+  }
+
+  @Override
+  protected void setHeaders(WebResponse response) {
+    response.setHeader("Date", "[now]");
+    response.setHeader("Expires", "[0]");
+    response.setHeader("Pragma", "no-cache");
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0, private");
   }
 }
