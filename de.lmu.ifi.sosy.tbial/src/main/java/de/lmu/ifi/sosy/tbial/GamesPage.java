@@ -16,12 +16,16 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 
+import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 /** This page shows a list of all current games and provides the option to join one of them. */
+@AuthenticationRequired
 public class GamesPage extends BasePage {
 
-  final String userName = getSession().getUser().getName();
+  final User user = getSession().getUser();
+
+  final String userName = user.getName();
 
   private static final long serialVersionUID = 1L;
 
@@ -143,11 +147,15 @@ public class GamesPage extends BasePage {
             joinGameForm.add(joinGamePw);
             joinGameForm.add(joinGameButton);
             joinGameForm.add(joinTooltip);
+
+            if (user == null) throw new NullPointerException("Player is null!");
+
             if (game.getPlayers().containsKey(userName)) {
               listItem.add(new Label("currentGame", "X"));
             } else {
               listItem.add(new Label("currentGame", " "));
             }
+
             listItem.add(
                 new Label(
                     "numberOfPlayers",
