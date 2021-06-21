@@ -12,6 +12,7 @@ import org.apache.wicket.request.Request;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
 
 /**
  * An authenticated TBIAL session.
@@ -66,9 +67,20 @@ public class TBIALSession extends AuthenticatedWebSession {
     return (TBIALApplication) getApplication();
   }
 
-  /** Signs out and clears the user. */
+  /** Leaves the current game (if not null), signs out and clears the user. */
   @Override
   public void signOut() {
+    Game currentGame = getTbialApplication().getGameManager().getGameOfUser(user.getName());
+    if (currentGame != null) {
+      if (!currentGame.checkIfLastPlayer() && getUser().getName().equals(currentGame.getHost())) {
+        currentGame.changeHost();
+      }
+      if (currentGame.checkIfLastPlayer()) {
+        getTbialApplication().getGameManager().removeGame(currentGame);
+      }
+      currentGame.getPlayers().remove(getUser().getName());
+      getTbialApplication().getGameManager().removeUserFromGame(user.getName());
+    }
     super.signOut();
     if (user != null) {
       String name = user.getName();

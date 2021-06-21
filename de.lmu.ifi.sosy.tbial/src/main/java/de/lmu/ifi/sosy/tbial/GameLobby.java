@@ -143,6 +143,7 @@ public class GameLobby extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
+            if (player.getUserName() == null) throw new NullPointerException("Player is null!");
             listItem.add(new Label("playerName", player.getUserName()));
           }
         };
@@ -214,6 +215,8 @@ public class GameLobby extends BasePage {
    */
   private boolean isHost() {
     TBIALSession session = getSession();
+    if (session.getUser() == null) throw new NullPointerException("Player is null!");
+
     String hostName = getGame().getHost();
     return session.getUser().getName().equals(hostName);
   }

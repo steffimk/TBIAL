@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial.game;
 
 import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

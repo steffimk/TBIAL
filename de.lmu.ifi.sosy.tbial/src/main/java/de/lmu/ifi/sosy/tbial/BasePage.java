@@ -68,8 +68,8 @@ public abstract class BasePage extends WebPage {
             if (currentSession instanceof AuthenticatedWebSession) {
               ((AuthenticatedWebSession) currentSession).signOut();
             }
-
             currentSession.invalidate();
+            setResponsePage(getTbialApplication().getHomePage());
           }
         };
 
@@ -81,7 +81,7 @@ public abstract class BasePage extends WebPage {
 
     // Show user name in navigation bar next to Logout
     loggedInUsername = new Label("loggedInUsername", "");
-	loggedInUsername.setOutputMarkupId(true);
+    loggedInUsername.setOutputMarkupId(true);
     add(loggedInUsername);
 
     // show invitation messages

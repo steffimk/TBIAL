@@ -19,6 +19,7 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
 
 /** The page that displays all users that are currently online. */
+@AuthenticationRequired
 public class PlayersPage extends BasePage {
 
   private static final long serialVersionUID = 1L;
