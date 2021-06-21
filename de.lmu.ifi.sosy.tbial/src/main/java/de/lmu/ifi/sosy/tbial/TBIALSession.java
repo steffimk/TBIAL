@@ -70,8 +70,8 @@ public class TBIALSession extends AuthenticatedWebSession {
   /** Leaves the current game (if not null), signs out and clears the user. */
   @Override
   public void signOut() {
-    Game currentGame = getTbialApplication().getGameManager().getGameOfUser(user.getName());
-    if (currentGame != null) {
+	if (user != null && getTbialApplication().getGameManager().getGameOfUser(user.getName()) != null) {
+      Game currentGame = getTbialApplication().getGameManager().getGameOfUser(user.getName());
       if (!currentGame.checkIfLastPlayer() && getUser().getName().equals(currentGame.getHost())) {
         currentGame.changeHost();
       }
