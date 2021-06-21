@@ -26,14 +26,12 @@ public class GameManager {
    * Adds the game to the current game and maps the host to the game
    *
    * @param game The new game.
-   * @param hostName The user name of the host of this game.
    */
-  public synchronized void addGame(Game game, String hostName) {
+  public synchronized void addGame(Game game) {
     requireNonNull(game);
-    requireNonNull(hostName);
     if (!gameNameTaken(game.getName())) {
       this.currentGames.put(game.getName(), game);
-      this.userNameXgameName.put(hostName, game.getName());
+      this.userNameXgameName.put(game.getHost(), game.getName());
     }
   }
 

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -53,7 +52,7 @@ public class GameTableTest extends PageTestBase {
     game.addNewPlayer("A");
     game.addNewPlayer("B");
     game.addNewPlayer("C");
-    getSession().setCurrentGame(game);
+    getGameManager().addGame(game);
     game.startGame();
     basePlayer = game.getPlayers().get("testuser");
     playerA = game.getPlayers().get("A");

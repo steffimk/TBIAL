@@ -16,6 +16,7 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
 
 /** The page that displays all users that are currently online. */
 public class PlayersPage extends BasePage {
@@ -113,10 +114,7 @@ public class PlayersPage extends BasePage {
                   @Override
                   public boolean isVisible() {
                     Game currentGame = getGameManager().getGameOfUser(userName);
-                    if (currentGame != null
-                        && currentGame
-                            .getHost()
-                            .equals(((TBIALSession) getSession()).getUser().getName())) {
+                    if (currentGame != null && currentGame.getHost().equals(userName)) {
                       return !listItem
                           .getModelObject()
                           .equals(((TBIALSession) getSession()).getUser());
