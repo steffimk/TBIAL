@@ -21,8 +21,8 @@
 		<input wicket:id="showPlayersButton" class="buttonStyle" type="submit" value="Players" />
 	</form>
 
-
-    <form wicket:id="newGameForm" class="boxedform">
+	<div class="boxedform">
+    <form wicket:id="newGameForm">
     	<label for="name">Name of new game
     		<span class="small" wicket:id="nameFeedback">Whether the name is valid</span>
     	</label>
@@ -37,9 +37,13 @@
 		    	</label>
 		 		<input wicket:id="newGamePw" type="password" name="newGamePw"/>
 		 	</div>
+		<div class="inGameTooltip">
 	    <input type=submit value="New Game" wicket:id="newGameButton"/>
+	    <span wicket:id="newGameTooltip" class="inCreateGameTooltiptext" ></span>
+	    </div>
     	<div class="spacer"></div>
     </form>
+    </div>
 </wicket:extend>
 </body>
 
