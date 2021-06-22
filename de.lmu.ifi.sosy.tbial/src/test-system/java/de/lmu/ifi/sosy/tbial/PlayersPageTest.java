@@ -40,13 +40,43 @@ public class PlayersPageTest extends PageTestBase {
   }
 
   @Test
+  public void navigateToCreateNewGame() {
+    tester.startPage(PlayersPage.class);
+    tester.assertRenderedPage(PlayersPage.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("createGameButton");
+    tester.assertRenderedPage(Lobby.class);
+  }
+
+  @Test
+  public void navigateToGamesPage() {
+    tester.startPage(PlayersPage.class);
+    tester.assertRenderedPage(PlayersPage.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("showGamesButton");
+    tester.assertRenderedPage(GamesPage.class);
+  }
+
+  @Test
+  public void navigateToPlayersPage() {
+    tester.startPage(PlayersPage.class);
+    tester.assertRenderedPage(PlayersPage.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("showPlayersButton");
+    tester.assertRenderedPage(PlayersPage.class);
+  }
+
+  @Test
   public void displayUsersInLobbyAndSendInvitationToGame() {
     tester.startPage(PlayersPage.class);
     tester.assertRenderedPage(PlayersPage.class);
 
     TBIALSession session = getSession();
     session.setUser(testuser);
-   
+
     tester.assertComponent("playerlistContainer", WebMarkupContainer.class);
     @SuppressWarnings("unchecked")
     ListView<User> playerList =
