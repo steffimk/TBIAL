@@ -2,7 +2,9 @@ package de.lmu.ifi.sosy.tbial;
 
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -16,13 +18,14 @@ import org.apache.wicket.util.time.Duration;
 import de.lmu.ifi.sosy.tbial.db.User;
 
 /** The page that displays all users that are currently online. */
+@AuthenticationRequired
 public class PlayersPage extends BasePage {
 
   private static final long serialVersionUID = 1L;
 
   public PlayersPage() {
 
-    Form menuForm = new Form("menuForm");
+    Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -69,12 +72,89 @@ public class PlayersPage extends BasePage {
           @Override
           protected void populateItem(final ListItem<User> listItem) {
             listItem.add(new Label("name"));
+            Form<?> invitationForm = new Form<>("invitationForm");
+            Label tooltip =
+                new Label("tooltip", "This player already joined your game.") {
+
+                  /** */
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  public boolean isVisible() {
+                    if (((TBIALSession) getSession()).getCurrentGame() != null
+                        && !(((TBIALSession) getSession())
+                            .getCurrentGame()
+                            .getPlayers()
+                            .containsKey(listItem.getModelObject().getName()))) {
+                      return false;
+                    }
+                    return true;
+                  }
+                };
+            Button inviteButton =
+                new Button("inviteButton") {
+                  private static final long serialVersionUID = 1L;
+                  private String customCSS = null;
+
+                  @Override
+                  public void onSubmit() {
+                    synchronized (listItem.getModelObject().getInvitations()) {
+                      listItem
+                          .getModelObject()
+                          .invite(
+                              new Invitation(
+                                  ((TBIALSession) getSession()).getUser().getName(),
+                                  "has invited you to join a game.",
+                                  ((TBIALSession) getSession()).getCurrentGame().getName()));
+                    }
+                  }
+
+                  @Override
+                  public boolean isVisible() {
+                    if (((TBIALSession) getSession()).getCurrentGame() != null
+                        && ((TBIALSession) getSession())
+                            .getCurrentGame()
+                            .getHost()
+                            .equals(((TBIALSession) getSession()).getUser().getName())) {
+                      return !listItem
+                          .getModelObject()
+                          .equals(((TBIALSession) getSession()).getUser());
+                    }
+                    return false;
+                  }
+
+                  @Override
+                  public boolean isEnabled() {
+                    if (((TBIALSession) getSession()).getCurrentGame() != null) {
+                      return !(((TBIALSession) getSession())
+                          .getCurrentGame()
+                          .getPlayers()
+                          .containsKey(listItem.getModelObject().getName()));
+                    }
+                    return true;
+                  }
+
+                  @Override
+                  protected void onComponentTag(ComponentTag tag) {
+                    if (isEnabled()) {
+                      customCSS = "buttonStyle";
+
+                    } else {
+                      customCSS = null;
+                    }
+                    super.onComponentTag(tag);
+                    tag.put("class", customCSS);
+                  }
+                };
+            invitationForm.add(inviteButton);
+            invitationForm.add(tooltip);
+            listItem.add(invitationForm);
           }
         };
 
     WebMarkupContainer playerListContainer = new WebMarkupContainer("playerlistContainer");
     playerListContainer.add(playerList);
-    playerListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
+    playerListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
     playerListContainer.setOutputMarkupId(true);
 
     add(playerListContainer);

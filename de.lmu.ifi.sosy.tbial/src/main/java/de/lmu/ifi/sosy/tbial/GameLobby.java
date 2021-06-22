@@ -132,6 +132,8 @@ public class GameLobby extends BasePage {
     add(leaveForm);
     add(menuForm);
 
+    startGameLink.setOutputMarkupId(true);
+
     IModel<List<Player>> gameInfoModel =
         (IModel<List<Player>>) () -> getGame().getInGamePlayersList();
 
@@ -143,6 +145,7 @@ public class GameLobby extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
+            if (player.getUserName() == null) throw new NullPointerException("Player is null!");
             listItem.add(new Label("playerName", player.getUserName()));
           }
         };
@@ -214,6 +217,8 @@ public class GameLobby extends BasePage {
   private boolean isHost() {
     TBIALSession session = getSession();
     String hostName = game.getHost();
+
+    if (getSession().getUser() == null) throw new NullPointerException("Player is null!");
     return session.getUser().getName().equals(hostName);
   }
 

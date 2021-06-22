@@ -57,6 +57,10 @@ public class TBIALSession extends AuthenticatedWebSession {
     return true;
   }
 
+  public boolean isInGame() {
+    return getCurrentGame() != null;
+  }
+
   private Database getDatabase() {
     return TBIALApplication.getDatabase();
   }
@@ -65,9 +69,20 @@ public class TBIALSession extends AuthenticatedWebSession {
     return (TBIALApplication) getApplication();
   }
 
-  /** Signs out and clears the user. */
+  /** Leaves the current game (if not null), signs out and clears the user. */
   @Override
   public void signOut() {
+    if (getCurrentGame() != null) {
+      if (!getCurrentGame().checkIfLastPlayer()
+          && getUser().getName().equals(getCurrentGame().getHost())) {
+        getCurrentGame().changeHost();
+      }
+      if (getCurrentGame().checkIfLastPlayer()) {
+        getTbialApplication().getGameManager().removeGame(getCurrentGame());
+      }
+      getCurrentGame().getPlayers().remove(getUser().getName());
+      setCurrentGameNull();
+    }
     super.signOut();
     if (user != null) {
       String name = user.getName();
@@ -108,5 +123,21 @@ public class TBIALSession extends AuthenticatedWebSession {
 
   public void setCurrentGameNull() {
     this.currentGame = null;
+  }
+
+  /**
+   * Method to join a game, adding to the games player list and setting the current game
+   *
+   * @param game
+   * @param password
+   */
+  public boolean joinGame(Game game, String password) {
+    String username = getUser().getName();
+    if (game.checkIfYouCanJoin(username, password)) {
+      game.addNewPlayer(username);
+      setCurrentGame(game);
+      return true;
+    }
+    return false;
   }
 }
