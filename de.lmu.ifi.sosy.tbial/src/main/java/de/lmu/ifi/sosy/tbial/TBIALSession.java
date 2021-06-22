@@ -28,8 +28,6 @@ public class TBIALSession extends AuthenticatedWebSession {
 
   private User user;
 
-  private Game currentGame = null;
-
   public TBIALSession(Request request) {
     super(request);
   }
@@ -57,6 +55,10 @@ public class TBIALSession extends AuthenticatedWebSession {
     return true;
   }
 
+  public boolean isInGame() {
+    return getTbialApplication().getGameManager().getGameOfUser(user.getName()) != null;
+  }
+
   private Database getDatabase() {
     return TBIALApplication.getDatabase();
   }
@@ -65,9 +67,20 @@ public class TBIALSession extends AuthenticatedWebSession {
     return (TBIALApplication) getApplication();
   }
 
-  /** Signs out and clears the user. */
+  /** Leaves the current game (if not null), signs out and clears the user. */
   @Override
   public void signOut() {
+	if (user != null && getTbialApplication().getGameManager().getGameOfUser(user.getName()) != null) {
+      Game currentGame = getTbialApplication().getGameManager().getGameOfUser(user.getName());
+      if (!currentGame.checkIfLastPlayer() && getUser().getName().equals(currentGame.getHost())) {
+        currentGame.changeHost();
+      }
+      if (currentGame.checkIfLastPlayer()) {
+        getTbialApplication().getGameManager().removeGame(currentGame);
+      }
+      currentGame.getPlayers().remove(getUser().getName());
+      getTbialApplication().getGameManager().removeUserFromGame(user.getName());
+    }
     super.signOut();
     if (user != null) {
       String name = user.getName();
@@ -97,16 +110,5 @@ public class TBIALSession extends AuthenticatedWebSession {
   public void setUser(User user) {
     this.user = user;
   }
-
-  public Game getCurrentGame() {
-    return currentGame;
-  }
-
-  public void setCurrentGame(Game game) {
-    this.currentGame = game;
-  }
-
-  public void setCurrentGameNull() {
-    this.currentGame = null;
-  }
+  
 }

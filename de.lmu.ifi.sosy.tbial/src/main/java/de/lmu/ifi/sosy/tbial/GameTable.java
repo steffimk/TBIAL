@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -37,13 +38,14 @@ public class GameTable extends BasePage {
 
   private WebMarkupContainer table;
 
+  private Game currentGame;
+
   public GameTable() {
 
     getApplication().getMarkupSettings().setStripWicketTags(true);
-    table = new WebMarkupContainer("table");
-    table.setOutputMarkupId(true);
+
     // get current game
-    Game currentGame = getSession().getCurrentGame();
+    currentGame = getGameManager().getGameOfUser(getSession().getUser().getName());
 
     // get number of players in current game
     int numberOfPlayers = currentGame.getCurrentNumberOfPlayers();
@@ -58,6 +60,26 @@ public class GameTable extends BasePage {
 
     // set current session player as base player
     Player basePlayer = currentPlayers.get(currentPlayerUsername);
+
+    table =
+        new WebMarkupContainer("table") {
+          /** */
+          static final long serialVersionUID = 1L;
+
+          @Override
+          public void onBeforeRender() {
+            currentGame =
+                getGameManager().getGameOfUser(((TBIALSession) getSession()).getUser().getName());
+
+            if (currentGame == null) {
+              throw new RestartResponseAtInterceptPageException(Lobby.class);
+            }
+            // For debugging:
+            // System.out.println("GameId: " + System.identityHashCode(currentGame) + "\n");
+            super.onBeforeRender();
+          }
+        };
+    table.setOutputMarkupId(true);
 
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");

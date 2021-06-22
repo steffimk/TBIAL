@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -30,6 +29,7 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -57,7 +57,7 @@ public class GameTableTest extends PageTestBase {
     game.addNewPlayer("A");
     game.addNewPlayer("B");
     game.addNewPlayer("C");
-    getSession().setCurrentGame(game);
+    getGameManager().addGame(game);
     game.startGame();
     basePlayer = game.getPlayers().get("testuser");
     playerA = game.getPlayers().get("A");
@@ -222,6 +222,9 @@ public class GameTableTest extends PageTestBase {
     playerA.setMentalHealth(0);
     playerB.setMentalHealth(0);
     playerC.setMentalHealth(0);
+    // need to click on message container in order for it to be initialized because of executing all
+    // timer behaviors
+    tester.clickLink("messageContainer:message");
     tester.executeAllTimerBehaviors(tester.getLastRenderedPage());
 
     // Player A
@@ -410,6 +413,28 @@ public class GameTableTest extends PageTestBase {
     tester.clickLink(tester.getComponentFromLastRenderedPage("discardButton"));
 
     assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+  }
+
+  @Test
+  public void drawCardsFromStackWorks() {
+    tester.startPage(GameTable.class);
+    game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
+    game.getTurn().setStage(TurnStage.DRAWING_CARDS);
+
+    ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
+    int handSizeBefore = handCards.size();
+
+    List<StackCard> stack = game.getStackAndHeap().getStack();
+    int stackSizeBefore = stack.size();
+
+    // Draw two cards from stack
+    tester.executeAjaxEvent("table:stackContainer", "click");
+    tester.executeAjaxEvent("table:stackContainer", "click");
+
+    // stack size should be decreased by two
+    assertEquals(stackSizeBefore - 2, stack.size());
+    // hand size should be increased by two
+    assertEquals(handSizeBefore + 2, basePlayer.getHandCards().size());
   }
 
   @Test

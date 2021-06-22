@@ -18,6 +18,7 @@ import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
@@ -53,9 +54,6 @@ public class TBIALApplication extends WebApplication {
     this.database = database;
   }
 
-
- 
-
   /** Returns a new {@link TBIALSession} instead of a default Wicket {@link Session}. */
   @Override
   public TBIALSession newSession(Request request, Response response) {
@@ -77,6 +75,7 @@ public class TBIALApplication extends WebApplication {
       super.getMarkupSettings().setStripWicketTags(true);
       getMarkupSettings().setStripComments(true);
       getMarkupSettings().setCompressWhitespace(true);
+      getResourceSettings().setDefaultCacheDuration(Duration.NONE);
     }
   }
 
@@ -105,9 +104,13 @@ public class TBIALApplication extends WebApplication {
                   Class<T> componentClass) {
                 boolean requiresAuthentication =
                     componentClass.isAnnotationPresent(AuthenticationRequired.class);
-                boolean isSignedIn = ((TBIALSession) Session.get()).isSignedIn();
-
-                if (requiresAuthentication && !isSignedIn) {
+                TBIALSession session = (TBIALSession) Session.get();
+                boolean isSignedIn = session.isSignedIn();
+                if (requiresAuthentication
+                    && (!isSignedIn
+                        || !loggedInUsers.contains(((TBIALSession) Session.get()).getUser()))) {
+                  session.signOut();
+                  session.invalidate();
                   // redirect the user to the login page.
                   throw new RestartResponseAtInterceptPageException(Login.class);
                 }
@@ -130,7 +133,7 @@ public class TBIALApplication extends WebApplication {
             });
   }
 
-    @Override
+  @Override
   public Class<Lobby> getHomePage() {
     return Lobby.class;
   }
@@ -139,11 +142,9 @@ public class TBIALApplication extends WebApplication {
     return GameLobby.class;
   }
 
-
   public Class<GameTable> getGameTablePage() {
     return GameTable.class;
   }
-
 
   public Class<GamesPage> getGamesPage() {
     return GamesPage.class;
