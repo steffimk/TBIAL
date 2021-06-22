@@ -23,7 +23,7 @@ public class GameLobbyTest extends PageTestBase {
     game.addNewPlayer("A");
     game.addNewPlayer("B");
     game.addNewPlayer("C");
-    getSession().setCurrentGame(game);
+    getGameManager().addGame(game);
   }
 
   @Test

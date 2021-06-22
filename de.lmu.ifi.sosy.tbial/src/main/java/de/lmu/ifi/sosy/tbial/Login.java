@@ -51,7 +51,7 @@ public class Login extends BasePage {
 
   private void performLogin(String name, String password) {
     if (getSession().signIn(name, password)) {
-      if (getSession().getCurrentGame() != null) {
+      if (getGameManager().getGameOfUser(name) != null) {
         continueToOriginalDestination();
       }
       setResponsePage(getApplication().getHomePage());

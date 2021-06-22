@@ -2,6 +2,8 @@ package de.lmu.ifi.sosy.tbial;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.InMemoryDatabase;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
+
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.util.tester.WicketTester;
 
@@ -26,5 +28,13 @@ public abstract class PageTestBase {
 
   protected TBIALSession getSession() {
     return (TBIALSession) tester.getSession();
+  }
+
+  protected TBIALApplication getApplication() {
+    return application;
+  }
+
+  protected GameManager getGameManager() {
+    return application.getGameManager();
   }
 }

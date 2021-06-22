@@ -29,8 +29,7 @@ public class BasePageTest extends PageTestBase {
     testuser2 = database.getUser("testuser2");
     Game game = new Game("gamename", 4, true, "123456", "testuser");
     testuser2.invite(new Invitation("testuser", "has invited you to join a game.", game.getName()));
-    getSession().setCurrentGame(game);
-    getSession().getTbialApplication().getGameManager().addGame(game);
+    getGameManager().addGame(game);
   }
 
   @Test
@@ -60,7 +59,7 @@ public class BasePageTest extends PageTestBase {
     tester.startPage(Lobby.class);
     tester.assertRenderedPage(Lobby.class);
 
-    Game game = getSession().getCurrentGame();
+    Game game = getGameManager().getGameOfUser("testuser");
 
     tester.clickLink("messageContainer:message");
     tester.assertComponent("modal:content", NotificationPanel.class);
@@ -84,7 +83,7 @@ public class BasePageTest extends PageTestBase {
     tester.startPage(Lobby.class);
     tester.assertRenderedPage(Lobby.class);
 
-    Game game = getSession().getCurrentGame();
+    Game game = getGameManager().getGameOfUser("testuser");
 
     tester.clickLink("messageContainer:message");
     tester.assertComponent("modal:content", NotificationPanel.class);
