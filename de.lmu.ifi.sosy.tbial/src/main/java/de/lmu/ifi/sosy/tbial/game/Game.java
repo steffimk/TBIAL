@@ -424,6 +424,15 @@ public class Game implements Serializable {
     if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
       player.addToMentalHealth(1);
     }
+
+    chatMessages.add(
+        new ChatMessage(
+            player.getUserName()
+                + " blocked \""
+                + bugCard.toString()
+                + "\" with \""
+                + lameExcuseCard.toString()
+                + "\"."));
   }
 
   /**

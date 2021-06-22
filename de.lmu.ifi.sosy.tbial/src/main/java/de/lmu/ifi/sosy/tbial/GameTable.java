@@ -313,17 +313,25 @@ public class GameTable extends BasePage {
           @Override
           protected void onTimer(AjaxRequestTarget target) {
             boolean hasLameExcuse = false;
+            boolean hasSolution = false;
 
             for (StackCard card : basePlayer.getHandCards()) {
               if (((Card) card).getCardType() == CardType.ACTION) {
                 if (((ActionCard) card).isLameExcuse()) {
                   hasLameExcuse = true;
-                  break;
+                }
+                if (((ActionCard) card).isSolution()) {
+                  hasSolution = true;
                 }
               }
             }
 
-            if (!basePlayer.getBugBlocks().isEmpty() && hasLameExcuse) {
+            if (!basePlayer.getBugBlocks().isEmpty() && (hasLameExcuse || hasSolution)) {
+              if (!modal.isShown()) {
+                currentGame
+                    .getChatMessages()
+                    .add(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
+              }
               modal.show(target);
             }
           }
