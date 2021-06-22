@@ -27,7 +27,6 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
-import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -181,6 +180,14 @@ public class GameTableTest extends PageTestBase {
 
     // Chat
     tester.assertComponent("chatPanel", ChatPanel.class);
+
+    // End Game
+    tester.assertComponent("ceremony", WebMarkupContainer.class);
+    tester.assertComponent("ceremony:ceremonyTitle", Label.class);
+    tester.assertComponent("ceremony:winners", Label.class);
+    tester.assertModelValue("ceremony:winners", game.getWinners());
+    tester.assertComponent("ceremony:confetti", WebMarkupContainer.class);
+    FormTester form = tester.newFormTester("ceremony:endGameForm");
   }
 
   /**
@@ -474,5 +481,34 @@ public class GameTableTest extends PageTestBase {
 
     // check if only the two not empty messages were added
     assertEquals(game.getChatMessages().size(), 2);
+  }
+
+  @Test
+  public void ceremonyGetsDisplayed() {
+    tester.startPage(GameTable.class);
+    game.firePlayer(game.getConsultant(), game.getConsultant().getHandCards());
+    game.firePlayer(
+        game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
+    game.firePlayer(
+        game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
+
+    // need to click on message container in order for it to be initialized because of executing all
+    // timer behaviors
+    tester.clickLink("messageContainer:message");
+    tester.executeAllTimerBehaviors(tester.getLastRenderedPage());
+
+    if (basePlayer.hasWon()) {
+      tester.assertModelValue("ceremony:ceremonyTitle", "Congratulations!");
+      tester.assertModelValue("ceremony:winners", "You have won.");
+    } else {
+      tester.assertModelValue("ceremony:ceremonyTitle", "You lost!");
+      tester.assertModelValue("ceremony:winners", game.getManager().getUserName() + " has won.");
+    }
+
+    FormTester form = tester.newFormTester("ceremony:endGameForm");
+    assertEquals(getGameManager().getCurrentGames().isEmpty(), false);
+    form.submit("endGameButton");
+    assertEquals(getGameManager().getCurrentGames().isEmpty(), true);
+    tester.assertRenderedPage(getApplication().getHomePage());
   }
 }

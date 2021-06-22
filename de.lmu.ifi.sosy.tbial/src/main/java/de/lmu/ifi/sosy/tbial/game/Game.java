@@ -57,7 +57,7 @@ public class Game implements Serializable {
   private Player manager;
   private Player consultant;
   private List<Player> monkeys = new ArrayList<Player>();
-  private List<Player> developers = new ArrayList<Player>();
+  private Player developer;
 
   private String winners = "";
 
@@ -129,7 +129,7 @@ public class Game implements Serializable {
     setManager(getInGamePlayersList());
     setConsultant(getInGamePlayersList());
     setEvilCodeMonkeys(getInGamePlayersList());
-    setHonestDevelopers(getInGamePlayersList());
+    setHonestDeveloper(getInGamePlayersList());
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
     turn = new Turn(new ArrayList<Player>(players.values()));
@@ -528,31 +528,24 @@ public class Game implements Serializable {
     return monkeys;
   }
 
-  public void setHonestDevelopers(List<Player> players) {
+  public void setHonestDeveloper(List<Player> players) {
     for (Player player : players) {
       if (player.getRole() == Role.HONEST_DEVELOPER) {
-        developers.add(player);
+        developer = player;
       }
     }
   }
 
-  public List<Player> getHonestDevelopers() {
-    return developers;
+  public Player getHonestDeveloper() {
+    return developer;
   }
 
-  /**
-   * Update mental health and fire if mental health=0
-   *
-   * @param mentalHealth The amount of mental health to add or substract from the current mental
-   *     health
-   * @param player The player who loses mental health
-   */
+  /** Ends the game. */
   public synchronized void endGame() {
     if (hasEnded) {
       return;
     }
     hasEnded = true;
-
 
     // Consultant wins
     if (manager.isFired() && allMonkeysFired(monkeys)) {
@@ -561,11 +554,10 @@ public class Game implements Serializable {
       for (Player monkey : monkeys) {
         monkey.win(false);
       }
-      for (Player developer : developers) {
+      if (developer != null) {
         developer.win(false);
       }
       winners = consultant.getUserName() + " has won.";
-
     }
     // Evil Code Monkeys and Consultant win
     else if (manager.isFired() && !allMonkeysFired(monkeys)) {
@@ -575,29 +567,27 @@ public class Game implements Serializable {
       }
       manager.win(false);
       consultant.win(true);
-      for (Player developer : developers) {
+      if (developer != null) {
         developer.win(false);
       }
-      winners += "& " + consultant.getUserName() + " have won.";
-      System.out.println(winners);
+      // remove , at end of string
+      winners = winners.substring(0, winners.length() - 2);
+      winners += " & " + consultant.getUserName() + " have won.";
     }
     // Manager and Honest Developers win
     else if (consultant.isFired() && allMonkeysFired(monkeys)) {
       manager.win(true);
-      for (Player developer : developers) {
-        developer.win(true);
-        winners += developer.getUserName() + ", ";
-      }
       consultant.win(false);
       for (Player monkey : monkeys) {
         monkey.win(false);
       }
-      if (developers.isEmpty()) {
+      if (developer == null) {
         winners = manager.getUserName() + " has won.";
       } else {
-      winners += "& " + manager.getUserName() + " have won.";
+        developer.win(true);
+        winners += developer.getUserName();
+        winners += " & " + manager.getUserName() + " have won.";
       }
     }
   }
-  
 }

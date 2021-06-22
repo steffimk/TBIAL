@@ -382,7 +382,6 @@ public class GameTable extends BasePage {
           @Override
           public void onSubmit() {
             getTbialApplication().getGameManager().removeGame(currentGame);
-            ((TBIALSession) getSession()).setCurrentGameNull();
             setResponsePage(getApplication().getHomePage());
           }
         };
