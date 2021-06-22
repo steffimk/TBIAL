@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 
 import com.googlecode.wicket.jquery.ui.interaction.droppable.Droppable;
 
+import de.lmu.ifi.sosy.tbial.game.Card;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 
@@ -92,19 +93,18 @@ public class DroppableArea extends Droppable<Void> {
   @Override
   public void onDrop(AjaxRequestTarget target, Component component) {
     System.out.println("DROP + " + this.type.toString() + " + " + this.getPageRelativePath());
-    switch (type) {
-      case ADD_CARD:
-        LOGGER.info(
-            basePlayer.getUserName()
-                + " dropped card on add card area of "
-                + playerOfPanel.getUserName());
-        game.clickedOnAddCardToPlayer(basePlayer, playerOfPanel);
-        //        this.add(
-        //            new AttributeModifier(
-        //                "style", "animation: blinking 0.3s linear; animation-iteration-count:
-        // 3;"));
-        break;
-      case PLAY_ABILITY:
+    Card card = (Card) basePlayer.getSelectedHandCard();
+    if (card == null) return;
+
+    if (this.type == DroppableType.HEAP) {
+      boolean success = game.clickedOnHeap(basePlayer);
+      if (!success) return;
+      target.add(table);
+      return;
+    }
+
+    switch (card.getCardType()) {
+      case ABILITY:
         LOGGER.info(
             basePlayer.getUserName()
                 + " clicked on play ability button of "
@@ -115,9 +115,16 @@ public class DroppableArea extends Droppable<Void> {
         //                "style", "animation: blinking 0.3s linear; animation-iteration-count:
         // 3;"));
         break;
-      case HEAP:
-        boolean success = game.clickedOnHeap(basePlayer);
-        if (!success) return;
+      default:
+        LOGGER.info(
+            basePlayer.getUserName()
+                + " dropped card on add card area of "
+                + playerOfPanel.getUserName());
+        game.clickedOnAddCardToPlayer(basePlayer, playerOfPanel);
+        //        this.add(
+        //            new AttributeModifier(
+        //                "style", "animation: blinking 0.3s linear; animation-iteration-count:
+        // 3;"));
         break;
     }
     target.add(table);
