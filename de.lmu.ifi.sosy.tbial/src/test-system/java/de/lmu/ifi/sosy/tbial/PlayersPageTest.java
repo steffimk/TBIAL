@@ -34,19 +34,18 @@ public class PlayersPageTest extends PageTestBase {
     testuser3 = database.getUser("testuser3");
     getSession().authenticate("testuser3", "testpassword3");
     Game game = new Game("gamename", 4, true, "123456", "testuser");
-    game.addNewPlayer(testuser2.getName());
-    getSession().setCurrentGame(game);
-    getSession().getTbialApplication().getGameManager().addGame(game);
+    getGameManager().addGame(game);
+    getGameManager().joinGame(testuser2.getName(), game, "123456");
   }
 
   @Test
   public void displayUsersInLobbyAndSendInvitationToGame() {
+    TBIALSession session = getSession();
+    session.setUser(testuser);
+
     tester.startPage(PlayersPage.class);
     tester.assertRenderedPage(PlayersPage.class);
 
-    TBIALSession session = getSession();
-    session.setUser(testuser);
-   
     tester.assertComponent("playerlistContainer", WebMarkupContainer.class);
     @SuppressWarnings("unchecked")
     ListView<User> playerList =
