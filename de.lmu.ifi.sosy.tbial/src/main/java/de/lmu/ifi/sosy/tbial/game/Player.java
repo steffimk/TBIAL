@@ -100,6 +100,10 @@ public class Player implements Serializable {
     return fired;
   }
 
+  public boolean hasCardSelected() {
+    return selectedHandCard != null;
+  }
+
   public void setCharacterCard(CharacterCard characterCard) {
     this.characterCard = characterCard;
   }

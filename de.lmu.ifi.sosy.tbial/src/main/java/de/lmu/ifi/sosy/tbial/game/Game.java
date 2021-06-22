@@ -394,6 +394,10 @@ public class Game implements Serializable {
   }
 
   public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
+    if (!player.hasCardSelected()) {
+      return;
+    }
+    
     StackCard selectedCard = player.getSelectedHandCard();
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
