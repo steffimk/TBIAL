@@ -39,7 +39,16 @@ public class GameLobbyTest extends PageTestBase {
     tester.startPage(GameLobby.class);
     tester.assertRenderedPage(GameLobby.class);
     tester.submitForm("leaveForm");
+    Game game = getGameManager().getGameOfUser("testuser");
+    assertNotNull(game);
+
+    tester.submitForm("leaveForm");
     tester.assertRenderedPage(Lobby.class);
+
+    assertNull(game.getPlayers().get("testuser"));
+    assertNull(getGameManager().getGameOfUser("testuser"));
+    
+    assertNotNull(getGameManager().getCurrentGames().containsKey("gamename"));
   }
 
   @Test
