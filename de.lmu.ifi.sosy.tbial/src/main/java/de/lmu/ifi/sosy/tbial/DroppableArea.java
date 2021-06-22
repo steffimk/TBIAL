@@ -2,9 +2,7 @@ package de.lmu.ifi.sosy.tbial;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 
@@ -27,8 +25,6 @@ public class DroppableArea extends Droppable<Void> {
   private Game game;
   private Player basePlayer;
   private WebMarkupContainer table;
-
-  // private DroppableArea thisArea;
 
   /**
    * The constructor of a droppable are.
@@ -54,45 +50,11 @@ public class DroppableArea extends Droppable<Void> {
     this.basePlayer = basePlayer;
     this.playerOfPanel = playerOfPanel;
     this.table = table;
-    // this.thisArea = this;
-
-    //    this.add(
-    //        new AjaxEventBehavior("mouseover") {
-    //
-    //          private static final long serialVersionUID = 1L;
-    //
-    //          @Override
-    //          protected void onEvent(AjaxRequestTarget target) {
-    //            System.out.println("mouseover");
-    //            if (thisArea.type != DroppableType.HEAP) {
-    //              thisArea.add(
-    //                  new AttributeModifier("style", "background: rgba(0, 0, 0, 0) !important;"));
-    //              target.add(thisArea);
-    //            }
-    //          }
-    //        });
-    //
-    //    this.add(
-    //        new AjaxEventBehavior("mouseout") {
-    //
-    //          private static final long serialVersionUID = 1L;
-    //
-    //          @Override
-    //          protected void onEvent(AjaxRequestTarget target) {
-    //            System.out.println("mouseout");
-    //            if (thisArea.type != DroppableType.HEAP) {
-    //              thisArea.add(
-    //                  new AttributeModifier(
-    //                      "style", "background: rgba(244, 115, 29, 0.5) !important;"));
-    //              target.add(thisArea);
-    //            }
-    //          }
-    //        });
   }
 
   @Override
   public void onDrop(AjaxRequestTarget target, Component component) {
-    System.out.println("DROP + " + this.type.toString() + " + " + this.getPageRelativePath());
+	  
     Card card = (Card) basePlayer.getSelectedHandCard();
     if (card == null) return;
 
@@ -110,10 +72,6 @@ public class DroppableArea extends Droppable<Void> {
                 + " clicked on play ability button of "
                 + playerOfPanel.getUserName());
         game.clickedOnPlayAbility(basePlayer, playerOfPanel);
-        //        this.add(
-        //            new AttributeModifier(
-        //                "style", "animation: blinking 0.3s linear; animation-iteration-count:
-        // 3;"));
         break;
       default:
         LOGGER.info(
@@ -121,43 +79,11 @@ public class DroppableArea extends Droppable<Void> {
                 + " dropped card on add card area of "
                 + playerOfPanel.getUserName());
         game.clickedOnAddCardToPlayer(basePlayer, playerOfPanel);
-        //        this.add(
-        //            new AttributeModifier(
-        //                "style", "animation: blinking 0.3s linear; animation-iteration-count:
-        // 3;"));
         break;
     }
     target.add(table);
   }
 
-//  @Override
-//  public void onOver(AjaxRequestTarget target, Component component) {
-//    System.out.println("Over");
-//    this.add(new AttributeModifier("style", "animation: blinking 0.5s infinite linear;"));
-//        try {
-//          Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//          e.printStackTrace();
-//        }
-//    target.add(this);
-//  }
-
-//  @Override
-//  public void onExit(AjaxRequestTarget target, Component component) {
-//    this.add(new AttributeModifier("style", "animation: none;"));
-//    System.out.println("Exit event triggered");
-//    target.add(this);
-//  }
-
-  //  @Override
-  //  public boolean isOverEventEnabled() {
-  //    return type != DroppableType.HEAP;
-  //  }
-
-  //  @Override
-  //  public boolean isExitEventEnabled() {
-  //    return type != DroppableType.HEAP;
-  //  }
 
   public enum DroppableType {
     PLAY_ABILITY,
