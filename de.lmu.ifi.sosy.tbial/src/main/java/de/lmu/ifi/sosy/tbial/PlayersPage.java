@@ -2,7 +2,6 @@ package de.lmu.ifi.sosy.tbial;
 
 import java.util.List;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -16,6 +15,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
+import de.lmu.ifi.sosy.tbial.game.GameManager;
 
 /** The page that displays all users that are currently online. */
 @AuthenticationRequired
@@ -26,6 +27,8 @@ public class PlayersPage extends BasePage {
   public PlayersPage() {
 
     Form<?> menuForm = new Form<>("menuForm");
+
+    String userName = getSession().getUser().getName();
 
     Button createGameButton =
         new Button("createGameButton") {
@@ -81,9 +84,9 @@ public class PlayersPage extends BasePage {
 
                   @Override
                   public boolean isVisible() {
-                    if (((TBIALSession) getSession()).getCurrentGame() != null
-                        && !(((TBIALSession) getSession())
-                            .getCurrentGame()
+                    Game currentGame = getGameManager().getGameOfUser(userName);
+                    if (currentGame != null
+                        && !(currentGame
                             .getPlayers()
                             .containsKey(listItem.getModelObject().getName()))) {
                       return false;
@@ -103,19 +106,16 @@ public class PlayersPage extends BasePage {
                           .getModelObject()
                           .invite(
                               new Invitation(
-                                  ((TBIALSession) getSession()).getUser().getName(),
+                                  userName,
                                   "has invited you to join a game.",
-                                  ((TBIALSession) getSession()).getCurrentGame().getName()));
+                                  getGameManager().getGameOfUser(userName).getName()));
                     }
                   }
 
                   @Override
                   public boolean isVisible() {
-                    if (((TBIALSession) getSession()).getCurrentGame() != null
-                        && ((TBIALSession) getSession())
-                            .getCurrentGame()
-                            .getHost()
-                            .equals(((TBIALSession) getSession()).getUser().getName())) {
+                    Game currentGame = getGameManager().getGameOfUser(userName);
+                    if (currentGame != null && currentGame.getHost().equals(userName)) {
                       return !listItem
                           .getModelObject()
                           .equals(((TBIALSession) getSession()).getUser());
@@ -125,9 +125,9 @@ public class PlayersPage extends BasePage {
 
                   @Override
                   public boolean isEnabled() {
-                    if (((TBIALSession) getSession()).getCurrentGame() != null) {
-                      return !(((TBIALSession) getSession())
-                          .getCurrentGame()
+                    Game currentGame = getGameManager().getGameOfUser(userName);
+                    if (currentGame != null) {
+                      return !(currentGame
                           .getPlayers()
                           .containsKey(listItem.getModelObject().getName()));
                     }

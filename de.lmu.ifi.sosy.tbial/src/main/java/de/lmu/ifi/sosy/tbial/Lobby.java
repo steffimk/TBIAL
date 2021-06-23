@@ -198,7 +198,6 @@ public class Lobby extends BasePage {
     if (!getGameManager().gameNameTaken(name)) {
       Game game = new Game(name, maxPlayers, isPrivate, password, hostName);
       getGameManager().addGame(game);
-      getSession().setCurrentGame(game);
       setResponsePage(getTbialApplication().getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");

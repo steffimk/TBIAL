@@ -112,7 +112,7 @@ public class GamesPage extends BasePage {
                     if (isInGame) {
                       setResponsePage(getTbialApplication().getGameLobbyPage());
                     } else {
-                      ((TBIALSession) getSession()).joinGame(game, joinGamePw.getModelObject());
+                      getGameManager().joinGame(userName, game, joinGamePw.getModelObject());
                       setResponsePage(getTbialApplication().getGameLobbyPage());
                     }
                   }

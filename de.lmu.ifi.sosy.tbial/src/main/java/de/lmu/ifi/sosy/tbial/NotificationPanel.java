@@ -59,11 +59,9 @@ public class NotificationPanel extends Panel {
 
                   @Override
                   public boolean isVisible() {
-                    if (((TBIALSession) getSession()).getCurrentGame() != null
-                        && (((TBIALSession) getSession())
-                            .getCurrentGame()
-                            .getPlayers()
-                            .containsKey(user.getName()))) {
+                    Game currentGame = getGameManager().getGameOfUser(user.getName());
+                    if (currentGame != null
+                        && currentGame.getPlayers().containsKey(user.getName())) {
                       return true;
                     }
                     return false;
@@ -102,7 +100,7 @@ public class NotificationPanel extends Panel {
                         }
                         remove(notificationForm);
                         // add player to game
-                        if (((TBIALSession) getSession()).joinGame(game, game.getHash())) {
+                        if (getGameManager().joinGame(user.getName(), game, game.getHash())) {
 
                           // send message in game lobby that invitation was accepted
                           game.getChatMessages()
@@ -118,13 +116,10 @@ public class NotificationPanel extends Panel {
 
                   @Override
                   public boolean isEnabled() {
-                    if (((TBIALSession) getSession()).getCurrentGame() != null) {
-                      if (((TBIALSession) getSession())
-                              .getCurrentGame()
-                              .getPlayers()
-                              .containsKey(user.getName())
-                          || (((TBIALSession) getSession()).getCurrentGame().getPlayers().size()
-                              == ((TBIALSession) getSession()).getCurrentGame().getMaxPlayers())) {
+                    Game currentGame = getGameManager().getGameOfUser(user.getName());
+                    if (currentGame != null) {
+                      if (currentGame.getPlayers().containsKey(user.getName())
+                          || (currentGame.getPlayers().size() == currentGame.getMaxPlayers())) {
                         return false;
                       }
                     }
