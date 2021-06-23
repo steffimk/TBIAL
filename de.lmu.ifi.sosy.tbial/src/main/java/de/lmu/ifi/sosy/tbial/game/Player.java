@@ -45,7 +45,7 @@ public class Player implements Serializable {
     this.userName = userName;
     this.prestige = 0;
     this.fired = false;
-    this.mentalHealth = 0;
+    this.mentalHealth = 4;
     this.handCards = Collections.synchronizedSet(new HashSet<>());
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
@@ -110,7 +110,6 @@ public class Player implements Serializable {
     requireNonNull(characterCard);
     requireNonNull(roleCard);
     //mentalHealth = characterCard.getMaxHealthPoints();
-    mentalHealth = 4;
     if (roleCard.getRole() == Role.MANAGER) {
       mentalHealth += 1;
     }

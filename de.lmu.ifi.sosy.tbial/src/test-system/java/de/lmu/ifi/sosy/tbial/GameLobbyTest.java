@@ -52,9 +52,11 @@ public class GameLobbyTest extends PageTestBase {
               assertEquals(v.getPrestigeInt(), 0);
               assertEquals(v.getHandCards().size(), v.getMentalHealthInt());
               if (v.getRole() == Role.MANAGER) {
-                assertEquals(v.getMentalHealthInt(), v.getCharacterCard().getMaxHealthPoints() + 1);
+                assertEquals(
+                    v.getMentalHealthInt(), 5 /*v.getCharacterCard().getMaxHealthPoints() * +1*/);
               } else {
-                assertEquals(v.getMentalHealthInt(), v.getCharacterCard().getMaxHealthPoints());
+                assertEquals(
+                    v.getMentalHealthInt(), 4 /*v.getCharacterCard().getMaxHealthPoints()*/);
               }
             });
 
