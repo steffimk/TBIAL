@@ -126,10 +126,26 @@ public class Game implements Serializable {
     hasStarted = true;
     chatMessages.clear();
     distributeRoleCards();
-    setManager(getInGamePlayersList());
-    setConsultant(getInGamePlayersList());
-    setEvilCodeMonkeys(getInGamePlayersList());
-    setHonestDeveloper(getInGamePlayersList());
+    for (Player player : getInGamePlayersList()) {
+      switch (player.getRole()) {
+        case MANAGER:
+          manager = player;
+          break;
+        case CONSULTANT:
+          consultant = player;
+          break;
+        case HONEST_DEVELOPER:
+          developer = player;
+          break;
+        case EVIL_CODE_MONKEY:
+          monkeys.add(player);
+          break;
+      }
+    }
+    //    setManager(getInGamePlayersList());
+    //    setConsultant(getInGamePlayersList());
+    //    setEvilCodeMonkeys(getInGamePlayersList());
+    //    setHonestDeveloper(getInGamePlayersList());
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
     turn = new Turn(new ArrayList<Player>(players.values()));
@@ -481,6 +497,21 @@ public class Game implements Serializable {
     stackAndHeap.addAllToHeap(handCards, player);
     handCards.removeAll(handCards);
     player.fire(true);
+
+    if (developer != null) {
+      if (manager.isFired()
+          || consultant.isFired() && allMonkeysFired(monkeys)
+          || manager.isFired() && allMonkeysFired(monkeys) && developer.isFired()) {
+      endGame();
+    }
+    } else {
+      if (manager.isFired()
+          || consultant.isFired() && allMonkeysFired(monkeys)
+          || manager.isFired() && allMonkeysFired(monkeys)) {
+        endGame();
+      }
+    }
+    
   }
 
   public boolean allMonkeysFired(List<Player> monkeys) {
@@ -491,49 +522,17 @@ public class Game implements Serializable {
     }
     return true;
   }
-
-  public void setManager(List<Player> players) {
-    for (Player player : players) {
-      if (player.getRole() == Role.MANAGER) {
-        manager = player;
-      }
-    }
-  }
-
+  
   public Player getManager() {
     return manager;
-  }
-
-  public void setConsultant(List<Player> players) {
-    for (Player player : players) {
-      if (player.getRole() == Role.CONSULTANT) {
-        consultant = player;
-      }
-    }
   }
 
   public Player getConsultant() {
     return consultant;
   }
 
-  public void setEvilCodeMonkeys(List<Player> players) {
-    for (Player player : players) {
-      if (player.getRole() == Role.EVIL_CODE_MONKEY) {
-        monkeys.add(player);
-      }
-    }
-  }
-
   public List<Player> getEvilCodeMonkeys() {
     return monkeys;
-  }
-
-  public void setHonestDeveloper(List<Player> players) {
-    for (Player player : players) {
-      if (player.getRole() == Role.HONEST_DEVELOPER) {
-        developer = player;
-      }
-    }
   }
 
   public Player getHonestDeveloper() {
@@ -559,20 +558,20 @@ public class Game implements Serializable {
       }
       winners = consultant.getUserName() + " has won.";
     }
-    // Evil Code Monkeys and Consultant win
-    else if (manager.isFired() && !allMonkeysFired(monkeys)) {
+    // Evil Code Monkeys win
+    else if (manager.isFired()) {
       for (Player monkey : monkeys) {
         monkey.win(true);
         winners += monkey.getUserName() + ", ";
       }
       manager.win(false);
-      consultant.win(true);
+      consultant.win(false);
       if (developer != null) {
         developer.win(false);
       }
       // remove , at end of string
       winners = winners.substring(0, winners.length() - 2);
-      winners += " & " + consultant.getUserName() + " have won.";
+      winners += " have won.";
     }
     // Manager and Honest Developers win
     else if (consultant.isFired() && allMonkeysFired(monkeys)) {

@@ -250,12 +250,29 @@ public class GameTest {
   @Test
   public void consultantWins() {
     Game game = getNewGameThatHasStarted();
-    game.firePlayer(game.getManager(), game.getManager().getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    game.endGame();
+
+    game.firePlayer(game.getManager(), game.getManager().getHandCards());
+    assertEquals(game.getWinners(), game.getConsultant().getUserName() + " has won.");
+  }
+
+  @Test
+  public void consultantWinsWith5Players() {
+    Game game = new Game(name, 5, false, password, "username");
+    game.addNewPlayer("A");
+    game.addNewPlayer("B");
+    game.addNewPlayer("C");
+    game.addNewPlayer("D");
+    game.startGame();
+    game.firePlayer(
+        game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
+    game.firePlayer(
+        game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
+    game.firePlayer(game.getHonestDeveloper(), game.getHonestDeveloper().getHandCards());
+    game.firePlayer(game.getManager(), game.getManager().getHandCards());
     assertEquals(game.getWinners(), game.getConsultant().getUserName() + " has won.");
   }
 
@@ -267,25 +284,21 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    game.endGame();
     assertEquals(game.getWinners(), game.getManager().getUserName() + " has won.");
   }
 
   @Test
-  public void consultantAndEvilCodeMonkeysWin() {
+  public void evilCodeMonkeysWin() {
     Game game = getNewGameThatHasStarted();
     game.firePlayer(game.getManager(), game.getManager().getHandCards());
     // wins even though he is fired
     game.firePlayer(
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
-    game.endGame();
     assertEquals(
         game.getWinners(),
         game.getEvilCodeMonkeys().get(0).getUserName()
             + ", "
             + game.getEvilCodeMonkeys().get(1).getUserName()
-            + " & "
-            + game.getConsultant().getUserName()
             + " have won.");
   }
 
@@ -302,7 +315,6 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    game.endGame();
     assertEquals(
         game.getWinners(),
         game.getHonestDeveloper().getUserName()

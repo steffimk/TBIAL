@@ -381,6 +381,10 @@ public class GameTable extends BasePage {
 
           @Override
           public void onSubmit() {
+            getTbialApplication().getGameManager().removeUserFromGame(basePlayer.getUserName());
+            for (Player player : otherPlayers) {
+              getTbialApplication().getGameManager().removeUserFromGame(player.getUserName());
+            }
             getTbialApplication().getGameManager().removeGame(currentGame);
             setResponsePage(getApplication().getHomePage());
           }
@@ -388,28 +392,27 @@ public class GameTable extends BasePage {
     endGameForm.add(endGameButton);
     ceremony.add(endGameForm);
     ceremony.add(
-        new AbstractAjaxTimerBehavior(Duration.seconds(10)) {
+        new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
 
           /** */
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            if (currentGame.getManager().isFired()) {
-              ceremony.add(new AttributeModifier("class", "visible"));
-              currentGame.endGame();
-              if (basePlayer.hasWon()) {
-                confetti.add(new AttributeModifier("style", "display: block;"));
-              }
-              stop(target);
-            } else if (currentGame.getConsultant().isFired()
-                && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
-              ceremony.add(new AttributeModifier("class", "visible"));
-              currentGame.endGame();
-              if (basePlayer.hasWon()) {
-                confetti.add(new AttributeModifier("style", "display: block;"));
-              }
-              stop(target);
+              if (currentGame.getManager().isFired()) {
+                ceremony.add(new AttributeModifier("class", "visible"));
+                if (basePlayer.hasWon()) {
+                  confetti.add(new AttributeModifier("style", "display: block;"));
+                }
+                stop(target);
+              } else if (currentGame.getConsultant().isFired()
+                  && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
+                ceremony.add(new AttributeModifier("class", "visible"));
+                if (basePlayer.hasWon()) {
+                  confetti.add(new AttributeModifier("style", "display: block;"));
+                }
+                stop(target);
+              
             }
             target.add(ceremony);
           }
