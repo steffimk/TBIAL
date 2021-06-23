@@ -39,6 +39,8 @@ public class Lobby extends BasePage {
 
   public Lobby() {
 
+    boolean isInGame = getSession().isInGame();
+
     Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
@@ -77,6 +79,21 @@ public class Lobby extends BasePage {
     menuForm.add(showPlayersButton);
     add(menuForm);
 
+    Label newGameTooltip =
+        new Label("newGameTooltip", "Leave your current game first.") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public boolean isVisible() {
+            if (isInGame) {
+              return true;
+            }
+            return false;
+          }
+        };
+
     newGameButton =
         new Button("newGameButton") {
 
@@ -90,6 +107,14 @@ public class Lobby extends BasePage {
             boolean isPrivate = isPrivateCheckBox.getModelObject();
             String password = newGamePwField.getModelObject();
             createNewGame(gameName, maxPlayers, isPrivate, password);
+          }
+
+          @Override
+          public boolean isEnabled() {
+            if (isInGame) {
+              return false;
+            }
+            return true;
           }
         };
 
@@ -147,9 +172,9 @@ public class Lobby extends BasePage {
 
     passwordContainer.add(newGamePwField);
 
-
     Form<?> newGameForm = new Form<>("newGameForm");
     newGameForm
+        .add(newGameTooltip)
         .add(newGameNameField)
         .add(nameFeedbackLabel)
         .add(maxPlayersField)
@@ -173,7 +198,6 @@ public class Lobby extends BasePage {
     if (!getGameManager().gameNameTaken(name)) {
       Game game = new Game(name, maxPlayers, isPrivate, password, hostName);
       getGameManager().addGame(game);
-      getSession().setCurrentGame(game);
       setResponsePage(getTbialApplication().getGameLobbyPage());
       info("Game creation successful! You are host of a new game");
       LOGGER.info("New game '" + name + "' game creation successful");

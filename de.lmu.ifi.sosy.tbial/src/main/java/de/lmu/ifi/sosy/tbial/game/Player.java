@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial.game;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -45,9 +46,9 @@ public class Player implements Serializable {
     this.prestige = 0;
     this.fired = false;
     this.mentalHealth = 0;
-    this.handCards = new HashSet<>();
-    this.playedAbilityCards = new HashSet<>();
-    this.receivedCards = new HashSet<>();
+    this.handCards = Collections.synchronizedSet(new HashSet<>());
+    this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
+    this.receivedCards = Collections.synchronizedSet(new HashSet<>());
   }
 
   public String getUserName() {

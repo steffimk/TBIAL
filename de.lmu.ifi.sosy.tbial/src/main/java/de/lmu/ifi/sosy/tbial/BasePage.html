@@ -6,7 +6,7 @@
 <title><wicket:message key="applicationName">The bug is a Lie</wicket:message>
 </title>
 <link rel="stylesheet" href="style.css" type="text/css" />
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"/>
 </head>
 <body>
 	<div class="header-wrapper">
@@ -33,12 +33,25 @@
 						<li><a href="TBIAL_Spielanleitung.pdf">About the game</a></li>
 						<li><a wicket:id="signout">Logout</a></li>
 						<li><span wicket:id="loggedInUsername">Username</span></li>
+						<li style="float: right; margin-right: 2%;">
+							<div wicket:id="messageContainer"
+								style="display: flex; margin-top: 10%;">
+								<div wicket:id="message">
+									<i class="fas fa-envelope fa-border"
+										style="font-size: xx-large; color: white; border-color: transparent;">
+									</i>
+								</div>
+								<div wicket:id="numberOfMessages"
+									style="margin-left: -10%; margin-top: -5%; color: white;"></div>
+							</div>
+						</li>
 					</wicket:link>
 					<!-- END MENU -->
 				</ul>
 			</div>
 		</div>
 	</div>
+	<div wicket:id="modal"></div>
 	<div class="pagewidth">
 		<div class="page-wrap">
 			<div class="content">

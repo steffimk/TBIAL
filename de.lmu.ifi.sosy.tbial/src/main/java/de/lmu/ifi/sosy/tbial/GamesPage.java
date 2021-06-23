@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -15,16 +16,22 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 
+import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 /** This page shows a list of all current games and provides the option to join one of them. */
+@AuthenticationRequired
 public class GamesPage extends BasePage {
 
-  final String userName = getSession().getUser().getName();
+  final User user = getSession().getUser();
+
+  final String userName = user.getName();
 
   private static final long serialVersionUID = 1L;
 
   public GamesPage() {
+
+    boolean isInGame = getSession().isInGame();
 
     Form<?> menuForm = new Form<>("menuForm");
 
@@ -75,22 +82,80 @@ public class GamesPage extends BasePage {
             Form<?> joinGameForm = new Form<>("joinGameForm");
             PasswordTextField joinGamePw = new PasswordTextField("joinGamePw", new Model<>(""));
             joinGamePw.setVisible(game.isPrivate());
+
+            Label joinTooltip =
+                new Label("joinTooltip", "Leave your current game before joining another.") {
+
+                  /** */
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  public boolean isVisible() {
+                    if (isInGame && !game.getPlayers().containsKey(userName)) {
+                      return true;
+                    }
+                    return false;
+                  }
+                };
+
             Button joinGameButton =
                 new Button("joinGameButton") {
+
+                  private String buttonValue = null;
+
+                  private String buttonCSS = null;
+
                   private static final long serialVersionUID = 1L;
 
                   @Override
                   public void onSubmit() {
-                    joinGame(game, joinGamePw.getModelObject());
+                    if (isInGame) {
+                      setResponsePage(getTbialApplication().getGameLobbyPage());
+                    } else {
+                      getGameManager().joinGame(userName, game, joinGamePw.getModelObject());
+                      setResponsePage(getTbialApplication().getGameLobbyPage());
+                    }
+                  }
+
+                  @Override
+                  protected void onComponentTag(ComponentTag tag) {
+                    if (game.getPlayers().containsKey(userName)) {
+                      buttonValue = "Return to Game Lobby";
+                      buttonCSS = "buttonStyle";
+                    } else {
+                      buttonValue = "Join Game";
+                      if (isInGame) {
+                        buttonCSS = "disabledButtonStyle";
+                      } else {
+                        buttonCSS = "buttonStyle";
+                      }
+                    }
+                    super.onComponentTag(tag);
+                    tag.put("value", buttonValue);
+                    tag.put("class", buttonCSS);
+                  }
+
+                  @Override
+                  public boolean isEnabled() {
+                    if (isInGame && !game.getPlayers().containsKey(userName)) {
+                      return false;
+                    }
+                    return true;
                   }
                 };
+
             joinGameForm.add(joinGamePw);
             joinGameForm.add(joinGameButton);
+            joinGameForm.add(joinTooltip);
+
+            if (user == null) throw new NullPointerException("Player is null!");
+
             if (game.getPlayers().containsKey(userName)) {
               listItem.add(new Label("currentGame", "X"));
             } else {
               listItem.add(new Label("currentGame", " "));
             }
+
             listItem.add(
                 new Label(
                     "numberOfPlayers",
@@ -114,21 +179,5 @@ public class GamesPage extends BasePage {
     gameListContainer.setOutputMarkupId(true);
 
     add(gameListContainer);
-  }
-
-  /**
-   * Method to join a game, adding to the games player list, setting the current game and being
-   * directed to its GameLobby
-   *
-   * @param game
-   * @param password
-   */
-  public void joinGame(Game game, String password) {
-    String username = getSession().getUser().getName();
-    if (game.checkIfYouCanJoin(username, password)) {
-      game.addNewPlayer(getSession().getUser().getName());
-      getSession().setCurrentGame(game);
-      setResponsePage(getTbialApplication().getGameLobbyPage());
-    }
   }
 }

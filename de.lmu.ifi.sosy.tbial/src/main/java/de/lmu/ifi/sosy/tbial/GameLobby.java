@@ -30,15 +30,13 @@ public class GameLobby extends BasePage {
 
   private static final Logger LOGGER = LogManager.getLogger(GameLobby.class);
 
-  private final Link<Void> startGameLink;
+  private final Link<Game> startGameLink;
   private final Label isHostLabel;
   private final Label currentStatusLabel;
 
-  private final Game game;
-
   public GameLobby() {
 
-    game = getSession().getCurrentGame();
+    Game game = this.getGame();
 
     // Go to lobby, if there is no game in the session
     if (game == null || getSession().getUser() == null) {
@@ -51,10 +49,10 @@ public class GameLobby extends BasePage {
     currentStatusLabel = new Label("currentStatusLabel", () -> getCurrentStatusMessage());
     currentStatusLabel.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
-    Form startGameForm = new Form("startGameForm");
+    Form<Void> startGameForm = new Form<>("startGameForm");
 
     startGameLink =
-        new Link<Void>("startGameLink") {
+        new Link<Game>("startGameLink", () -> getGame()) {
           private String customCSS = null;
 
           private static final long serialVersionUID = 1L;
@@ -66,7 +64,7 @@ public class GameLobby extends BasePage {
 
           @Override
           public void onConfigure() {
-            if (game.hasStarted()) {
+            if (this.getModelObject().hasStarted()) {
               throw new RestartResponseAtInterceptPageException(GameTable.class);
             }
             super.onConfigure();
@@ -96,8 +94,8 @@ public class GameLobby extends BasePage {
     startGameForm.add(startGameLink);
     startGameForm.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
-    Form leaveForm =
-        new Form("leaveForm") {
+    Form<Void> leaveForm =
+        new Form<>("leaveForm") {
 
           private static final long serialVersionUID = 1L;
 
@@ -107,7 +105,7 @@ public class GameLobby extends BasePage {
           }
         };
 
-    Form menuForm = new Form("menuForm");
+    Form<Void> menuForm = new Form<>("menuForm");
     Button showGamesButton =
         new Button("showGamesButton") {
 
@@ -132,6 +130,8 @@ public class GameLobby extends BasePage {
     add(leaveForm);
     add(menuForm);
 
+    startGameLink.setOutputMarkupId(true);
+
     IModel<List<Player>> gameInfoModel =
         (IModel<List<Player>>) () -> getGame().getInGamePlayersList();
 
@@ -143,6 +143,7 @@ public class GameLobby extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
+            if (player.getUserName() == null) throw new NullPointerException("Player is null!");
             listItem.add(new Label("playerName", player.getUserName()));
           }
         };
@@ -180,6 +181,7 @@ public class GameLobby extends BasePage {
    * the user to the game table.
    */
   private void startGame() {
+    Game game = this.getGame();
     TBIALSession session = getSession();
     User user = session.getUser();
     if (game == null || user == null) {
@@ -202,7 +204,7 @@ public class GameLobby extends BasePage {
    * @return String to be displayed in the isHostLabel
    */
   private String currentHostMessage() {
-    String hostName = game.getHost();
+    String hostName = getGame().getHost();
     return isHost() ? "You are the host of this game." : hostName + " is the host of this game.";
   }
 
@@ -213,7 +215,9 @@ public class GameLobby extends BasePage {
    */
   private boolean isHost() {
     TBIALSession session = getSession();
-    String hostName = game.getHost();
+    if (session.getUser() == null) throw new NullPointerException("Player is null!");
+
+    String hostName = getGame().getHost();
     return session.getUser().getName().equals(hostName);
   }
 
@@ -226,10 +230,11 @@ public class GameLobby extends BasePage {
       getGame().changeHost();
     }
     if (getGame().checkIfLastPlayer()) {
-      getGameManager().removeGame(game);
+      getGameManager().removeGame(getGame());
     }
-    getGame().getPlayers().remove(getSession().getUser().getName());
-    getSession().setCurrentGameNull();
+    String userName = getSession().getUser().getName();
+    getGame().getPlayers().remove(userName);
+    getGameManager().removeUserFromGame(userName);
   }
 
   /**
@@ -238,8 +243,8 @@ public class GameLobby extends BasePage {
    * @return A message about how many players can still join the game.
    */
   private String getCurrentStatusMessage() {
-    int maxPlayers = game.getMaxPlayers();
-    int currentPlayers = game.getCurrentNumberOfPlayers();
+    int maxPlayers = getGame().getMaxPlayers();
+    int currentPlayers = getGame().getCurrentNumberOfPlayers();
 
     String message = currentPlayers + "/" + maxPlayers + " players.";
     if (maxPlayers - currentPlayers == 0)
@@ -250,6 +255,6 @@ public class GameLobby extends BasePage {
   }
 
   public Game getGame() {
-    return game;
+    return getGameManager().getGameOfUser(getSession().getUser().getName());
   }
 }
