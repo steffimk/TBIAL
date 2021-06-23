@@ -329,7 +329,6 @@ div.footer p a {
 	font-weight: bold;
 }
 
-
 /* ----------- Boxed Form ----------- */
 /* inspired by http://woork.blogspot.de/2008/06/clean-and-pure-css-form-design.html */
 .spacer {
@@ -411,6 +410,25 @@ pre.boxed {
 
 
 .bugBlocksContainer {
+	width: 93%;
+    padding: 2%;
+    margin: 1%;
+	border: 1px solid #ff6600;
+	display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.blink {
+  animation: blinker 2s linear;
+  animation-iteration-count: 4;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+
+.notificationContainer {
 	width: 93%;
     padding: 2%;
     margin: 1%;

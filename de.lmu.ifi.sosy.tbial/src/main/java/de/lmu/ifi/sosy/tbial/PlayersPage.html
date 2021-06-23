@@ -20,24 +20,29 @@
 		<input wicket:id="showGamesButton" class="buttonStyle" type="submit" value="Games" />
 		<input wicket:id="showPlayersButton" class="buttonStyle" type="submit" value="Players" />
 	</form>
-	
-	
-   <table wicket:id="playerlistContainer">
- 		 <thead>
-    		<tr>
-      			<th>Tbial Players online</th>
-   			</tr>
-  		</thead>
-	   <tbody>
- 	   <tr wicket:id="loggedInUsers">
-            <td wicket:id="name" ></td>
-       </tr>
-	  </tbody> 
-    </table> 
-    
-    
-    
-</wicket:extend>
+
+		<table wicket:id="playerlistContainer">
+			<thead>
+				<tr>
+					<th>Players online</th>
+					<th>Invite to game</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr wicket:id="loggedInUsers">
+					<td wicket:id="name"></td>
+					<td>
+						<form wicket:id="invitationForm" class="tooltip">
+						
+							<input type="submit" wicket:id="inviteButton"
+								value="Send invitation" > <span wicket:id="tooltip" class="tooltiptext" ></span> 
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</wicket:extend>
 </body>
 
 </html>

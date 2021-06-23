@@ -51,7 +51,7 @@ public class ActionCard extends Card implements StackCard {
     CODE_FIX("Code+Fix Session", 2, ActionType.SOLUTION, "imgs/cards/card23.png"),
     REGEX("I know regular expressions", 2, ActionType.SOLUTION, "imgs/cards/card24.png"),
     STAND_UP("Standup Meeting", 2, ActionType.SPECIAL, "imgs/cards/card25.png"),
-    COFFEE_MACHINE("Presonal Coffee Machine", 2, ActionType.SPECIAL, "imgs/cards/card26.png"),
+    COFFEE_MACHINE("Personal Coffee Machine", 2, ActionType.SPECIAL, "imgs/cards/card26.png"),
     BORING("Boring Meeting", 2, ActionType.SPECIAL, "imgs/cards/card30.png"),
     REFACTORED("I refactored your code. Away.", 4, ActionType.SPECIAL, "imgs/cards/card31.png"),
     PWND("Pwnd", 4, ActionType.SPECIAL, "imgs/cards/card32.png"),

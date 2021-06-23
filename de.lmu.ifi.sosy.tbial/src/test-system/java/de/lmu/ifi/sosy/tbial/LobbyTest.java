@@ -7,6 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -62,11 +63,13 @@ public class LobbyTest extends PageTestBase {
   @Test
   public void createGameOk() {
     Lobby lobby = tester.startPage(Lobby.class);
+
+    User user = getSession().getUser();
+    getGameManager().removeUserFromGame(user.getName());
+
     attemptCreateNewPublicGame("newGame", "5");
 
-    TBIALSession session = getSession();
-
-    Game game = session.getCurrentGame();
+    Game game = getGameManager().getGameOfUser(getSession().getUser().getName());
     assertNotNull(game);
 
     assertEquals(lobby.getGameManager().getCurrentGames().containsValue(game), true);

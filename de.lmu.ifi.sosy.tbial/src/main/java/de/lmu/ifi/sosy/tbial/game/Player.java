@@ -5,6 +5,7 @@ import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -47,9 +48,9 @@ public class Player implements Serializable {
     this.prestige = 0;
     this.fired = false;
     this.mentalHealth = 0;
-    this.handCards = new HashSet<>();
-    this.playedAbilityCards = new HashSet<>();
-    this.receivedCards = new HashSet<>();
+    this.handCards = Collections.synchronizedSet(new HashSet<>());
+    this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
+    this.receivedCards = Collections.synchronizedSet(new HashSet<>());
   }
 
   public LinkedList<BugBlock> getBugBlocks() {
