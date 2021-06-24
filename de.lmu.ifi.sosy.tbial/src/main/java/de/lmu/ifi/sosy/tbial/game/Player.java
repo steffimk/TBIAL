@@ -12,10 +12,6 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
-import de.lmu.ifi.sosy.tbial.BugBlock;
-
 /**
  * A player of a game.
  *
