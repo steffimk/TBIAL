@@ -201,9 +201,11 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent("table:heapContainer", WebMarkupContainer.class);
 
     // Turn related buttons
-    tester.assertComponent("playCardsButton", AjaxLink.class);
-    tester.assertComponent("discardButton", AjaxLink.class);
-    tester.assertComponent("endTurnButton", AjaxLink.class);
+    tester.assertComponent("gameflow:drawCardsButton", AjaxLink.class);
+    tester.assertComponent("gameflow:playCardsButton", AjaxLink.class);
+    tester.assertComponent("gameflow:waitForResponseButton", AjaxLink.class);
+    tester.assertComponent("gameflow:discardButton", AjaxLink.class);
+    tester.assertComponent("gameflow:endTurnButton", AjaxLink.class);
 
     // Chat
     tester.assertComponent("chatPanel", ChatPanel.class);
@@ -397,7 +399,6 @@ public class GameTableTest extends PageTestBase {
 
   @Test
   public void clickOnPlayCardButtonWorks() {
-    tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.DRAWING_CARDS);
 
@@ -405,7 +406,8 @@ public class GameTableTest extends PageTestBase {
       game.getTurn().incrementDrawnCardsInDrawingStage();
     }
 
-    tester.clickLink(tester.getComponentFromLastRenderedPage("playCardsButton"));
+    tester.startPage(GameTable.class);
+    tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:playCardsButton"));
 
     assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
     
@@ -413,11 +415,11 @@ public class GameTableTest extends PageTestBase {
 
   @Test
   public void clickOnDiscardButtonWorks() {
-    tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.PLAYING_CARDS);
 
-    tester.clickLink(tester.getComponentFromLastRenderedPage("discardButton"));
+    tester.startPage(GameTable.class);
+    tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:discardButton"));
 
     assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
   }
@@ -446,7 +448,6 @@ public class GameTableTest extends PageTestBase {
 
   @Test
   public void clickOnEndTurnButtonWorks() {
-    tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
     int mentalHealth = basePlayer.getMentalHealthInt();
@@ -454,15 +455,17 @@ public class GameTableTest extends PageTestBase {
 
     // Make mental health smaller than amount of hand cards -> player cannot end turn
     basePlayer.addToMentalHealth(-mentalHealth);
-    tester.clickLink(tester.getComponentFromLastRenderedPage("endTurnButton"));
-    
+
+    tester.startPage(GameTable.class);
+    tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:endTurnButton"));
+
     assertEquals(game.getTurn().getCurrentPlayer(), basePlayer);
     assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
 
     // Make mental health bigger than amount of hand cards -> player can end turn
     basePlayer.addToMentalHealth(handCardSize + 1);
-    tester.clickLink(tester.getComponentFromLastRenderedPage("endTurnButton"));
-    
+    tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:endTurnButton"));
+
     assertFalse(game.getTurn().getCurrentPlayer() == basePlayer);
     assertEquals(game.getTurn().getStage(), TurnStage.DRAWING_CARDS);
   }

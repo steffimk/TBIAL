@@ -275,6 +275,16 @@ public class Game implements Serializable {
   }
 
   /**
+   * Checks whether it is currently the turn of this player.
+   *
+   * @param player The player to be checked
+   * @return <code>true</code> if it is the turn of this player, <code>false</code> otherwise
+   */
+  public boolean isTurnOfPlayer(Player player) {
+    return turn.getCurrentPlayer() == player;
+  }
+
+  /**
    * Whether the leaving player is the last player in the current game
    *
    * @return
