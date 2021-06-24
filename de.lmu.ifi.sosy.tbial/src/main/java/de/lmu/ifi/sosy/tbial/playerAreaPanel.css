@@ -60,9 +60,19 @@ li {
 	margin: 0 auto 0 0;
 }
 
-.handcard {
+.handcard, .playedcard {
 	height: 100%;
 	border-radius: 10%;
+}
+
+.handcard:hover {
+	transform: scale(2);
+	transform-origin: bottom;
+	}
+	
+.playedcard:hover {
+	transform: scale(2);
+	transform-origin: top;
 }
 
 .selected {
