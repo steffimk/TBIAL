@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -27,6 +28,7 @@ import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
+import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** Game Table */
 @AuthenticationRequired
@@ -38,6 +40,8 @@ public class GameTable extends BasePage {
   private WebMarkupContainer table;
 
   private Game currentGame;
+
+  private Player basePlayer;
 
   public GameTable() {
 
@@ -56,7 +60,7 @@ public class GameTable extends BasePage {
     Map<String, Player> currentPlayers = currentGame.getPlayers();
 
     // set current session player as base player
-    Player basePlayer = currentPlayers.get(currentPlayerUsername);
+    basePlayer = currentPlayers.get(currentPlayerUsername);
 
     table =
         new WebMarkupContainer("table") {
@@ -273,14 +277,56 @@ public class GameTable extends BasePage {
 
         });
 
+    WebMarkupContainer gameFlowContainer = new WebMarkupContainer("gameflow");
+    gameFlowContainer.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
+
+          private static final long serialVersionUID = 1L;
+          private TurnStage previousTurnStage = null;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+            if (previousTurnStage == currentGame.getTurn().getStage()) {
+              return;
+            }
+            previousTurnStage = currentGame.getTurn().getStage();
+            target.add(gameFlowContainer);
+          }
+        });
+    gameFlowContainer.setOutputMarkupId(true);
+
+    AjaxLink<Void> drawCardsButton =
+        new AjaxLink<>("drawCardsButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onConfigure() {
+            onConfigureOfGameFlowButtons(this, TurnStage.DRAWING_CARDS, null);
+            super.onConfigure();
+          }
+
+          @Override
+          public void onClick(AjaxRequestTarget target) {
+            return;
+          }
+        };
+
     AjaxLink<Void> playCardsButton =
         new AjaxLink<>("playCardsButton") {
 
           private static final long serialVersionUID = 1L;
 
           @Override
+          public void onConfigure() {
+            onConfigureOfGameFlowButtons(this, TurnStage.PLAYING_CARDS, TurnStage.DRAWING_CARDS);
+            super.onConfigure();
+          }
+
+          @Override
           public void onClick(AjaxRequestTarget target) {
             currentGame.clickedOnPlayCardsButton(basePlayer);
+            target.add(gameFlowContainer);
           }
         };
 
@@ -290,8 +336,15 @@ public class GameTable extends BasePage {
           private static final long serialVersionUID = 1L;
 
           @Override
+          public void onConfigure() {
+            onConfigureOfGameFlowButtons(this, TurnStage.DISCARDING_CARDS, TurnStage.PLAYING_CARDS);
+            super.onConfigure();
+          }
+
+          @Override
           public void onClick(AjaxRequestTarget target) {
             currentGame.clickedOnDiscardButton(basePlayer);
+            target.add(gameFlowContainer);
           }
         };
 
@@ -301,8 +354,15 @@ public class GameTable extends BasePage {
           private static final long serialVersionUID = 1L;
 
           @Override
+          public void onConfigure() {
+            onConfigureOfGameFlowButtons(this, null, TurnStage.DISCARDING_CARDS);
+            super.onConfigure();
+          }
+
+          @Override
           public void onClick(AjaxRequestTarget target) {
             currentGame.clickedOnEndTurnButton(basePlayer);
+            target.add(gameFlowContainer);
           }
         };
 
@@ -315,9 +375,14 @@ public class GameTable extends BasePage {
     table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
 
     add(table);
-    add(playCardsButton);
-    add(discardButton);
-    add(endTurnButton);
+
+    gameFlowContainer.add(new Label("turnLabel", () -> this.getTextOfTurnLabel()));
+    gameFlowContainer.add(drawCardsButton);
+    gameFlowContainer.add(playCardsButton);
+    gameFlowContainer.add(discardButton);
+    gameFlowContainer.add(endTurnButton);
+    add(gameFlowContainer);
+
     add(new ChatPanel("chatPanel", currentGame.getChatMessages()));
  }
 
@@ -330,5 +395,55 @@ public class GameTable extends BasePage {
     }
     return new AttributeModifier(
         "style", "animation-name: discardAnimation" + numberOfPlayers + "-" + playerIndex);
+  }
+
+  /**
+   * Add this to the onConfigure method of the game flow links. Enables/disables the link and
+   * changes its appearance based on the game state.
+   *
+   * @param link The link.
+   * @param thisStage The stage in which the button shows the current stage.
+   * @param transferInStagePossible The stage in which the button should be enabled
+   */
+  private void onConfigureOfGameFlowButtons(
+      AjaxLink<Void> link, TurnStage thisStage, TurnStage transferInStagePossible) {
+    link.setEnabled(false);
+    TurnStage currentStage = currentGame.getTurn().getStage();
+    if (currentGame.isTurnOfPlayer(basePlayer)) {
+      if (currentStage == transferInStagePossible) {
+        link.setEnabled(true);
+        link.add(
+            new AttributeModifier(
+                "style",
+                "background: rgba(244, 115, 29, 0.5) !important; border: 2px solid rgba(244, 115, 29, 0.5) !important;"));
+      } else if (currentStage == thisStage) {
+        link.add(
+            new AttributeModifier(
+                "style", "background: #F4731D !important; border: 2px solid #F4731D !important;"));
+      } else {
+        link.add(
+            new AttributeModifier(
+                "style", "background: #E8E8E8 !important; border: 2px solid #E8E8E8 !important;"));
+      }
+    } else {
+      link.setEnabled(false);
+      if (currentStage == thisStage) {
+        link.add(
+            new AttributeModifier(
+                "style", "background: grey !important; border: 2px solid grey !important;"));
+      } else {
+        link.add(
+            new AttributeModifier(
+                "style", "background: #E8E8E8 !important; border: 2px solid #E8E8E8 !important;"));
+      }
+    }
+  }
+  
+  private String getTextOfTurnLabel() {
+	  String currentPlayerName = currentGame.getTurn().getCurrentPlayer().getUserName();
+	  if (currentPlayerName == basePlayer.getUserName()) {
+		  return "";
+	  }
+    return "Turn: " + currentPlayerName;
   }
 }
