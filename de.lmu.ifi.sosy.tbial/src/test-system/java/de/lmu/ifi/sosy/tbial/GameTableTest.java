@@ -201,7 +201,9 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent("table:heapContainer", WebMarkupContainer.class);
 
     // Turn related buttons
+    tester.assertComponent("gameflow:drawCardsButton", AjaxLink.class);
     tester.assertComponent("gameflow:playCardsButton", AjaxLink.class);
+    tester.assertComponent("gameflow:waitForResponseButton", AjaxLink.class);
     tester.assertComponent("gameflow:discardButton", AjaxLink.class);
     tester.assertComponent("gameflow:endTurnButton", AjaxLink.class);
 
