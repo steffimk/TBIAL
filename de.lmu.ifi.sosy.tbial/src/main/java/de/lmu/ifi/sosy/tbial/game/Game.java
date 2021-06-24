@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -44,12 +45,21 @@ public class Game implements Serializable {
   private byte[] salt;
 
   private boolean hasStarted;
+  
+  private boolean hasEnded;
 
   private StackAndHeap stackAndHeap;
 
   private Turn turn;
 
   private LinkedList<ChatMessage> chatMessages = new LinkedList<ChatMessage>();
+
+  private Player manager;
+  private Player consultant;
+  private List<Player> monkeys = new ArrayList<Player>();
+  private Player developer;
+
+  private String winners = "";
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -114,6 +124,22 @@ public class Game implements Serializable {
     hasStarted = true;
     chatMessages.clear();
     distributeRoleCards();
+    for (Player player : getInGamePlayersList()) {
+      switch (player.getRole()) {
+        case MANAGER:
+          manager = player;
+          break;
+        case CONSULTANT:
+          consultant = player;
+          break;
+        case HONEST_DEVELOPER:
+          developer = player;
+          break;
+        case EVIL_CODE_MONKEY:
+          monkeys.add(player);
+          break;
+      }
+    }
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
     turn = new Turn(new ArrayList<Player>(players.values()));
@@ -287,6 +313,10 @@ public class Game implements Serializable {
     return chatMessages;
   }
 
+  public String getWinners() {
+    return winners;
+  }
+
   public int getCurrentNumberOfPlayers() {
     return players.size();
   }
@@ -330,6 +360,10 @@ public class Game implements Serializable {
 
   public boolean hasStarted() {
     return hasStarted;
+  }
+
+  public boolean hasEnded() {
+    return hasEnded;
   }
 
   public void setHasStarted(boolean hasStarted) {
@@ -466,5 +500,102 @@ public class Game implements Serializable {
     StackCard drawnCard = stackAndHeap.drawCard();
     turn.incrementDrawnCardsInDrawingStage();
     player.addToHandCards(drawnCard);
+  }
+
+  public void firePlayer(Player player, Set<StackCard> handCards) {
+    stackAndHeap.addAllToHeap(handCards, player);
+    handCards.removeAll(handCards);
+    player.fire(true);
+
+    if (developer != null) {
+      if (manager.isFired()
+          || consultant.isFired() && allMonkeysFired(monkeys)
+          || manager.isFired() && allMonkeysFired(monkeys) && developer.isFired()) {
+      endGame();
+    }
+    } else {
+      if (manager.isFired()
+          || consultant.isFired() && allMonkeysFired(monkeys)
+          || manager.isFired() && allMonkeysFired(monkeys)) {
+        endGame();
+      }
+    }
+    
+  }
+
+  public boolean allMonkeysFired(List<Player> monkeys) {
+    for (Player monkey : monkeys) {
+      if (!monkey.isFired()) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  public Player getManager() {
+    return manager;
+  }
+
+  public Player getConsultant() {
+    return consultant;
+  }
+
+  public List<Player> getEvilCodeMonkeys() {
+    return monkeys;
+  }
+
+  public Player getHonestDeveloper() {
+    return developer;
+  }
+
+  /** Ends the game. */
+  public synchronized void endGame() {
+    if (hasEnded) {
+      return;
+    }
+    hasEnded = true;
+
+    // Consultant wins
+    if (manager.isFired() && allMonkeysFired(monkeys)) {
+      consultant.win(true);
+      manager.win(false);
+      for (Player monkey : monkeys) {
+        monkey.win(false);
+      }
+      if (developer != null) {
+        developer.win(false);
+      }
+      winners = consultant.getUserName() + " has won.";
+    }
+    // Evil Code Monkeys win
+    else if (manager.isFired()) {
+      for (Player monkey : monkeys) {
+        monkey.win(true);
+        winners += monkey.getUserName() + ", ";
+      }
+      manager.win(false);
+      consultant.win(false);
+      if (developer != null) {
+        developer.win(false);
+      }
+      // remove , at end of string
+      winners = winners.substring(0, winners.length() - 2);
+      winners += " have won.";
+    }
+    // Manager and Honest Developers win
+    else if (consultant.isFired() && allMonkeysFired(monkeys)) {
+      manager.win(true);
+      consultant.win(false);
+      for (Player monkey : monkeys) {
+        monkey.win(false);
+      }
+      if (developer == null) {
+        winners = manager.getUserName() + " has won.";
+      } else {
+        developer.win(true);
+        winners += developer.getUserName();
+        winners += " & " + manager.getUserName() + " have won.";
+      }
+    }
   }
 }

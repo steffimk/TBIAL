@@ -7,16 +7,43 @@
 	<wicket:link>
 		<link rel="stylesheet" href="gameTable.css" type="text/css" />
 		<link rel="stylesheet" href="chat.css" type="text/css" />
+		<link rel="stylesheet" href="lobby.css" type="text/css" />
 	</wicket:link>
 </wicket:head>
 </head>
 
 <body>
 	<wicket:extend>
+		<div class="ceremony" wicket:id="ceremony">
+			<div style="width: 80%;">
+				<h1 class="congrats" wicket:id="ceremonyTitle">Congratulations!</h1>
+				<h1 class="winner" wicket:id="winners">... Won!!</h1>
+				<form wicket:id="endGameForm"
+					style="text-align: center; margin-top: 100px;">
+					<input wicket:id="endGameButton" class="buttonStyle" type="submit" value="End Game" style="width: 200px; height: 50px;" />
+				</form>
+			</div>
+			<div class="confettiWrapper" wicket:id="confetti">
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+				<div class="confetti"></div>
+			</div>
+
+		</div>
 		<div class="contentWrapper">
 			<h3 wicket:id="gameName" align="center" style="margin-top: 1%;">Game
 				Name</h3>
-		
+
 		<div id=wrapper>
 			<div wicket:id="table" id=table>
 				<div wicket:id="player1" class="player-1">

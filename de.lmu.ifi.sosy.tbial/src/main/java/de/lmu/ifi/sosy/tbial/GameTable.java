@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -13,6 +14,8 @@ import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -26,6 +29,7 @@ import org.apache.wicket.util.time.Duration;
 import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
@@ -88,6 +92,20 @@ public class GameTable extends BasePage {
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
 
+    player1.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+            if (basePlayer.isFired()) {
+              player1.add(new AttributeModifier("style", "opacity: 0.4;"));
+              stop(target);
+            }
+          }
+        });
     player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer, table));
     player1.setOutputMarkupId(true);
     // get the rest of the players
@@ -113,12 +131,17 @@ public class GameTable extends BasePage {
             PlayerAreaPanel panel =
                 new PlayerAreaPanel("panel", Model.of(player), currentGame, basePlayer, table);
             // add css classes
+            if (player.isFired()) {
+              listItem.add(new AttributeModifier("style", "opacity: 0.4;"));
+            }
             listItem.add(
                 new AttributeModifier("class", "player-" + "" + numberOfPlayers + "-" + "" + (i)));
             panel.add(
                 new AttributeModifier(
                     "class", "container" + "" + numberOfPlayers + "-" + "" + (i)));
             listItem.add(panel);
+            listItem.setOutputMarkupId(true);
+
             i++;
             if (i > numberOfPlayers) {
               i = 2;
@@ -397,6 +420,83 @@ public class GameTable extends BasePage {
     add(gameFlowContainer);
 
     add(new ChatPanel("chatPanel", currentGame.getChatMessages()));
+
+    WebMarkupContainer ceremony = new WebMarkupContainer("ceremony");
+    Label ceremonyTitle =
+        new Label(
+            "ceremonyTitle",
+            () -> {
+              if (basePlayer.hasWon()) {
+                return "Congratulations!";
+              } else return "You lost!";
+            });
+    Label winner =
+        new Label(
+            "winners",
+            () -> {
+              if (basePlayer.hasWon()
+                  && (basePlayer.getRole() == Role.MANAGER
+                      || (basePlayer.getRole() == Role.CONSULTANT
+                          && currentGame.allMonkeysFired(otherPlayers)))) {
+                return currentGame
+                    .getWinners()
+                    .replace("has", "have")
+                    .replace(basePlayer.getUserName(), "You");
+              }
+              return currentGame.getWinners().replace(basePlayer.getUserName(), "you");
+            });
+    winner.setOutputMarkupId(true);
+    WebMarkupContainer confetti = new WebMarkupContainer("confetti");
+    ceremony.add(winner);
+    ceremony.add(ceremonyTitle);
+    ceremony.add(confetti);
+    Form<?> endGameForm = new Form<>("endGameForm");
+    Button endGameButton =
+        new Button("endGameButton") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onSubmit() {
+            getTbialApplication().getGameManager().removeUserFromGame(basePlayer.getUserName());
+            for (Player player : otherPlayers) {
+              getTbialApplication().getGameManager().removeUserFromGame(player.getUserName());
+            }
+            getTbialApplication().getGameManager().removeGame(currentGame);
+            setResponsePage(getApplication().getHomePage());
+          }
+        };
+    endGameForm.add(endGameButton);
+    ceremony.add(endGameForm);
+    ceremony.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+              if (currentGame.getManager().isFired()) {
+                ceremony.add(new AttributeModifier("class", "visible"));
+                if (basePlayer.hasWon()) {
+                  confetti.add(new AttributeModifier("style", "display: block;"));
+                }
+                stop(target);
+              } else if (currentGame.getConsultant().isFired()
+                  && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
+                ceremony.add(new AttributeModifier("class", "visible"));
+                if (basePlayer.hasWon()) {
+                  confetti.add(new AttributeModifier("style", "display: block;"));
+                }
+                stop(target);
+              
+            }
+            target.add(ceremony);
+          }
+        });
+
+    add(ceremony);
  }
 
   private AttributeModifier getDiscardingAnimationForPlayer(
