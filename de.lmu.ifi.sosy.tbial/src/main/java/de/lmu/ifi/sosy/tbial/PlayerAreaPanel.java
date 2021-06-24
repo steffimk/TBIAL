@@ -57,7 +57,8 @@ public class PlayerAreaPanel extends Panel {
     add(mentalHealth);
     add(new Label("prestige"));
 
-    // update mental health; if mental health == 0 (-> fire player) -> show role of player on game table
+    // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
+    // table
     mentalHealth.add(
         new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
 
@@ -72,6 +73,7 @@ public class PlayerAreaPanel extends Panel {
               target.add(getParent().add(new AttributeModifier("style", "opacity: 0.4;")));
               stop(target);
             }
+
             // TODO maybe this update should be triggered somewhere else in the future
             target.add(mentalHealth);
           }
@@ -117,6 +119,8 @@ public class PlayerAreaPanel extends Panel {
                 new Image(
                     "playedCard",
                     new PackageResourceReference(getClass(), abilityCard.getResourceFileName())));
+
+           
           }
         };
     playAbilityDropBox.add(playedAbilityCards);
@@ -136,6 +140,7 @@ public class PlayerAreaPanel extends Panel {
                     + " clicked on add card button of "
                     + player.getObject().getUserName());
             game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
+
             target.add(table);
           }
         };
@@ -158,6 +163,16 @@ public class PlayerAreaPanel extends Panel {
                 new Image(
                     "blockCard",
                     new PackageResourceReference(getClass(), blockCard.getResourceFileName())));
+
+            item.add(
+                new AjaxEventBehavior("click") {
+                  private static final long serialVersionUID = 1L;
+
+                  @Override
+                  protected void onEvent(AjaxRequestTarget target) {
+                    game.clickedOnReceivedCard(basePlayer, blockCard);
+                  }
+                });
           }
         };
     addCardDropBox.add(blockCards);

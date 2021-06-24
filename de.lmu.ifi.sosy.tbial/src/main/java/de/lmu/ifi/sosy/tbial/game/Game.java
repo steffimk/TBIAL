@@ -18,9 +18,9 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -196,6 +196,10 @@ public class Game implements Serializable {
       return true;
     }
     return false;
+  }
+
+  public void putCardOnHeap(Player player, StackCard card) {
+    stackAndHeap.addToHeap(card, player);
   }
 
   /**
@@ -401,6 +405,8 @@ public class Game implements Serializable {
    */
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
+ 
+    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) return;
 
     if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) {
       chatMessages.add(
@@ -410,15 +416,67 @@ public class Game implements Serializable {
     }
     
     StackCard selectedCard = player.getSelectedHandCard();
+    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+      if (((ActionCard) selectedCard).isBug()) {
+        turn.incrementPlayedBugCardsThisTurn();
+        turn.setLastPlayedBugCard((ActionCard) selectedCard);
+        turn.setLastPlayedBugCardBy(player);
+        LOGGER.info(player.getUserName() + " played bug card " + selectedCard.toString());
+
+        receiverOfCard.blockBug(new BugBlock(player.getUserName()));
+
+        int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
+        receiverOfCard.setMentalHealth(decreasedMentalHealthPoints);
+      }
+    }
 
     if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
+    }
+  }
 
-      if (((Card) selectedCard).getCardType() == CardType.ACTION
-          && ((ActionCard) selectedCard).isBug()) {
-        turn.incrementPlayedBugCardsThisTurn();
+  public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
+    if (!player.hasSelectedCard()) {
+      return;
+    }
+    
+    StackCard selectedCard = player.getSelectedHandCard();
+    LOGGER.info(player.getUserName() + " clicked on received Card");
+    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+      if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
+        discardHandCard(player, selectedCard);
+        putCardOnHeap(player, clickedCard);
+        player.getReceivedCards().remove(clickedCard);
+        chatMessages.add(
+            new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
+        if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
+          player.addToMentalHealth(1);
+        }
       }
     }
+  }
+
+  public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
+    ActionCard bugCard = turn.getLastPlayedBugCard();
+    Player basePlayer = turn.getLastPlayedBugCardBy();
+
+    putCardOnHeap(player, lameExcuseCard);
+    putCardOnHeap(basePlayer, bugCard);
+    player.getReceivedCards().remove(lameExcuseCard);
+    player.getReceivedCards().remove(bugCard);
+
+    if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
+      player.addToMentalHealth(1);
+    }
+
+    chatMessages.add(
+        new ChatMessage(
+            player.getUserName()
+                + " blocked \""
+                + bugCard.toString()
+                + "\" with \""
+                + lameExcuseCard.toString()
+                + "\"."));
   }
 
   /**

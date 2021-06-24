@@ -1,15 +1,16 @@
 package de.lmu.ifi.sosy.tbial.game;
 
+import de.lmu.ifi.sosy.tbial.BugBlock;
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 /**
  * A player of a game.
@@ -43,6 +44,8 @@ public class Player implements Serializable {
 
   private boolean won;
 
+  private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
+
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
@@ -59,6 +62,14 @@ public class Player implements Serializable {
 
   public String getMentalHealth() {
     return "Mental Health: " + mentalHealth;
+  }
+
+  public LinkedList<BugBlock> getBugBlocks() {
+    return bugBlocks;
+  }
+
+  public void blockBug(BugBlock bugBlock) {
+    bugBlocks.add(bugBlock);
   }
 
   public String getPrestige() {
@@ -198,6 +209,10 @@ public class Player implements Serializable {
    */
   public void setSelectedHandCard(StackCard selectedCard) {
     this.selectedHandCard = selectedCard;
+  }
+
+  public boolean hasSelectedCard() {
+    return selectedHandCard != null;
   }
 
   /**

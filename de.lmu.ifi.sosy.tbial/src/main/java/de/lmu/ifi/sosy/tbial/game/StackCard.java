@@ -6,4 +6,6 @@ public interface StackCard {
   public abstract String getResourceFileName();
 
   public abstract boolean isBug();
+
+  public abstract boolean isLameExcuse();
 }

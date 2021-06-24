@@ -153,7 +153,7 @@ public abstract class BasePage extends WebPage {
         && ((TBIALSession) currentSession).getUser() != null) {
       loggedInUsername.setDefaultModelObject(((TBIALSession) currentSession).getUser().getName());
     }
-
+    
     if (!getSession().isSignedIn()) {
       link.setVisible(false);
       link.setEnabled(false);
