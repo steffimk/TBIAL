@@ -407,6 +407,8 @@ pre.boxed {
 	white-space: pre-wrap;
 	border: solid 2px #ff6600;
 }
+<<<<<<< HEAD
+=======
 
 .bugBlocksContainer {
 	width: 93%;
@@ -436,3 +438,4 @@ pre.boxed {
   justify-content: space-between;
   align-items: center;
 }
+>>>>>>> master

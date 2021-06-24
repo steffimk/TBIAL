@@ -14,6 +14,8 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -26,8 +28,10 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.game.ActionCard;
 import de.lmu.ifi.sosy.tbial.game.Card;
+import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
@@ -45,6 +49,8 @@ public class GameTable extends BasePage {
   private Game currentGame;
 
   public GameTable() {
+
+    getApplication().getMarkupSettings().setStripWicketTags(true);
 
     // get current game
     currentGame = getGameManager().getGameOfUser(getSession().getUser().getName());
@@ -86,6 +92,20 @@ public class GameTable extends BasePage {
     // always add current session player here
     WebMarkupContainer player1 = new WebMarkupContainer("player1");
 
+    player1.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+            if (basePlayer.isFired()) {
+              player1.add(new AttributeModifier("style", "opacity: 0.4;"));
+              stop(target);
+            }
+          }
+        });
     player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer, table));
     player1.setOutputMarkupId(true);
     // get the rest of the players
@@ -111,12 +131,17 @@ public class GameTable extends BasePage {
             PlayerAreaPanel panel =
                 new PlayerAreaPanel("panel", Model.of(player), currentGame, basePlayer, table);
             // add css classes
+            if (player.isFired()) {
+              listItem.add(new AttributeModifier("style", "opacity: 0.4;"));
+            }
             listItem.add(
                 new AttributeModifier("class", "player-" + "" + numberOfPlayers + "-" + "" + (i)));
             panel.add(
                 new AttributeModifier(
                     "class", "container" + "" + numberOfPlayers + "-" + "" + (i)));
             listItem.add(panel);
+            listItem.setOutputMarkupId(true);
+
             i++;
             if (i > numberOfPlayers) {
               i = 2;
@@ -131,6 +156,7 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
+            System.out.println("Clicked on stack");
 
             if (currentGame.getStackAndHeap().getStack().size() == 0) {
               currentGame.getStackAndHeap().refillStack();
@@ -177,7 +203,9 @@ public class GameTable extends BasePage {
     stackImage.setOutputMarkupId(true);
     stackContainer.add(stackImage);
 
-    WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
+    DroppableArea heapContainer =
+        new DroppableArea(
+            "heapContainer", DroppableType.HEAP, currentGame, basePlayer, null, table);
     Image heapImage =
         new Image("heapCard", () -> currentGame.getStackAndHeap().getUppermostCardOfHeap()) {
 
@@ -250,7 +278,7 @@ public class GameTable extends BasePage {
             double remainingCardsPercentage =
                 (double) currentHeapSize / (double) StackAndHeap.HEAP_MAX_SIZE;
 
-            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+            if (remainingCardsPercentage > 0.02 && remainingCardsPercentage < 0.33) {
               return StackImageResourceReferences.smallHeapImage;
             } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
               return StackImageResourceReferences.mediumHeapImage;
@@ -263,7 +291,7 @@ public class GameTable extends BasePage {
         };
     heapBackgroundImage.setOutputMarkupId(true);
     heapContainer.add(heapBackgroundImage);
-
+    
     heapContainer.add(
         new AjaxEventBehavior("click") {
           private static final long serialVersionUID = 1L;
@@ -323,9 +351,19 @@ public class GameTable extends BasePage {
     table.add(heapContainer);
     table.add(player1);
     table.add(playerList);
-    // Update the table every 20 seconds so that other players can see progress
+    // Update the table every 5 seconds so that other players can see progress
     // -> Is there a better way for this?
-    table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
+    table.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected boolean shouldTrigger() {
+            // Don't update when it's the baseplayer's turn
+            return currentGame.getTurn().getCurrentPlayer() != basePlayer;
+          }
+        });
 
     table.add(
         new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
@@ -363,6 +401,83 @@ public class GameTable extends BasePage {
     add(discardButton);
     add(endTurnButton);
     add(new ChatPanel("chatPanel", currentGame.getChatMessages()));
+
+    WebMarkupContainer ceremony = new WebMarkupContainer("ceremony");
+    Label ceremonyTitle =
+        new Label(
+            "ceremonyTitle",
+            () -> {
+              if (basePlayer.hasWon()) {
+                return "Congratulations!";
+              } else return "You lost!";
+            });
+    Label winner =
+        new Label(
+            "winners",
+            () -> {
+              if (basePlayer.hasWon()
+                  && (basePlayer.getRole() == Role.MANAGER
+                      || (basePlayer.getRole() == Role.CONSULTANT
+                          && currentGame.allMonkeysFired(otherPlayers)))) {
+                return currentGame
+                    .getWinners()
+                    .replace("has", "have")
+                    .replace(basePlayer.getUserName(), "You");
+              }
+              return currentGame.getWinners().replace(basePlayer.getUserName(), "you");
+            });
+    winner.setOutputMarkupId(true);
+    WebMarkupContainer confetti = new WebMarkupContainer("confetti");
+    ceremony.add(winner);
+    ceremony.add(ceremonyTitle);
+    ceremony.add(confetti);
+    Form<?> endGameForm = new Form<>("endGameForm");
+    Button endGameButton =
+        new Button("endGameButton") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onSubmit() {
+            getTbialApplication().getGameManager().removeUserFromGame(basePlayer.getUserName());
+            for (Player player : otherPlayers) {
+              getTbialApplication().getGameManager().removeUserFromGame(player.getUserName());
+            }
+            getTbialApplication().getGameManager().removeGame(currentGame);
+            setResponsePage(getApplication().getHomePage());
+          }
+        };
+    endGameForm.add(endGameButton);
+    ceremony.add(endGameForm);
+    ceremony.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+              if (currentGame.getManager().isFired()) {
+                ceremony.add(new AttributeModifier("class", "visible"));
+                if (basePlayer.hasWon()) {
+                  confetti.add(new AttributeModifier("style", "display: block;"));
+                }
+                stop(target);
+              } else if (currentGame.getConsultant().isFired()
+                  && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
+                ceremony.add(new AttributeModifier("class", "visible"));
+                if (basePlayer.hasWon()) {
+                  confetti.add(new AttributeModifier("style", "display: block;"));
+                }
+                stop(target);
+              
+            }
+            target.add(ceremony);
+          }
+        });
+
+    add(ceremony);
  }
 
   private AttributeModifier getDiscardingAnimationForPlayer(
@@ -370,7 +485,7 @@ public class GameTable extends BasePage {
     int playerIndex = 2 + otherPlayers.indexOf(player);
     // If basePlayer
     if (playerIndex == 1) {
-      return new AttributeModifier("style", "animation-name: discardAnimation");
+      return new AttributeModifier("style", "animation-name: none;");
     }
     return new AttributeModifier(
         "style", "animation-name: discardAnimation" + numberOfPlayers + "-" + playerIndex);

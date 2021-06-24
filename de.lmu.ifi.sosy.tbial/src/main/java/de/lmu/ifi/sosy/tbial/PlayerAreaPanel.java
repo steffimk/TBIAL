@@ -9,6 +9,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -22,7 +23,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
 
+import com.googlecode.wicket.jquery.core.resource.StyleSheetPackageHeaderItem;
+import com.googlecode.wicket.jquery.ui.interaction.draggable.Draggable;
+import com.googlecode.wicket.jquery.ui.interaction.droppable.Droppable;
+
 import de.lmu.ifi.sosy.tbial.game.StackCard;
+import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 
@@ -61,9 +67,10 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected void onTimer(AjaxRequestTarget target) {
             if (player.getObject().getMentalHealthInt() == 0) {
-              player.getObject().fire(true);
+              game.firePlayer(player.getObject(), player.getObject().getHandCards());
               role.setVisible(true);
               target.add(role);
+              target.add(getParent().add(new AttributeModifier("style", "opacity: 0.4;")));
               stop(target);
             }
 
@@ -88,7 +95,15 @@ public class PlayerAreaPanel extends Panel {
             target.add(table);
           }
         };
-    add(playAbilityButton);
+    Droppable<Void> playAbilityDropBox =
+        new DroppableArea(
+            "playAbilityDropBox",
+            DroppableType.PLAY_ABILITY,
+            game,
+            basePlayer,
+            player.getObject(),
+            table);
+    playAbilityDropBox.add(playAbilityButton);
 
     IModel<List<StackCard>> playedAbilityCardsModel =
         (IModel<List<StackCard>>)
@@ -108,7 +123,9 @@ public class PlayerAreaPanel extends Panel {
            
           }
         };
-    add(playedAbilityCards);
+    playAbilityDropBox.add(playedAbilityCards);
+
+    add(playAbilityDropBox);
 
     // --------------------------- The block cards ---------------------------
     AjaxLink<Void> addCardButton =
@@ -127,8 +144,10 @@ public class PlayerAreaPanel extends Panel {
             target.add(table);
           }
         };
-
-    add(addCardButton);
+    Droppable<Void> addCardDropBox =
+        new DroppableArea(
+            "addCardDropBox", DroppableType.ADD_CARD, game, basePlayer, player.getObject(), table);
+    addCardDropBox.add(addCardButton);
 
     IModel<List<StackCard>> blockCardModel =
         (IModel<List<StackCard>>)
@@ -156,7 +175,9 @@ public class PlayerAreaPanel extends Panel {
                 });
           }
         };
-    add(blockCards);
+    addCardDropBox.add(blockCards);
+
+    add(addCardDropBox);
 
     // --------------------------- The hand cards ---------------------------
 
@@ -191,12 +212,25 @@ public class PlayerAreaPanel extends Panel {
                   new Image(
                       "handCard",
                       new PackageResourceReference(getClass(), handCard.getResourceFileName()));
-              listItem.add(card);
-              if (player.getObject().getSelectedHandCard() == handCard) {
-                card.add(new AttributeModifier("class", "handcard selected"));
+              card.setOutputMarkupId(true);
+              // If it is the turn of the player: Cards are draggable
+              if (game.getTurn().getCurrentPlayer() == player.getObject()) {
+                if (player.getObject().getSelectedHandCard() == handCard) {
+                  card.add(new AttributeModifier("class", "handcard selected"));
+                }
+                Draggable<StackCard> draggable =
+                    getNewDraggableInstance(handCard, game, player.getObject());
+                draggable.add(card);
+                listItem.add(draggable);
+              } else {
+                WebMarkupContainer notDraggable = new WebMarkupContainer("draggable");
+                notDraggable.add(card);
+                listItem.add(notDraggable);
               }
             } else {
-              listItem.add(new Image("handCard", StackImageResourceReferences.cardBackImage));
+              WebMarkupContainer notDraggable = new WebMarkupContainer("draggable");
+              notDraggable.add(new Image("handCard", StackImageResourceReferences.cardBackImage));
+              listItem.add(notDraggable);
             }
           }
         };
@@ -205,4 +239,30 @@ public class PlayerAreaPanel extends Panel {
     add(handCardContainer);
   }
 
+  @Override
+  public void renderHead(IHeaderResponse response) {
+    super.renderHead(response);
+    response.render(new StyleSheetPackageHeaderItem(GameTable.class));
+  }
+
+  /**
+   * Returns a new instance of a draggable
+   *
+   * @param card The card which the draggable contains
+   * @param game The current game
+   * @param player The player whose card it is
+   * @return
+   */
+  private Draggable<StackCard> getNewDraggableInstance(StackCard card, Game game, Player player) {
+    return new Draggable<StackCard>("draggable", () -> card) {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void onDragStart(AjaxRequestTarget target, int top, int left) {
+        game.clickedOnHandCard(player, card);
+        getApplication().getMarkupSettings().setStripWicketTags(true);
+      }
+    };
+  }
 }
+

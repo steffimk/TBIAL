@@ -16,7 +16,6 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
-import de.lmu.ifi.sosy.tbial.game.GameManager;
 
 /** The page that displays all users that are currently online. */
 @AuthenticationRequired
