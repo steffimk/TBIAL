@@ -97,9 +97,9 @@
 	transform: rotate(180deg);
 }
 
-.container4-3 .handcard {
-	transform: rotate(180deg);
-}
+/* .container4-3 .handcard { */
+/* 	transform: rotate(180deg); */
+/* } */
 
 .container4-3 .playedcard {
 	transform: rotate(180deg);
@@ -216,10 +216,6 @@
 	transform: rotate(180deg);
 }
 
-.container5-3 .handcard {
-	transform: rotate(180deg);
-}
-
 .container5-3 .playedcard {
 	transform: rotate(180deg);
 }
@@ -264,10 +260,6 @@
 .container5-4 .cards {
 	left: 24%;
 	transform: scaleX(-1);
-}
-
-.container5-4 .handcard {
-	transform: rotate(180deg) scaleX(-1);
 }
 
 .container5-4 .linkText {
@@ -324,10 +316,6 @@
 
 .container5-5 .linkText {
 	transform: rotate(180deg) scaleX(-1);
-}
-
-.container5-5 .handcard {
-	transform: scaleX(-1);
 }
 
 .container5-5 .playedcard {
@@ -422,10 +410,6 @@
     height: 30%;
 }
 
-.container6-3 .handcard {
-	transform: rotate(180deg);
-}
-
 .container6-3 .linkText {
 	transform: rotate(180deg);
 }
@@ -478,10 +462,6 @@
 	width: 21%;
 	height: 30%;
 	transform: scaleX(-1);
-}
-
-.container6-4 .handcard {
-	transform: rotate(180deg) scaleX(-1);
 }
 
 .container6-4 .linkText {
@@ -540,10 +520,6 @@
     height: 30%;
 }
 
-.container6-5 .handcard {
-	transform: rotate(180deg) scaleX(-1);
-}
-
 .container6-5 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
@@ -597,10 +573,6 @@
     width: 22%;
     height: 32%;
     transform: scaleX(-1);
-}
-
-.container6-6 .handcard {
-	transform: scaleX(-1);
 }
 
 .container6-6 .linkText {
@@ -703,10 +675,6 @@
     transform: rotate(-45deg);
 }
 
-.container7-3 .handcard {
-	transform: rotate(180deg);
-}
-
 .container7-3 .linkText {
 	transform: rotate(180deg);
 }
@@ -759,10 +727,6 @@
     top: 69%;
     width: 21%;
     height: 30%;
-}
-
-.container7-4 .handcard {
-	transform: rotate(180deg);
 }
 
 .container7-4 .linkText {
@@ -823,10 +787,6 @@
     transform: rotate(-90deg) scaleX(-1);
 }
 
-.container7-5 .handcard {
-	transform: rotate(180deg) scaleX(-1);
-}
-
 .container7-5 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
@@ -885,10 +845,6 @@
     transform: rotate(-45deg) scaleX(-1);
 }
 
-.container7-6 .handcard {
-	transform: rotate(180deg) scaleX(-1);
-}
-
 .container7-6 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
@@ -944,10 +900,6 @@
     width: 21%;
     height: 30%;
     transform: scaleX(-1);
-}
-
-.container7-7 .handcard {
-	transform: scaleX(-1);
 }
 
 .container7-7 .linkText {

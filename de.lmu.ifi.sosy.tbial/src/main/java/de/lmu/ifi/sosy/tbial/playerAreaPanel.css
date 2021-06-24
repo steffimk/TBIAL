@@ -68,13 +68,11 @@ li {
 	height: 90%;
 	width: 0%;
 	margin: 0 auto 0 0;
-	pointer-events: none;
 }
 
 .handCardWrapper {
 	width: 0%;
 	margin: 0 auto 0 0;
-	display: flex;
 }
 
 .handcard, .playedcard {
@@ -84,13 +82,15 @@ li {
 }
 
 .handcard:hover {
-	transform: scale(2);
+	transform: scale(1.5);
 	transform-origin: bottom;
-	}
-	
+	z-index: 10;
+}
+
 .playedcard:hover {
-	transform: scale(2);
+	transform: scale(1.5);
 	transform-origin: top;
+	z-index: 10;
 }
 
 .selected {
