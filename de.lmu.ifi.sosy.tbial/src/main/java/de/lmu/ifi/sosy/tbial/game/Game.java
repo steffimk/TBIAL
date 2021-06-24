@@ -73,8 +73,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-    //    addNewPlayer("A");
-    //    addNewPlayer("B");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -142,10 +140,6 @@ public class Game implements Serializable {
           break;
       }
     }
-    //    setManager(getInGamePlayersList());
-    //    setConsultant(getInGamePlayersList());
-    //    setEvilCodeMonkeys(getInGamePlayersList());
-    //    setHonestDeveloper(getInGamePlayersList());
     distributeCharacterCardsAndInitialMentalHealthPoints();
     stackAndHeap = new StackAndHeap();
     turn = new Turn(new ArrayList<Player>(players.values()));
