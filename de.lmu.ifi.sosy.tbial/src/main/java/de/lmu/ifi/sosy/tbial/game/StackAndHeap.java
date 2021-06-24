@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
@@ -81,6 +82,16 @@ public class StackAndHeap implements Serializable {
    */
   public void addToHeap(StackCard card, Player player) {
     heap.add(card);
+    lastPlayerToDiscardCard = player;
+  }
+
+  /**
+   * Adds all handCards to the heap
+   *
+   * @param cards The cards to be added to the heap
+   */
+  public synchronized void addAllToHeap(Set<StackCard> cards, Player player) {
+    heap.addAll(cards);
     lastPlayerToDiscardCard = player;
   }
 
