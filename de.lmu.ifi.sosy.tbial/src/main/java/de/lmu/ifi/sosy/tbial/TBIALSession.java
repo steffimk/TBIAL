@@ -28,8 +28,6 @@ public class TBIALSession extends AuthenticatedWebSession {
 
   private User user;
 
-  private Game currentGame = null;
-
   public TBIALSession(Request request) {
     super(request);
   }
@@ -58,7 +56,7 @@ public class TBIALSession extends AuthenticatedWebSession {
   }
 
   public boolean isInGame() {
-    return getCurrentGame() != null;
+    return getTbialApplication().getGameManager().getGameOfUser(user.getName()) != null;
   }
 
   private Database getDatabase() {
@@ -72,16 +70,16 @@ public class TBIALSession extends AuthenticatedWebSession {
   /** Leaves the current game (if not null), signs out and clears the user. */
   @Override
   public void signOut() {
-    if (getCurrentGame() != null) {
-      if (!getCurrentGame().checkIfLastPlayer()
-          && getUser().getName().equals(getCurrentGame().getHost())) {
-        getCurrentGame().changeHost();
+	if (user != null && getTbialApplication().getGameManager().getGameOfUser(user.getName()) != null) {
+      Game currentGame = getTbialApplication().getGameManager().getGameOfUser(user.getName());
+      if (!currentGame.checkIfLastPlayer() && getUser().getName().equals(currentGame.getHost())) {
+        currentGame.changeHost();
       }
-      if (getCurrentGame().checkIfLastPlayer()) {
-        getTbialApplication().getGameManager().removeGame(getCurrentGame());
+      if (currentGame.checkIfLastPlayer()) {
+        getTbialApplication().getGameManager().removeGame(currentGame);
       }
-      getCurrentGame().getPlayers().remove(getUser().getName());
-      setCurrentGameNull();
+      currentGame.getPlayers().remove(getUser().getName());
+      getTbialApplication().getGameManager().removeUserFromGame(user.getName());
     }
     super.signOut();
     if (user != null) {
@@ -112,32 +110,5 @@ public class TBIALSession extends AuthenticatedWebSession {
   public void setUser(User user) {
     this.user = user;
   }
-
-  public Game getCurrentGame() {
-    return currentGame;
-  }
-
-  public void setCurrentGame(Game game) {
-    this.currentGame = game;
-  }
-
-  public void setCurrentGameNull() {
-    this.currentGame = null;
-  }
-
-  /**
-   * Method to join a game, adding to the games player list and setting the current game
-   *
-   * @param game
-   * @param password
-   */
-  public boolean joinGame(Game game, String password) {
-    String username = getUser().getName();
-    if (game.checkIfYouCanJoin(username, password)) {
-      game.addNewPlayer(username);
-      setCurrentGame(game);
-      return true;
-    }
-    return false;
-  }
+  
 }
