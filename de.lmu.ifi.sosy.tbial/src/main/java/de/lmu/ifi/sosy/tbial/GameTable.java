@@ -7,11 +7,11 @@ import java.util.Map;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
-import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -26,7 +26,10 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
 
+import de.lmu.ifi.sosy.tbial.game.ActionCard;
+import de.lmu.ifi.sosy.tbial.game.Card;
 import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
+
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
@@ -34,6 +37,7 @@ import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 
 /** Game Table */
 @AuthenticationRequired
@@ -156,7 +160,7 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-        	  
+
             if (currentGame.getStackAndHeap().getStack().size() == 0) {
               currentGame.getStackAndHeap().refillStack();
             }
@@ -392,6 +396,15 @@ public class GameTable extends BasePage {
           }
         };
 
+        final ModalWindow modal;
+        add(modal = new ModalWindow("blockBugModal"));
+        modal.setTitle("Bug played against you!");
+        modal.setContent(new BugBlockPanel(modal.getContentId(), currentGame, basePlayer));
+        modal.setCloseButtonCallback(
+            target -> {
+              return true;
+            });
+        
     table.add(stackContainer);
     table.add(heapContainer);
     table.add(player1);
@@ -407,6 +420,37 @@ public class GameTable extends BasePage {
           protected boolean shouldTrigger() {
             // Don't update when it's the baseplayer's turn
             return currentGame.getTurn().getCurrentPlayer() != basePlayer;
+          }
+        });
+
+    table.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
+            boolean hasLameExcuse = false;
+            boolean hasSolution = false;
+
+            for (StackCard card : basePlayer.getHandCards()) {
+              if (((Card) card).getCardType() == CardType.ACTION) {
+                if (((ActionCard) card).isLameExcuse()) {
+                  hasLameExcuse = true;
+                }
+                if (((ActionCard) card).isSolution()) {
+                  hasSolution = true;
+                }
+              }
+            }
+
+            if (!basePlayer.getBugBlocks().isEmpty() && (hasLameExcuse || hasSolution)) {
+              if (!modal.isShown()) {
+                currentGame
+                    .getChatMessages()
+                    .add(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
+              }
+              modal.show(target);
+            }
           }
         });
 
