@@ -97,8 +97,15 @@
 	transform: rotate(180deg);
 }
 
-.container4-3 .handcard {
+.container4-3 .playedcard {
 	transform: rotate(180deg);
+}
+
+.container4-3 .playedcard:hover {
+	transform: scale(2) rotate(180deg) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container4-4 {
@@ -205,8 +212,15 @@
 	transform: rotate(180deg);
 }
 
-.container5-3 .handcard {
+.container5-3 .playedcard {
 	transform: rotate(180deg);
+}
+
+.container5-3 .playedcard:hover {
+	transform: scale(2) rotate(180deg) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container5-4 {
@@ -244,12 +258,19 @@
 	transform: scaleX(-1);
 }
 
-.container5-4 .handcard {
+.container5-4 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
 
-.container5-4 .linkText {
+.container5-4 .playedcard {
 	transform: rotate(180deg) scaleX(-1);
+}
+
+.container5-4 .playedcard:hover {
+	transform: scale(2) rotate(180deg) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container5-5 {
@@ -293,8 +314,15 @@
 	transform: rotate(180deg) scaleX(-1);
 }
 
-.container5-5 .handcard {
+.container5-5 .playedcard {
 	transform: scaleX(-1);
+}
+
+.container5-5 .playedcard:hover {
+	transform: scale(2) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container6-2 {
@@ -378,12 +406,19 @@
     height: 30%;
 }
 
-.container6-3 .handcard {
+.container6-3 .linkText {
 	transform: rotate(180deg);
 }
 
-.container6-3 .linkText {
+.container6-3 .playedcard {
 	transform: rotate(180deg);
+}
+
+.container6-3 .playedcard:hover {
+	transform: scale(2) rotate(180deg) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container6-4 {
@@ -425,12 +460,19 @@
 	transform: scaleX(-1);
 }
 
-.container6-4 .handcard {
+.container6-4 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
 
-.container6-4 .linkText {
+.container6-4 .playedcard {
 	transform: rotate(180deg) scaleX(-1);
+}
+
+.container6-4 .playedcard:hover {
+	transform: scale(2) rotate(180deg) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container6-5 {
@@ -474,12 +516,19 @@
     height: 30%;
 }
 
-.container6-5 .handcard {
+.container6-5 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
 
-.container6-5 .linkText {
+.container6-5 .playedcard {
 	transform: rotate(180deg) scaleX(-1);
+}
+
+.container6-5 .playedcard:hover {
+	transform: scale(2) rotate(180deg) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container6-6 {
@@ -522,12 +571,19 @@
     transform: scaleX(-1);
 }
 
-.container6-6 .handcard {
+.container6-6 .linkText {
+	transform: rotate(180deg) scaleX(-1);
+}
+
+.container6-6 .playedcard {
 	transform: scaleX(-1);
 }
 
-.container6-6 .linkText {
-	transform: rotate(180deg) scaleX(-1);
+.container6-6 .playedcard:hover {
+	transform: scale(2) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container7-2 {
@@ -615,12 +671,19 @@
     transform: rotate(-45deg);
 }
 
-.container7-3 .handcard {
+.container7-3 .linkText {
 	transform: rotate(180deg);
 }
 
-.container7-3 .linkText {
+.container7-3 .playedcard {
 	transform: rotate(180deg);
+}
+
+.container7-3 .playedcard:hover {
+	transform: scale(2) rotate(180deg) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container7-4 {
@@ -662,12 +725,19 @@
     height: 30%;
 }
 
-.container7-4 .handcard {
+.container7-4 .linkText {
 	transform: rotate(180deg);
 }
 
-.container7-4 .linkText {
+.container7-4 .playedcard {
 	transform: rotate(180deg);
+}
+
+.container7-4 .playedcard:hover {
+	transform: scale(2) rotate(180deg) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container7-5 {
@@ -713,12 +783,19 @@
     transform: rotate(-90deg) scaleX(-1);
 }
 
-.container7-5 .handcard {
+.container7-5 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
 
-.container7-5 .linkText {
+.container7-5 .playedcard {
 	transform: rotate(180deg) scaleX(-1);
+}
+
+.container7-5 .playedcard:hover {
+	transform: scale(2) rotate(180deg) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container7-6 {
@@ -764,12 +841,19 @@
     transform: rotate(-45deg) scaleX(-1);
 }
 
-.container7-6 .handcard {
+.container7-6 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
 
-.container7-6 .linkText {
+.container7-6 .playedcard {
 	transform: rotate(180deg) scaleX(-1);
+}
+
+.container7-6 .playedcard:hover {
+	transform: scale(2) rotate(180deg) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 .container7-7 {
@@ -814,12 +898,19 @@
     transform: scaleX(-1);
 }
 
-.container7-7 .handcard {
+.container7-7 .linkText {
+	transform: rotate(180deg) scaleX(-1);
+}
+
+.container7-7 .playedcard {
 	transform: scaleX(-1);
 }
 
-.container7-7 .linkText {
-	transform: rotate(180deg) scaleX(-1);
+.container7-7 .playedcard:hover {
+	transform: scale(2) scaleX(-1) translate(0, -15px);
+	transform-origin: center;
+    z-index: 10;
+    position: relative;
 }
 
 /* polygons start in the middle and then go clockwise */
