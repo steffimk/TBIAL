@@ -360,6 +360,23 @@ public class GameTable extends BasePage {
           }
         };
 
+    AjaxLink<Void> waitForResponseButton =
+        new AjaxLink<>("waitForResponseButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void onConfigure() {
+            onConfigureOfGameFlowButtons(this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, null);
+            super.onConfigure();
+          }
+
+          @Override
+          public void onClick(AjaxRequestTarget target) {
+            return;
+          }
+        };
+
     AjaxLink<Void> discardButton =
         new AjaxLink<>("discardButton") {
 
@@ -396,15 +413,15 @@ public class GameTable extends BasePage {
           }
         };
 
-        final ModalWindow modal;
-        add(modal = new ModalWindow("blockBugModal"));
-        modal.setTitle("Bug played against you!");
-        modal.setContent(new BugBlockPanel(modal.getContentId(), currentGame, basePlayer));
-        modal.setCloseButtonCallback(
-            target -> {
-              return true;
-            });
-        
+    final ModalWindow modal;
+    add(modal = new ModalWindow("blockBugModal"));
+    modal.setTitle("Bug played against you!");
+    modal.setContent(new BugBlockPanel(modal.getContentId(), currentGame, basePlayer));
+    modal.setCloseButtonCallback(
+        target -> {
+          return true;
+        });
+
     table.add(stackContainer);
     table.add(heapContainer);
     table.add(player1);
@@ -459,6 +476,7 @@ public class GameTable extends BasePage {
     gameFlowContainer.add(new Label("turnLabel", () -> this.getTextOfTurnLabel()));
     gameFlowContainer.add(drawCardsButton);
     gameFlowContainer.add(playCardsButton);
+    gameFlowContainer.add(waitForResponseButton);
     gameFlowContainer.add(discardButton);
     gameFlowContainer.add(endTurnButton);
     add(gameFlowContainer);
