@@ -373,8 +373,13 @@ public class Game implements Serializable {
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
 
-    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) return;
-
+    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) {
+      chatMessages.add(
+          new ChatMessage(
+              "You cannot play another bug.")); // TODO: Only show player who played card?
+      return;
+    }
+    
     StackCard selectedCard = player.getSelectedHandCard();
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isBug()) {

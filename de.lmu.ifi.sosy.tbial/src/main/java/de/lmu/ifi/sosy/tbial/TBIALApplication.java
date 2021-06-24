@@ -62,6 +62,7 @@ public class TBIALApplication extends WebApplication {
 
   @Override
   protected void init() {
+    super.init();
     initMarkupSettings();
     initPageMounts();
     initAuthorization();
@@ -71,6 +72,7 @@ public class TBIALApplication extends WebApplication {
   private void initMarkupSettings() {
     if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
       getMarkupSettings().setStripWicketTags(true);
+      super.getMarkupSettings().setStripWicketTags(true);
       getMarkupSettings().setStripComments(true);
       getMarkupSettings().setCompressWhitespace(true);
       getResourceSettings().setDefaultCacheDuration(Duration.NONE);

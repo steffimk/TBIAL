@@ -4,12 +4,16 @@ import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 /**
  * A player of a game.
@@ -20,7 +24,7 @@ public class Player implements Serializable {
 
   /** UID for serialization. */
   private static final long serialVersionUID = 1L;
-  
+
   private final String userName;
 
   private RoleCard roleCard;
@@ -33,7 +37,7 @@ public class Player implements Serializable {
   private Set<StackCard> handCards;
   /** The ability cards the player played. */
   private Set<AbilityCard> playedAbilityCards;
-  
+
   private Set<StackCard> receivedCards;
 
   /** The last card the player has clicked on. Is <code>null</code> if no card is selected. */
@@ -47,7 +51,7 @@ public class Player implements Serializable {
     this.userName = userName;
     this.prestige = 0;
     this.fired = false;
-    this.mentalHealth = 0;
+    this.mentalHealth = 4;
     this.handCards = Collections.synchronizedSet(new HashSet<>());
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
@@ -123,7 +127,7 @@ public class Player implements Serializable {
   public void initialMentalHealth() {
     requireNonNull(characterCard);
     requireNonNull(roleCard);
-    mentalHealth = characterCard.getMaxHealthPoints();
+    //mentalHealth = characterCard.getMaxHealthPoints();
     if (roleCard.getRole() == Role.MANAGER) {
       mentalHealth += 1;
     }

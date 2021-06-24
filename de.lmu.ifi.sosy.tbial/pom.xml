@@ -72,6 +72,16 @@
 			<artifactId>wicket-auth-roles</artifactId>
 			<version>${wicket-authroles.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.googlecode.wicket-jquery-ui</groupId>
+			<artifactId>wicket-jquery-ui</artifactId>
+			<version>8.12.0</version>
+		</dependency>
+		<dependency>
+   			<groupId>com.googlecode.wicket-jquery-ui</groupId>
+    		<artifactId>wicket-kendo-ui</artifactId>
+    		<version>8.12.0</version>
+		</dependency>
 
 		<!-- Java Servlet API -->
 		<dependency>
