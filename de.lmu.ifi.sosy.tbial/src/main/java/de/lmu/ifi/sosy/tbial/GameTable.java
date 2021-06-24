@@ -25,6 +25,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
 
+import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
@@ -44,6 +45,8 @@ public class GameTable extends BasePage {
   private Game currentGame;
 
   public GameTable() {
+
+    getApplication().getMarkupSettings().setStripWicketTags(true);
 
     // get current game
     currentGame = getGameManager().getGameOfUser(getSession().getUser().getName());
@@ -149,8 +152,7 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            System.out.println("Clicked on stack");
-
+        	  
             if (currentGame.getStackAndHeap().getStack().size() == 0) {
               currentGame.getStackAndHeap().refillStack();
             }
@@ -196,7 +198,9 @@ public class GameTable extends BasePage {
     stackImage.setOutputMarkupId(true);
     stackContainer.add(stackImage);
 
-    WebMarkupContainer heapContainer = new WebMarkupContainer("heapContainer");
+    DroppableArea heapContainer =
+        new DroppableArea(
+            "heapContainer", DroppableType.HEAP, currentGame, basePlayer, null, table);
     Image heapImage =
         new Image("heapCard", () -> currentGame.getStackAndHeap().getUppermostCardOfHeap()) {
 
@@ -269,7 +273,7 @@ public class GameTable extends BasePage {
             double remainingCardsPercentage =
                 (double) currentHeapSize / (double) StackAndHeap.HEAP_MAX_SIZE;
 
-            if (remainingCardsPercentage > 0 && remainingCardsPercentage < 0.33) {
+            if (remainingCardsPercentage > 0.02 && remainingCardsPercentage < 0.33) {
               return StackImageResourceReferences.smallHeapImage;
             } else if (remainingCardsPercentage >= 0.33 && remainingCardsPercentage < 0.66) {
               return StackImageResourceReferences.mediumHeapImage;
@@ -282,7 +286,7 @@ public class GameTable extends BasePage {
         };
     heapBackgroundImage.setOutputMarkupId(true);
     heapContainer.add(heapBackgroundImage);
-
+    
     heapContainer.add(
         new AjaxEventBehavior("click") {
           private static final long serialVersionUID = 1L;
@@ -293,7 +297,6 @@ public class GameTable extends BasePage {
             if (!success) return;
             target.add(table);
           }
-
         });
 
     AjaxLink<Void> playCardsButton =
@@ -333,9 +336,19 @@ public class GameTable extends BasePage {
     table.add(heapContainer);
     table.add(player1);
     table.add(playerList);
-    // Update the table every 20 seconds so that other players can see progress
+    // Update the table every 5 seconds so that other players can see progress
     // -> Is there a better way for this?
-    table.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(20)));
+    table.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected boolean shouldTrigger() {
+            // Don't update when it's the baseplayer's turn
+            return currentGame.getTurn().getCurrentPlayer() != basePlayer;
+          }
+        });
 
     add(table);
     add(playCardsButton);
@@ -426,7 +439,7 @@ public class GameTable extends BasePage {
     int playerIndex = 2 + otherPlayers.indexOf(player);
     // If basePlayer
     if (playerIndex == 1) {
-      return new AttributeModifier("style", "animation-name: discardAnimation");
+      return new AttributeModifier("style", "animation-name: none;");
     }
     return new AttributeModifier(
         "style", "animation-name: discardAnimation" + numberOfPlayers + "-" + playerIndex);

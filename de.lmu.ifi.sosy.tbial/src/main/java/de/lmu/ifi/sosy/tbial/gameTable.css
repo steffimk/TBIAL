@@ -93,6 +93,10 @@
 	transform: rotate(180deg);
 }
 
+.container4-3 .linkText {
+	transform: rotate(180deg);
+}
+
 .container4-3 .handcard {
 	transform: rotate(180deg);
 }
@@ -160,6 +164,10 @@
 	top: 64.5%;
 }
 
+.container5-2 .linkText {
+	transform: rotate(180deg);
+}
+
 .container5-3 {
 	height: 100%;
 	width: 100%;
@@ -191,6 +199,10 @@
 
 .container5-3 .cards {
 	left: 51%;
+}
+
+.container5-3 .linkText {
+	transform: rotate(180deg);
 }
 
 .container5-3 .handcard {
@@ -236,6 +248,10 @@
 	transform: rotate(180deg) scaleX(-1);
 }
 
+.container5-4 .linkText {
+	transform: rotate(180deg) scaleX(-1);
+}
+
 .container5-5 {
 	height: 100%;
 	width: 100%;
@@ -271,6 +287,10 @@
 	left: 34%;
     top: 64.5%;
     transform: scaleX(-1);
+}
+
+.container5-5 .linkText {
+	transform: rotate(180deg) scaleX(-1);
 }
 
 .container5-5 .handcard {
@@ -313,6 +333,10 @@
 	top: 67%;
 	width: 22%;
 	height: 32%;
+}
+
+.container6-2 .linkText {
+	transform: rotate(180deg);
 }
 
 .container6-3 {
@@ -358,6 +382,10 @@
 	transform: rotate(180deg);
 }
 
+.container6-3 .linkText {
+	transform: rotate(180deg);
+}
+
 .container6-4 {
 	height: 100%;
 	width: 100%;
@@ -398,6 +426,10 @@
 }
 
 .container6-4 .handcard {
+	transform: rotate(180deg) scaleX(-1);
+}
+
+.container6-4 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
 
@@ -446,6 +478,10 @@
 	transform: rotate(180deg) scaleX(-1);
 }
 
+.container6-5 .linkText {
+	transform: rotate(180deg) scaleX(-1);
+}
+
 .container6-6 {
 	height: 100%;
 	width: 100%;
@@ -490,6 +526,10 @@
 	transform: scaleX(-1);
 }
 
+.container6-6 .linkText {
+	transform: rotate(180deg) scaleX(-1);
+}
+
 .container7-2 {
 	height: 100%;
 	width: 100%;
@@ -528,6 +568,10 @@
     top: 69%;
     width: 21%;
     height: 30%;
+}
+
+.container7-2 .linkText {
+	transform: rotate(180deg);
 }
 
 .container7-3 {
@@ -575,6 +619,10 @@
 	transform: rotate(180deg);
 }
 
+.container7-3 .linkText {
+	transform: rotate(180deg);
+}
+
 .container7-4 {
 	height: 100%;
 	width: 100%;
@@ -615,6 +663,10 @@
 }
 
 .container7-4 .handcard {
+	transform: rotate(180deg);
+}
+
+.container7-4 .linkText {
 	transform: rotate(180deg);
 }
 
@@ -665,6 +717,10 @@
 	transform: rotate(180deg) scaleX(-1);
 }
 
+.container7-5 .linkText {
+	transform: rotate(180deg) scaleX(-1);
+}
+
 .container7-6 {
 	height: 100%;
 	width: 100%;
@@ -709,6 +765,10 @@
 }
 
 .container7-6 .handcard {
+	transform: rotate(180deg) scaleX(-1);
+}
+
+.container7-6 .linkText {
 	transform: rotate(180deg) scaleX(-1);
 }
 
@@ -758,18 +818,20 @@
 	transform: scaleX(-1);
 }
 
+.container7-7 .linkText {
+	transform: rotate(180deg) scaleX(-1);
+}
+
 /* polygons start in the middle and then go clockwise */
 .player-1 {
 	width: 100%;
 	height: 100%;
-	clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
 	position: absolute;
 	border: 1px solid black;
 }
 
 .player-1:before {
 	content: '';
-	clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
 	background-image: url("table.png");
 	opacity: 0.7;
 	display: block;
@@ -1197,6 +1259,12 @@
 	position: relative;
 }
 
+.heapcardContainer {
+	position: absolute;
+	height: 100%;
+	pointer-events: none;
+}
+
 .heapbackground {
 	position: absolute;
 	z-index: -1;
@@ -1216,6 +1284,7 @@
 	animation-duration: 1s;
 	position: relative;
 	animation-timing-function: ease-in;
+	pointer-events: none;
 }
 
 @keyframes discardAnimation {
