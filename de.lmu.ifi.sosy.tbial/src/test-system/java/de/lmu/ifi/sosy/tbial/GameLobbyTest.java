@@ -2,6 +2,7 @@ package de.lmu.ifi.sosy.tbial;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -32,6 +33,22 @@ public class GameLobbyTest extends PageTestBase {
     tester.assertComponent("isHostLabel", Label.class);
     tester.assertComponent("startGameForm:startGameLink", Link.class);
     tester.assertComponent("currentStatusLabel", Label.class);
+  }
+
+  @Test
+  public void leaveGameOk() {
+    tester.startPage(GameLobby.class);
+    tester.assertRenderedPage(GameLobby.class);
+    Game game = getGameManager().getGameOfUser("testuser");
+    assertNotNull(game);
+
+    tester.submitForm("leaveForm");
+    tester.assertRenderedPage(Lobby.class);
+
+    assertNull(game.getPlayers().get("testuser"));
+    assertNull(getGameManager().getGameOfUser("testuser"));
+
+    assertNotNull(getGameManager().getCurrentGames().containsKey("gamename"));
   }
 
   @Test
