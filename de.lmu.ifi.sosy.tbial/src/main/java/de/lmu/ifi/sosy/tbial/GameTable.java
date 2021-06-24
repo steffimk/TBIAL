@@ -29,6 +29,7 @@ import org.apache.wicket.util.time.Duration;
 import de.lmu.ifi.sosy.tbial.game.ActionCard;
 import de.lmu.ifi.sosy.tbial.game.Card;
 import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
+
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
@@ -302,7 +303,6 @@ public class GameTable extends BasePage {
             if (!success) return;
             target.add(table);
           }
-
         });
 
     AjaxLink<Void> playCardsButton =
