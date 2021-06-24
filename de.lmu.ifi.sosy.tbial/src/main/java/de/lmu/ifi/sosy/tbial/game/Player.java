@@ -1,15 +1,15 @@
 package de.lmu.ifi.sosy.tbial.game;
 
-import de.lmu.ifi.sosy.tbial.BugBlock;
-import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 /**
  * A player of a game.
@@ -41,8 +41,6 @@ public class Player implements Serializable {
 
   private boolean fired;
 
-  private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
-
   private boolean won;
 
   public Player(String userName) {
@@ -53,14 +51,6 @@ public class Player implements Serializable {
     this.handCards = Collections.synchronizedSet(new HashSet<>());
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
-  }
-
-  public LinkedList<BugBlock> getBugBlocks() {
-    return bugBlocks;
-  }
-
-  public void blockBug(BugBlock bugBlock) {
-    bugBlocks.add(bugBlock);
   }
 
   public String getUserName() {
@@ -102,9 +92,6 @@ public class Player implements Serializable {
   public boolean isFired() {
     return fired;
   }
-
-  public boolean hasCardSelected() {
-    return selectedHandCard != null;
 
   public boolean hasWon() {
     return won;
