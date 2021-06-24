@@ -226,14 +226,15 @@ public class GameLobby extends BasePage {
    * GamesList; Sets current game of the leaving player null.
    */
   public void leaveCurrentGame() {
-    if (!getGame().checkIfLastPlayer() && isHost()) {
-      getGame().changeHost();
+    Game game = getGame();
+    if (!game.checkIfLastPlayer() && isHost()) {
+      game.changeHost();
     }
-    if (getGame().checkIfLastPlayer()) {
-      getGameManager().removeGame(getGame());
+    if (game.checkIfLastPlayer()) {
+      getGameManager().removeGame(game);
     }
     String userName = getSession().getUser().getName();
-    getGame().getPlayers().remove(userName);
+    game.getPlayers().remove(userName);
     getGameManager().removeUserFromGame(userName);
   }
 
