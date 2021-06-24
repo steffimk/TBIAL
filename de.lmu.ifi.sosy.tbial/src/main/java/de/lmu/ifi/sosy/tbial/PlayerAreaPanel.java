@@ -60,7 +60,7 @@ public class PlayerAreaPanel extends Panel {
     // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
     // table
     mentalHealth.add(
-        new AbstractAjaxTimerBehavior(Duration.seconds(10)) {
+        new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
 
           private static final long serialVersionUID = 1L;
 

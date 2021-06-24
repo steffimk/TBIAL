@@ -157,7 +157,6 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            System.out.println("Clicked on stack");
 
             if (currentGame.getStackAndHeap().getStack().size() == 0) {
               currentGame.getStackAndHeap().refillStack();
