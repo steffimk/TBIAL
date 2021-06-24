@@ -50,14 +50,15 @@ public class BugBlockPanel extends Panel {
 
                   @Override
                   public void onSubmit() {
-                    ActionCard lameExcuseCard = null;
+                    ActionCard lameExcuseOrSolutionCard = null;
 
                     for (StackCard card : player.getHandCards()) {
                       if (((Card) card).getCardType() == CardType.ACTION) {
-                        if (((ActionCard) card).isLameExcuse()) {
-                          lameExcuseCard = (ActionCard) card;
+                        if (((ActionCard) card).isLameExcuse()
+                            || ((ActionCard) card).isSolution()) {
+                          lameExcuseOrSolutionCard = (ActionCard) card;
 
-                          currentGame.defendBugImmediately(player, lameExcuseCard);
+                          currentGame.defendBugImmediately(player, lameExcuseOrSolutionCard);
 
                           player.getBugBlocks().remove(bugBlock);
                           remove(bugBlockForm);
@@ -65,8 +66,8 @@ public class BugBlockPanel extends Panel {
                       }
                     }
 
-                    if (lameExcuseCard != null) {
-                      player.removeHandCard(lameExcuseCard);
+                    if (lameExcuseOrSolutionCard != null) {
+                      player.removeHandCard(lameExcuseOrSolutionCard);
                     }
 
                     currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
@@ -80,6 +81,11 @@ public class BugBlockPanel extends Panel {
                   public void onSubmit() {
                     player.getBugBlocks().remove(bugBlock);
                     remove(bugBlockForm);
+
+                    //
+                    currentGame
+                        .getChatMessages()
+                        .add(new ChatMessage(player.getUserName() + " rejected to block Bug"));
 
                     currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
                   }

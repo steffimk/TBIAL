@@ -437,7 +437,7 @@ public class Game implements Serializable {
   }
 
   public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
-    if (!player.hasCardSelected()) {
+    if (!player.hasSelectedCard()) {
       return;
     }
     
@@ -448,6 +448,8 @@ public class Game implements Serializable {
         discardHandCard(player, selectedCard);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
+        chatMessages.add(
+            new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
         if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
           player.addToMentalHealth(1);
         }
