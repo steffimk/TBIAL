@@ -20,8 +20,8 @@ public class StackAndHeap implements Serializable {
 
   private List<StackCard> stack;
   private List<StackCard> heap;
-  public static final int STACK_SIZE_AT_START = 80;
-  public static final int HEAP_MAX_SIZE = 80;
+  public static final int STACK_SIZE_AT_START = 64; // 80 TODO: Adapt when implementing more cards.
+  public static final int HEAP_MAX_SIZE = 64; // 80 TODO: Adapt when implementing more cards.80
   /** The last player to add a card to the heap. Needed for the animation of the discard */
   private Player lastPlayerToDiscardCard;
 
@@ -43,8 +43,10 @@ public class StackAndHeap implements Serializable {
     }
     // Add Action Cards
     for (Action action : Action.values()) {
-      for (int i = 0; i < action.count; i++) {
-        stack.add(new ActionCard(action));
+      if (action.isImplemented) {
+        for (int i = 0; i < action.count; i++) {
+          stack.add(new ActionCard(action));
+        }
       }
     }
     // Add Stumbling Block Cards
