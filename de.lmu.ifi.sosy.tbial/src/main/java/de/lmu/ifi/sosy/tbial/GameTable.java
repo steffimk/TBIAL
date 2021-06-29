@@ -313,13 +313,17 @@ public class GameTable extends BasePage {
 
           private static final long serialVersionUID = 1L;
           private TurnStage previousTurnStage = null;
+          private boolean playerCanEndTurn = false;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            if (previousTurnStage == currentGame.getTurn().getStage()) {
+            TurnStage turnStage = currentGame.getTurn().getStage();
+            boolean canEndTurn = currentGame.getTurn().getCurrentPlayer().canEndTurn();
+            if (previousTurnStage == turnStage && playerCanEndTurn == canEndTurn) {
               return;
             }
-            previousTurnStage = currentGame.getTurn().getStage();
+            previousTurnStage = turnStage;
+            playerCanEndTurn = canEndTurn;
             target.add(gameFlowContainer);
           }
         });
@@ -402,7 +406,16 @@ public class GameTable extends BasePage {
 
           @Override
           public void onConfigure() {
-            onConfigureOfGameFlowButtons(this, null, TurnStage.DISCARDING_CARDS);
+            TurnStage currentStage = currentGame.getTurn().getStage();
+            if (currentGame.isTurnOfPlayer(basePlayer)
+                && (currentStage == TurnStage.PLAYING_CARDS
+                    || currentStage == TurnStage.DISCARDING_CARDS)
+                && basePlayer.canEndTurn()) {
+              this.setEnabled(true);
+              this.add(getAttributeModifierForLink("rgba(244, 115, 29, 0.5)"));
+            } else {
+              onConfigureOfGameFlowButtons(this, null, null);
+            }
             super.onConfigure();
           }
 
@@ -587,29 +600,17 @@ public class GameTable extends BasePage {
     if (currentGame.isTurnOfPlayer(basePlayer)) {
       if (currentStage == transferInStagePossible) {
         link.setEnabled(true);
-        link.add(
-            new AttributeModifier(
-                "style",
-                "background: rgba(244, 115, 29, 0.5) !important; border: 2px solid rgba(244, 115, 29, 0.5) !important;"));
+        link.add(getAttributeModifierForLink("rgba(244, 115, 29, 0.5)"));
       } else if (currentStage == thisStage) {
-        link.add(
-            new AttributeModifier(
-                "style", "background: #F4731D !important; border: 2px solid #F4731D !important;"));
+        link.add(getAttributeModifierForLink("#F4731D"));
       } else {
-        link.add(
-            new AttributeModifier(
-                "style", "background: #E8E8E8 !important; border: 2px solid #E8E8E8 !important;"));
+        link.add(getAttributeModifierForLink("#E8E8E8"));
       }
     } else {
-      link.setEnabled(false);
       if (currentStage == thisStage) {
-        link.add(
-            new AttributeModifier(
-                "style", "background: grey !important; border: 2px solid grey !important;"));
+        link.add(getAttributeModifierForLink("grey"));
       } else {
-        link.add(
-            new AttributeModifier(
-                "style", "background: #E8E8E8 !important; border: 2px solid #E8E8E8 !important;"));
+        link.add(getAttributeModifierForLink("#E8E8E8"));
       }
     }
   }
@@ -620,5 +621,11 @@ public class GameTable extends BasePage {
 		  return "";
 	  }
     return "Turn: " + currentPlayerName;
+  }
+
+  private AttributeModifier getAttributeModifierForLink(String color) {
+    return new AttributeModifier(
+        "style",
+        "background: " + color + " !important; border: 2px solid " + color + " !important;");
   }
 }

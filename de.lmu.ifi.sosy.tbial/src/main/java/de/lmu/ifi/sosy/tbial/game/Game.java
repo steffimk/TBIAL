@@ -525,7 +525,9 @@ public class Game implements Serializable {
    * @param player The player who clicked on the button.
    */
   public void clickedOnEndTurnButton(Player player) {
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS) {
+    if (turn.getCurrentPlayer() != player
+        || !(turn.getStage() == TurnStage.DISCARDING_CARDS
+            || turn.getStage() == TurnStage.PLAYING_CARDS)) {
       LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
       return;
     }
