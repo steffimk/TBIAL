@@ -79,6 +79,7 @@ public class DroppableArea extends Droppable<Void> {
                 + " dropped card on add card area of "
                 + playerOfPanel.getUserName());
         game.clickedOnAddCardToPlayer(basePlayer, playerOfPanel);
+        target.add(table);
         break;
     }
     target.add(table);

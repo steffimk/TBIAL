@@ -188,18 +188,19 @@ public class Game implements Serializable {
    *
    * @param player The player who wants to discard the card.
    * @param card The card the player wants to discard.
+   * @param isNormalDiscard <code>true</code> if the card is added to the heap in the discard stage
    * @return <code>true</code> if the discarding was successful, <code>false</code> otherwise
    */
-  public boolean discardHandCard(Player player, StackCard card) {
+  public boolean discardHandCard(Player player, StackCard card, boolean isNormalDiscard) {
     if (player.removeHandCard(card)) {
-      stackAndHeap.addToHeap(card, player);
+      stackAndHeap.addToHeap(card, player, isNormalDiscard);
       return true;
     }
     return false;
   }
 
   public void putCardOnHeap(Player player, StackCard card) {
-    stackAndHeap.addToHeap(card, player);
+    stackAndHeap.addToHeap(card, player, false);
   }
 
   /**
@@ -222,7 +223,7 @@ public class Game implements Serializable {
         return true;
       }
       receiver.receiveCard(card);
-      return true;
+      return false;
     }
     return false;
   }
@@ -236,7 +237,7 @@ public class Game implements Serializable {
    */
   private void playSolution(StackCard card, Player player, Player receiver) {
     receiver.addToMentalHealth(1);
-    stackAndHeap.addToHeap(card, receiver);
+    stackAndHeap.addToHeap(card, receiver, false);
     chatMessages.add(
         new ChatMessage(
             receiver.getUserName()
@@ -257,23 +258,23 @@ public class Game implements Serializable {
   private void playBug(StackCard card, Player player, Player receiver) {
     if (receiver.bugGetsBlockedByBugDelegationCard()) {
       // Receiver moves card to heap immediately without having to react
-      stackAndHeap.addToHeap(card, receiver);
+      stackAndHeap.addToHeap(card, receiver, false);
       chatMessages.add(
           new ChatMessage(
               receiver.getUserName()
                   + " blocked \""
                   + card.toString()
                   + "\" with a bug delegation card."));
-    } else {
-      receiver.receiveCard(card);
-      turn.incrementPlayedBugCardsThisTurn();
-      turn.setLastPlayedBugCard((ActionCard) card);
-      turn.setLastPlayedBugCardBy(player);
-      LOGGER.info(player.getUserName() + " played bug card " + card.toString());
-
-      receiver.blockBug(new BugBlock(player.getUserName()));
-      receiver.addToMentalHealth(-1);
+      return;
     }
+    receiver.receiveCard(card);
+    turn.incrementPlayedBugCardsThisTurn();
+    turn.setLastPlayedBugCard((ActionCard) card);
+    turn.setLastPlayedBugCardBy(player);
+    LOGGER.info(player.getUserName() + " played bug card " + card.toString());
+
+    receiver.blockBug(new BugBlock(player.getUserName()));
+    receiver.addToMentalHealth(-1);
   }
 
   /**
@@ -440,7 +441,7 @@ public class Game implements Serializable {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS)
       return false;
     if (player.getSelectedHandCard() != null) {
-      return discardHandCard(player, player.getSelectedHandCard());
+      return discardHandCard(player, player.getSelectedHandCard(), true);
     }
     return false;
   }
@@ -470,7 +471,7 @@ public class Game implements Serializable {
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
-
+    return;
   }
 
   public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
@@ -482,7 +483,7 @@ public class Game implements Serializable {
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        discardHandCard(player, selectedCard);
+        discardHandCard(player, selectedCard, false);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
         chatMessages.add(

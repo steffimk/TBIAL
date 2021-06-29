@@ -165,7 +165,7 @@ public class GameTest {
   public void discardHandCard_returnsFalseIfCardNotInHandCards() {
     Game game = getNewGameThatHasStarted();
     StackCard testCard = new AbilityCard(Ability.GOOGLE);
-    assertThat(game.discardHandCard(game.getPlayers().get("A"), testCard), is(false));
+    assertThat(game.discardHandCard(game.getPlayers().get("A"), testCard, true), is(false));
   }
 
   @Test
@@ -174,7 +174,7 @@ public class GameTest {
     Player player = game.getPlayers().get("A");
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
-    game.discardHandCard(player, testCard);
+    game.discardHandCard(player, testCard, true);
     assertThat(game.getStackAndHeap().getHeap().contains(testCard), is(true));
   }
 
@@ -184,7 +184,7 @@ public class GameTest {
     Player player = game.getPlayers().get("A");
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
-    game.discardHandCard(player, testCard);
+    game.discardHandCard(player, testCard, true);
     assertThat(player.getHandCards().contains(testCard), is(false));
   }
   
