@@ -21,7 +21,7 @@ public class ChatMessage implements Serializable {
    */
   public ChatMessage(String textMessage) {
     super();
-    this.sender = "GAME UPDATE";
+    this.sender = "UPDATE";
     this.textMessage = textMessage;
   }
 
