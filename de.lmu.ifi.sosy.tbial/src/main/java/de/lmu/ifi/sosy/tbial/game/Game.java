@@ -203,9 +203,8 @@ public class Game implements Serializable {
   }
 
   /**
-   * Removes the card from the player's hand cards and adds it to the receiver's received cards. If
-   * the card is a bug and the receiver owns a bug delegation card, there's a 25% chance the card
-   * will get blocked and added to the heap immediately.
+   * Removes the card from the player's hand cards and adds it to the receiver's received cards.
+   * Deals with the different types of cards respectively.
    *
    * @param card The card to be played
    * @param player The player who is playing the card.
@@ -213,28 +212,68 @@ public class Game implements Serializable {
    * @return <code>true</code> if the action was successful, <code>false</code> otherwise
    */
   public boolean putCardToPlayer(StackCard card, Player player, Player receiver) {
-    if (turn.getCurrentPlayer() != player) return false;
     if (player.removeHandCard(card)) {
-      if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
-        // Receiver moves card to heap immediately without having to react
-        stackAndHeap.addToHeap(card, receiver);
-        chatMessages.add(
-            new ChatMessage(
-                receiver.getUserName()
-                    + " blocked \""
-                    + card.toString()
-                    + "\" with a bug delegation card."));
-        LOGGER.info(
-            receiver.getUserName()
-                + " blocked "
-                + card.toString()
-                + " with his bug delegation card.");
+      if (card.isBug()) {
+        playBug(card, player, receiver);
+        return true;
+      }
+      if (((Card) card).getCardType() == CardType.ACTION && ((ActionCard) card).isSolution()) {
+        playSolution(card, player, receiver);
         return true;
       }
       receiver.receiveCard(card);
-      return true; // TODO: maybe receiver needs to respond to this action immediately
+      return true;
     }
     return false;
+  }
+
+  /**
+   * Call when a player plays a solution card.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playSolution(StackCard card, Player player, Player receiver) {
+    receiver.addToMentalHealth(1);
+    stackAndHeap.addToHeap(card, receiver);
+    chatMessages.add(
+        new ChatMessage(
+            receiver.getUserName()
+                + " received the solution \""
+                + card.toString()
+                + "\" from "
+                + player.getUserName()));
+  }
+
+  /**
+   * Call when a player plays a bug. If the card is a bug and the receiver owns a bug delegation
+   * card, there's a 25% chance the card will get blocked and added to the heap immediately.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playBug(StackCard card, Player player, Player receiver) {
+    if (receiver.bugGetsBlockedByBugDelegationCard()) {
+      // Receiver moves card to heap immediately without having to react
+      stackAndHeap.addToHeap(card, receiver);
+      chatMessages.add(
+          new ChatMessage(
+              receiver.getUserName()
+                  + " blocked \""
+                  + card.toString()
+                  + "\" with a bug delegation card."));
+    } else {
+      receiver.receiveCard(card);
+      turn.incrementPlayedBugCardsThisTurn();
+      turn.setLastPlayedBugCard((ActionCard) card);
+      turn.setLastPlayedBugCardBy(player);
+      LOGGER.info(player.getUserName() + " played bug card " + card.toString());
+
+      receiver.blockBug(new BugBlock(player.getUserName()));
+      receiver.addToMentalHealth(-1);
+    }
   }
 
   /**
@@ -414,35 +453,24 @@ public class Game implements Serializable {
    * @param receiverOfCard The player who should receive the previously selected card.
    */
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
- 
-    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) return;
 
-    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) {
+    StackCard selectedCard = player.getSelectedHandCard();
+
+    if (turn.getCurrentPlayer() != player
+        || turn.getStage() != TurnStage.PLAYING_CARDS
+        || selectedCard == null) return;
+
+    if (selectedCard.isBug() && turn.getPlayedBugCardsInThisTurn() >= Turn.MAX_BUG_CARDS_PER_TURN) {
       chatMessages.add(
           new ChatMessage(
               "You cannot play another bug.")); // TODO: Only show player who played card?
       return;
     }
-    
-    StackCard selectedCard = player.getSelectedHandCard();
-    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
-      if (((ActionCard) selectedCard).isBug()) {
-        turn.incrementPlayedBugCardsThisTurn();
-        turn.setLastPlayedBugCard((ActionCard) selectedCard);
-        turn.setLastPlayedBugCardBy(player);
-        LOGGER.info(player.getUserName() + " played bug card " + selectedCard.toString());
 
-        receiverOfCard.blockBug(new BugBlock(player.getUserName()));
-
-        int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
-        receiverOfCard.setMentalHealth(decreasedMentalHealthPoints);
-      }
-    }
-
-    if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
+    if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
+
   }
 
   public void clickedOnReceivedCard(Player player, StackCard clickedCard) {

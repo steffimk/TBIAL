@@ -28,6 +28,9 @@ public class Player implements Serializable {
   private CharacterCard characterCard;
 
   private int mentalHealth;
+  /** The maximum value of mental health points. */
+  private int mentalHealthMax;
+
   private int prestige;
 
   // The different set of cards
@@ -51,6 +54,7 @@ public class Player implements Serializable {
     this.prestige = 0;
     this.fired = false;
     this.mentalHealth = 4;
+    this.mentalHealthMax = 4;
     this.handCards = Collections.synchronizedSet(new HashSet<>());
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
@@ -134,6 +138,7 @@ public class Player implements Serializable {
     if (roleCard.getRole() == Role.MANAGER) {
       mentalHealth += 1;
     }
+    mentalHealthMax = mentalHealth;
   }
 
   public int getMentalHealthInt() {
@@ -152,6 +157,9 @@ public class Player implements Serializable {
    */
   public synchronized void addToMentalHealth(int value) {
     mentalHealth += value;
+    if (mentalHealth > mentalHealthMax) {
+      mentalHealth = mentalHealthMax;
+    }
   }
 
   /**
