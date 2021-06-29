@@ -74,6 +74,8 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    addNewPlayer("A");
+    addNewPlayer("B");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -699,5 +701,15 @@ public class Game implements Serializable {
       }
     }
     return winners;
+  }
+
+  public String getGroupWon() {
+    if (manager.hasWon() && developer == null) {
+      return "The Manager has won!";
+    } else if (consultant.hasWon()) {
+      return "The Consultant has won!";
+    } else if (allMonkeysWon(monkeys)) {
+      return "The Evil Code Monkeys have won!";
+    } else return "The Manager and the Honest Developer have won!";
   }
 }

@@ -1487,9 +1487,9 @@
 .ceremony, .visible {
 	background: white;
 	position: absolute;
-	width: 84%;
+	width: 95%;
 	height: 0;
-	padding-bottom: 79%;
+	padding-bottom: 83%;
 	opacity: 0.8;
 	z-index: 10;
 	margin-left: -2%;
@@ -1562,14 +1562,13 @@
 
 }
 
-.congrats {
+.congrats, .winner {
 	text-align: center;
 	color: #DA5800;
+	padding-left: 0;
 	margin-top: 25%;
 }
 
 .winner {
-	text-align: center;
-	color: #DA5800;	
 	margin-top: 10%;
 }

@@ -492,6 +492,13 @@ public class GameTable extends BasePage {
                 return "Congratulations!";
               } else return "You lost!";
             });
+    Label groupWon =
+        new Label(
+            "groupWon",
+            () -> {
+              return currentGame.getGroupWon();
+            });
+    
     Label winner =
         new Label(
             "winners",
@@ -500,8 +507,10 @@ public class GameTable extends BasePage {
             });
 
     winner.setOutputMarkupId(true);
+    groupWon.setOutputMarkupId(true);
     WebMarkupContainer confetti = new WebMarkupContainer("confetti");
     ceremony.add(winner);
+    ceremony.add(groupWon);
     ceremony.add(ceremonyTitle);
     ceremony.add(confetti);
     Form<?> endGameForm = new Form<>("endGameForm");

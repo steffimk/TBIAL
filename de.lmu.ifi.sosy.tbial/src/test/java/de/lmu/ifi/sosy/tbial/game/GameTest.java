@@ -263,6 +263,7 @@ public class GameTest {
           game.getWinners(game.getPlayers().get("username")),
           game.getConsultant().getUserName() + " has won.");
     }
+    assertEquals(game.getGroupWon(), "The Consultant has won!");
   }
 
   @Test
@@ -286,6 +287,7 @@ public class GameTest {
           game.getWinners(game.getPlayers().get("username")),
           game.getConsultant().getUserName() + " has won.");
     }
+    assertEquals(game.getGroupWon(), "The Consultant has won!");
   }
 
   @Test
@@ -303,6 +305,7 @@ public class GameTest {
           game.getWinners(game.getPlayers().get("username")),
           game.getManager().getUserName() + " has won.");
     }
+    assertEquals(game.getGroupWon(), "The Manager has won!");
   }
 
   @Test
@@ -328,6 +331,7 @@ public class GameTest {
               + game.getEvilCodeMonkeys().get(1).getUserName()
               + " have won.");
     }
+    assertEquals(game.getGroupWon(), "The Evil Code Monkeys have won!");
   }
 
   @Test
@@ -343,11 +347,11 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    if (game.getPlayers().get("username").getRole() == Role.MANAGER) {
+    if (game.getPlayers().get("username").getRole() == Role.HONEST_DEVELOPER) {
       assertEquals(
           game.getWinners(game.getPlayers().get("username")),
           "You & " + game.getManager().getUserName() + " have won.");
-    } else if (game.getPlayers().get("username").getRole() == Role.HONEST_DEVELOPER) {
+    } else if (game.getPlayers().get("username").getRole() == Role.MANAGER) {
       assertEquals(
           game.getWinners(game.getPlayers().get("username")),
           game.getHonestDeveloper().getUserName() + " & you have won.");
@@ -359,6 +363,7 @@ public class GameTest {
               + game.getManager().getUserName()
               + " have won.");
     }
+    assertEquals(game.getGroupWon(), "The Manager and the Honest Developer have won!");
   }
 
   // ---------------------- Helper Methods ----------------------
