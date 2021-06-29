@@ -61,6 +61,9 @@ public class StackAndHeap implements Serializable {
    * @return the first card on the stack
    */
   public StackCard drawCard() {
+    if (stack.size() == 0) {
+      refillStack();
+    }
     return stack.remove(0);
   }
 

@@ -520,6 +520,21 @@ public class Game implements Serializable {
   }
 
   /**
+   * A player clicked on the draw cards button to get two cards from the stack.
+   *
+   * @param player The player who clicked on the button.
+   */
+  public void clickedOnDrawCardsButton(Player player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
+      LOGGER.debug(
+          "Player clicked on draw cards button but not his turn or not in the right stage");
+      return;
+    }
+    drawCardsFromStack(player);
+    turn.setStage(TurnStage.PLAYING_CARDS);
+  }
+
+  /**
    * A player clicked on the end turn button.
    *
    * @param player The player who clicked on the button.
@@ -536,30 +551,9 @@ public class Game implements Serializable {
     }
   }
 
-  /**
-   * A player clicked on the play cards button.
-   *
-   * @param player The player who clicked on the button.
-   */
-  public void clickedOnPlayCardsButton(Player player) {
-    if (turn.getDrawnCardsInDrawingStage() != Turn.DRAW_LIMIT_IN_DRAWING_STAGE) {
-      LOGGER.debug("Player hasn't drawn enough cards from stack.");
-      return;
-    }
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
-      LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
-      return;
-    }
-    turn.setStage(TurnStage.PLAYING_CARDS);
-  }
-
-  public void drawCardFromStack(Player player) {
-	if (stackAndHeap.getStack().size() == 0) {
-      stackAndHeap.refillStack();
-    }
-    StackCard drawnCard = stackAndHeap.drawCard();
-    turn.incrementDrawnCardsInDrawingStage();
-    player.addToHandCards(drawnCard);
+  private void drawCardsFromStack(Player player) {
+    player.addToHandCards(stackAndHeap.drawCard());
+    player.addToHandCards(stackAndHeap.drawCard());
   }
 
   public void firePlayer(Player player, Set<StackCard> handCards) {

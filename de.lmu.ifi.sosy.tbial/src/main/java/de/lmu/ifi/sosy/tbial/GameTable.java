@@ -35,7 +35,6 @@ import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
-import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 
@@ -161,17 +160,7 @@ public class GameTable extends BasePage {
           @Override
           protected void onEvent(AjaxRequestTarget target) {
 
-            if (currentGame.getStackAndHeap().getStack().size() == 0) {
-              currentGame.getStackAndHeap().refillStack();
-            }
-
-            int alreadyDrawnCards = currentGame.getTurn().getDrawnCardsInDrawingStage();
-            if (alreadyDrawnCards < Turn.DRAW_LIMIT_IN_DRAWING_STAGE
-                && currentGame.getTurn().getCurrentPlayer() == basePlayer) {
-
-              currentGame.drawCardFromStack(basePlayer);
-            }
-
+            currentGame.clickedOnDrawCardsButton(basePlayer);
             target.add(table);
           }
         });
@@ -336,13 +325,21 @@ public class GameTable extends BasePage {
 
           @Override
           public void onConfigure() {
-            onConfigureOfGameFlowButtons(this, TurnStage.DRAWING_CARDS, null);
+            if (currentGame.isTurnOfPlayer(basePlayer)
+                && currentGame.getTurn().getStage() == TurnStage.DRAWING_CARDS) {
+              this.setEnabled(true);
+              this.add(getAttributeModifierForLink("#F4731D"));
+            } else {
+              onConfigureOfGameFlowButtons(this, TurnStage.DRAWING_CARDS, null);
+            }
             super.onConfigure();
           }
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            return;
+            currentGame.clickedOnDrawCardsButton(basePlayer);
+            target.add(table);
+            target.add(gameFlowContainer);
           }
         };
 
@@ -359,8 +356,7 @@ public class GameTable extends BasePage {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            currentGame.clickedOnPlayCardsButton(basePlayer);
-            target.add(gameFlowContainer);
+            return;
           }
         };
 
