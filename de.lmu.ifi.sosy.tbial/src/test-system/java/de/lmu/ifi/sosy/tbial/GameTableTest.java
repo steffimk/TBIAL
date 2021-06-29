@@ -214,7 +214,7 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent("ceremony", WebMarkupContainer.class);
     tester.assertComponent("ceremony:ceremonyTitle", Label.class);
     tester.assertComponent("ceremony:winners", Label.class);
-    tester.assertModelValue("ceremony:winners", game.getWinners());
+    tester.assertModelValue("ceremony:winners", game.getWinners(basePlayer));
     tester.assertComponent("ceremony:confetti", WebMarkupContainer.class);
     FormTester form = tester.newFormTester("ceremony:endGameForm");
   }
