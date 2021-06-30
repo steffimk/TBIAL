@@ -8,6 +8,8 @@
 		<link rel="stylesheet" href="gameTable.css" type="text/css" />
 		<link rel="stylesheet" href="chat.css" type="text/css" />
 		<link rel="stylesheet" href="lobby.css" type="text/css" />
+		
+    	<script src="https://kendo.cdn.telerik.com/2017.2.504/js/kendo.all.min.js"></script>
 	</wicket:link>
 </wicket:head>
 </head>
@@ -38,7 +40,6 @@
 				<div class="confetti"></div>
 				<div class="confetti"></div>
 			</div>
-
 		</div>
 		<div class="contentWrapper">
 			<h3 wicket:id="gameName" align="center" style="margin-top: 1%;">Game
@@ -81,11 +82,13 @@
 				<span>End Turn</span>
 			</a>
 		</div>
-			
+		</div>
+		<div style="width: 80%; height: 100px;">
+			<div wicket:id ="chart"></div>
 		</div>
 		<div wicket:id="chatPanel" class="chatWrapper"></div>
-		
-					<div wicket:id="blockBugModal"></div>
+
+		<div wicket:id="blockBugModal"></div>
 	</wicket:extend>
 </body>
 </html>

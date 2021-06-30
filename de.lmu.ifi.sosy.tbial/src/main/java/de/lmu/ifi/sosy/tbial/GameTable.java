@@ -559,6 +559,9 @@ public class GameTable extends BasePage {
         });
 
     add(ceremony);
+
+    MentalHealthChart mhc = new MentalHealthChart(currentGame.getPlayers().values());
+    add(mhc.getNewChartInstance("chart"));
  }
 
   private AttributeModifier getDiscardingAnimationForPlayer(
