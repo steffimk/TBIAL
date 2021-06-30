@@ -238,13 +238,13 @@ public class Game implements Serializable {
   private void playSolution(StackCard card, Player player, Player receiver) {
     receiver.addToMentalHealth(1);
     stackAndHeap.addToHeap(card, receiver, false);
-    chatMessages.add(
-        new ChatMessage(
-            receiver.getUserName()
-                + " received the solution \""
-                + card.toString()
-                + "\" from "
-                + player.getUserName()));
+    String message = "the solution \"" + card.toString() + "\"";
+    if(player.equals(receiver)) {
+    	message = player.getUserName() + " played " + message + ".";
+    } else {
+    	message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
+    }
+    chatMessages.add(new ChatMessage(message));
   }
 
   /**
@@ -459,7 +459,9 @@ public class Game implements Serializable {
 
     if (turn.getCurrentPlayer() != player
         || turn.getStage() != TurnStage.PLAYING_CARDS
-        || selectedCard == null) return;
+        || selectedCard == null) {
+      return;
+    }
 
     if (selectedCard.isBug() && turn.getPlayedBugCardsInThisTurn() >= Turn.MAX_BUG_CARDS_PER_TURN) {
       chatMessages.add(
@@ -471,7 +473,6 @@ public class Game implements Serializable {
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
-    return;
   }
 
   public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
