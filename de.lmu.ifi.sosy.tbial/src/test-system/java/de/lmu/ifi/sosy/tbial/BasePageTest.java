@@ -72,7 +72,7 @@ public class BasePageTest extends PageTestBase {
         " has invited you to join a game.");
     acceptForm.submit("acceptButton");
     assertEquals(testuser2.getInvitations().size(), 0);
-    assertEquals(game.getChatMessages().get(0).getSender(), "GAME UPDATE: ");
+    assertEquals(game.getChatMessages().get(0).getSender(), "UPDATE: ");
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(), "testuser2 accepted the game invitation.");
     tester.assertRenderedPage(GameLobby.class);
@@ -96,7 +96,7 @@ public class BasePageTest extends PageTestBase {
         " has invited you to join a game.");
     rejectForm.submit("rejectButton");
     assertEquals(testuser2.getInvitations().size(), 0);
-    assertEquals(game.getChatMessages().get(0).getSender(), "GAME UPDATE: ");
+    assertEquals(game.getChatMessages().get(0).getSender(), "UPDATE: ");
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(), "testuser2 rejected the game invitation.");
     tester.assertRenderedPage(Lobby.class);
