@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -560,7 +561,8 @@ public class GameTable extends BasePage {
 
     add(ceremony);
 
-    MentalHealthChart mhc = new MentalHealthChart(currentGame.getPlayers().values());
+    MentalHealthChartFactory mhc =
+        new MentalHealthChartFactory(new HashSet<Player>(currentGame.getPlayers().values()));
     add(mhc.getNewChartInstance("chart"));
  }
 
