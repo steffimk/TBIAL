@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.AbilityType;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.ActionType;
-import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 
 public class GameStatistics implements Serializable {
