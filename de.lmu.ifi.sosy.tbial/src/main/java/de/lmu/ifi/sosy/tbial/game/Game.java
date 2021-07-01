@@ -262,7 +262,7 @@ public class Game implements Serializable {
     turn.setLastPlayedBugCardBy(player);
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
-    if (receiver.bugGetsBlockedByBugDelegationCard()) {
+    if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
       stackAndHeap.addToHeap(card, receiver, false);
       chatMessages.add(
@@ -272,11 +272,6 @@ public class Game implements Serializable {
                   + card.toString()
                   + "\" with a bug delegation card."));
       return;
-    }
-    else {
-      chatMessages.add(
-          new ChatMessage(
-              "Oh no! Bug delegation of " + receiver.getUserName() + " had no effect!"));
     }
     
     receiver.receiveCard(card);

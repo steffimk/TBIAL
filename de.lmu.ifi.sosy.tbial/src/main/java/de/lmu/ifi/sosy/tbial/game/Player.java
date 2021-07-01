@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial.game;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
+import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import static java.util.Objects.requireNonNull;
@@ -261,10 +262,22 @@ public class Player implements Serializable {
    *
    * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
    */
-  public boolean bugGetsBlockedByBugDelegationCard() {
+  public boolean bugGetsBlockedByBugDelegationCard(
+      LinkedList<ChatMessage> chatMessages, Player receiver) {
+    boolean isBugDelegationCardPlayed = false;
+    boolean isBugDelegationCardTriggered = false;
+
     Stream<AbilityCard> bugDelCards =
         playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
+    
+    isBugDelegationCardPlayed = bugDelCards.count() > 0;
+    isBugDelegationCardTriggered = Math.random() < 1;
 
-    return bugDelCards.count() > 0 && Math.random() < 0.25;
+    if (isBugDelegationCardPlayed && !isBugDelegationCardTriggered) {
+      chatMessages.add(
+          new ChatMessage("Oh no! Bug delegation of " + receiver.getUserName() + " had no effect"));
+    }
+
+    return isBugDelegationCardPlayed && isBugDelegationCardTriggered;
   }
 }
