@@ -25,9 +25,11 @@ public class MentalHealthChartFactory implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private final Set<Player> players;
+  private final int numberOfDataPerPlayer;
 
-  public MentalHealthChartFactory(Set<Player> players) {
+  public MentalHealthChartFactory(Set<Player> players, int numberOfDataPerPlayer) {
     this.players = players;
+    this.numberOfDataPerPlayer = numberOfDataPerPlayer;
   }
 
   /**
@@ -101,11 +103,11 @@ public class MentalHealthChartFactory implements Serializable {
   private List<MentalHealthData> getLines() {
     List<MentalHealthData> data = Generics.newArrayList();
 
-    for (int round = 0; round < 20; round++) {
+    for (int round = 0; round < numberOfDataPerPlayer; round++) {
       Integer[] values = new Integer[7];
       int i = 0;
       for (Player player : players) {
-        values[i] = i + round; // TODO: player.getMentalHealthInRound(round);
+        values[i] = player.getMentalHealthOfRound(round);
         i++;
       }
       data.add(new MentalHealthData("#" + round, values));

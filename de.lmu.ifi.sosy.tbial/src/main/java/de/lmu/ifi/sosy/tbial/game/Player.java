@@ -46,6 +46,8 @@ public class Player implements Serializable {
 
   private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
 
+  private LinkedList<Integer> mentalHealthDevelopment;
+
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
@@ -54,6 +56,7 @@ public class Player implements Serializable {
     this.handCards = Collections.synchronizedSet(new HashSet<>());
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
+    this.mentalHealthDevelopment = new LinkedList<Integer>();
   }
 
   public String getUserName() {
@@ -133,6 +136,9 @@ public class Player implements Serializable {
     //mentalHealth = characterCard.getMaxHealthPoints();
     if (roleCard.getRole() == Role.MANAGER) {
       mentalHealth += 1;
+    }
+    if (mentalHealthDevelopment.size() == 0) {
+      mentalHealthDevelopment.add(mentalHealth);
     }
   }
 
@@ -257,5 +263,29 @@ public class Player implements Serializable {
     Stream<AbilityCard> bugDelCards =
         playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
     return bugDelCards.count() > 0 && Math.random() < 0.25;
+  }
+
+  /** Adds the current number of mental health points to the mental health development-list */
+  public void snapshotOfMentalHealth() {
+    mentalHealthDevelopment.add(mentalHealth);
+  }
+
+  /**
+   * Returns the number of mental health points the player had in the requested game round
+   *
+   * @param round The game round. <code>0</code> for the start of the game
+   * @return The number of mental health points in the requested round
+   */
+  public Integer getMentalHealthOfRound(int round) {
+    return mentalHealthDevelopment.get(round);
+  }
+
+  /**
+   * Determines the number of snapshots of the mental health
+   *
+   * @return the number of stored mental health snapshots
+   */
+  public int getNumberOfStoredMentalHealthSnapshots() {
+    return mentalHealthDevelopment.size();
   }
 }

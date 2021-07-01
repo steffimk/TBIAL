@@ -562,7 +562,9 @@ public class GameTable extends BasePage {
     add(ceremony);
 
     MentalHealthChartFactory mhc =
-        new MentalHealthChartFactory(new HashSet<Player>(currentGame.getPlayers().values()));
+        new MentalHealthChartFactory(
+            new HashSet<Player>(currentGame.getPlayers().values()),
+            basePlayer.getNumberOfStoredMentalHealthSnapshots());
     add(mhc.getNewChartInstance("chart"));
  }
 

@@ -73,9 +73,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-    addNewPlayer("A");
-    addNewPlayer("B");
-    addNewPlayer("C");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -533,6 +530,7 @@ public class Game implements Serializable {
       return;
     }
     if (player.canEndTurn()) {
+      saveMentalHealthInfo();
       turn.switchToNextPlayer();
     }
   }
@@ -657,6 +655,13 @@ public class Game implements Serializable {
         winners += developer.getUserName();
         winners += " & " + manager.getUserName() + " have won.";
       }
+    }
+  }
+
+  /** Each player saves his current count of mental health points. */
+  private void saveMentalHealthInfo() {
+    for (Player player : players.values()) {
+      player.snapshotOfMentalHealth();
     }
   }
 }
