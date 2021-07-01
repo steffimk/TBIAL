@@ -782,7 +782,7 @@ public class Game implements Serializable {
         .substring(2)
         .replaceFirst("H", "h ")
         .replaceFirst("M", "min ")
-        .replaceFirst("S", "sec");
+        .replaceFirst("S", "s");
   }
 
   public GameStatistics getStatistics() {

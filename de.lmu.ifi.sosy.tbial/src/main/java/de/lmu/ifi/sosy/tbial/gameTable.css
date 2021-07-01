@@ -1572,3 +1572,43 @@
 .winner {
 	margin-top: 10%;
 }
+
+.category {
+	margin-top: 20px;
+	margin-bottom: 5px;
+	font-weight: bold;
+	display: block;
+	color: #DE5901;
+}
+
+.chartText {
+	margin-right: 3vw;
+	margin-bottom: 0px;
+    line-height: normal;
+    font: inherit;
+    color: #333333;
+}
+
+h5 {
+	font-size: 1.5em;
+	color: #DE5901;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+table {
+    width: 80%;
+  	border-collapse: collapse;
+  	text-align: center;
+}
+
+table tr th {
+	background: #FFFFFF none repeat-x scroll bottom left;
+	color: black;
+	font-size: 1.2vw;
+	border: 1px solid #DE5901;
+}
+
+table tr td {
+	border: 1px solid #DE5901;
+}

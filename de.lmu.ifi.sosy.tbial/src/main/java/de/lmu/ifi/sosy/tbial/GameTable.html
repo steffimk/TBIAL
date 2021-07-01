@@ -8,8 +8,6 @@
 		<link rel="stylesheet" href="gameTable.css" type="text/css" />
 		<link rel="stylesheet" href="chat.css" type="text/css" />
 		<link rel="stylesheet" href="lobby.css" type="text/css" />
-		
-    	<script src="https://kendo.cdn.telerik.com/2017.2.504/js/kendo.all.min.js"></script>
 	</wicket:link>
 </wicket:head>
 </head>
@@ -41,6 +39,7 @@
 				<div class="confetti"></div>
 				<div class="confetti"></div>
 			</div>
+
 		</div>
 		<div class="contentWrapper">
 			<h3 wicket:id="gameName" align="center" style="margin-top: 1%;">Game
@@ -84,39 +83,8 @@
 			</a>
 		</div>
 		</div>
-		<div style="width: 80%;">
-			<span wicket:id="startingTime"></span>
-			<span wicket:id="endingTime" style="display: block;"></span>
-			<span wicket:id="duration" style="display: block;"></span>
-			<span style="display: block;">Cards played during the game:</span>
-			<table>
-				<thead><tr>
-						<th>Bugs</th>
-						<th>Lame Excuses</th>
-						<th>Solutions</th>
-						<th>Special Actions</th>
-						<th>Fortran Maintenance</th>
-						<th>Off-The-Job Training</th>
-						<th>Previous Job</th>
-						<th>Wearing Garment</th>
-						<th>Bug Delegation</th>
-				</tr></thead>
-				<tbody><tr><td><span wicket:id="bugs"></span></td>
-						<td><span wicket:id="lameExcuses"></span></td>
-						<td><span wicket:id="solutions"></span></td>
-						<td><span wicket:id="specialActions"></span></td>
-						<td><span wicket:id="maintenance"></span></td>
-						<td><span wicket:id="training"></span></td>
-						<td><span wicket:id="previousJob"></span></td>
-						<td><span wicket:id="garment"></span></td>
-						<td><span wicket:id="bugDelegation"></span></td>
-				</tr></tbody>
-			</table>
-			<span wicket:id="blockedCards" style="display: block;"></span>
-			<div wicket:id="chart"></div>
-		</div>
 		<div wicket:id="chatPanel" class="chatWrapper"></div>
-
+		<div wicket:id="gameStatistics" style="width: 80%;"></div>
 		<div wicket:id="blockBugModal"></div>
 	</wicket:extend>
 </body>

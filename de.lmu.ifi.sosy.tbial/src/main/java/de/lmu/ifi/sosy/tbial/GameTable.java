@@ -1,7 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,6 @@ import de.lmu.ifi.sosy.tbial.game.Card;
 import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
-import de.lmu.ifi.sosy.tbial.game.GameStatistics;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
@@ -569,46 +567,10 @@ public class GameTable extends BasePage {
           }
         });
 
+    add(new GameStatisticsContainer(currentGame, basePlayer));
+
     add(ceremony);
 
-    MentalHealthChartFactory mhcf =
-        new MentalHealthChartFactory(
-            new HashSet<Player>(currentGame.getPlayers().values()),
-            basePlayer.getNumberOfStoredMentalHealthSnapshots());
-    Label startingTimeLabel =
-        new Label("startingTime", "Start: " + currentGame.getStartingTimeAsString());
-    Label endingTimeLabel = new Label("endingTime", "End: " + currentGame.getEndingTimeAsString());
-    Label durationLabel = new Label("duration", "Duration: " + currentGame.getDurationAsString());
-    GameStatistics statistics = currentGame.getStatistics();
-    Label bugsLabel = new Label("bugs", statistics.getBugCount());
-    Label lameExcusesLabel = new Label("lameExcuses", statistics.getBugCount());
-    Label solutionsLabel = new Label("solutions", statistics.getLameExcuseCount());
-    Label specialActionsLabel = new Label("specialActions", statistics.getSpecialActionCount());
-    Label maintenanceLabel = new Label("maintenance", statistics.getMaintenanceCount());
-    Label trainingLabel = new Label("training", statistics.getTrainingCount());
-    Label previousJobLabel = new Label("previousJob", statistics.getPreviousJobCount());
-    Label garmentLabel = new Label("garment", statistics.getGarmentCount());
-    Label bugDelegationLabel = new Label("bugDelegation", statistics.getBugDelegationCount());
-    Label blockedCardsLabel =
-        new Label(
-            "blockedCards",
-            statistics.getBlockedByDelegationCount()
-                + " cards got blocked by a bug dedlegation card.");
-
-    add(startingTimeLabel);
-    add(endingTimeLabel);
-    add(durationLabel);
-    add(bugsLabel);
-    add(lameExcusesLabel);
-    add(solutionsLabel);
-    add(specialActionsLabel);
-    add(maintenanceLabel);
-    add(trainingLabel);
-    add(previousJobLabel);
-    add(garmentLabel);
-    add(bugDelegationLabel);
-    add(blockedCardsLabel);
-    add(mhcf.getNewChartInstance("chart"));
  }
 
   private AttributeModifier getDiscardingAnimationForPlayer(

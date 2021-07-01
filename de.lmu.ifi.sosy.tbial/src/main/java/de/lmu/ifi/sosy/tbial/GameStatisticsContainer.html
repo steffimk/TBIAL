@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<wicket:panel>
+		<wicket:link>
+			<link rel="stylesheet" href="gameTable.css" type="text/css" />
+			<link rel="stylesheet" href="http://kendo.cdn.telerik.com/2021.2.616/styles/kendo.common.min.css" type="text/css" />
+    		<script src="http://kendo.cdn.telerik.com/2021.2.616/js/kendo.all.min.js"></script>
+		</wicket:link>
+		
+		<h5>Game Statistics</h5>
+		<span class=category>Start:</span><span wicket:id="startingTime"></span>
+		<span class=category>End:</span><span wicket:id="endingTime" ></span>
+		<span class=category>Duration:</span><span wicket:id="duration"></span>
+		<span class=category>Cards played during the game:</span>
+		<table>
+			<thead><tr>
+					<th>Bugs</th>
+					<th>Lame Excuses</th>
+					<th>Solutions</th>
+					<th>Special Actions</th>
+					<th>Fortran Maintenance</th>
+					<th>Off-The-Job Training</th>
+					<th>Previous Job</th>
+					<th>Wearing Garment</th>
+					<th>Bug Delegation</th>
+			</tr></thead>
+			<tbody><tr><td><span wicket:id="bugs"></span></td>
+					<td><span wicket:id="lameExcuses"></span></td>
+					<td><span wicket:id="solutions"></span></td>
+					<td><span wicket:id="specialActions"></span></td>
+					<td><span wicket:id="maintenance"></span></td>
+					<td><span wicket:id="training"></span></td>
+					<td><span wicket:id="previousJob"></span></td>
+					<td><span wicket:id="garment"></span></td>
+					<td><span wicket:id="bugDelegation"></span></td>
+			</tr></tbody>
+		</table>
+		<span class=category>Other Information:</span>
+		<span wicket:id="blockedCards"></span>
+		<span class=category>Mental Health Points:</span>
+		<p class=chartText>The following chart shows the number of mental health points 
+		of each player after every turn. To hide the line of a player, click on the corresponding 
+		name on the top of the chart.</p>
+		<div wicket:id="chart" style="width: 80%"></div>
+	</wicket:panel>
+</body>
+</html>
