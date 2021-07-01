@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 /** Tests referring to the Game class. */
 public class GameTest {
