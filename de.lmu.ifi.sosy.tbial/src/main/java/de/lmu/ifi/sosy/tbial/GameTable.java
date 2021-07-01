@@ -33,7 +33,6 @@ import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -571,11 +570,16 @@ public class GameTable extends BasePage {
 
     add(ceremony);
 
-    MentalHealthChartFactory mhc =
+    MentalHealthChartFactory mhcf =
         new MentalHealthChartFactory(
             new HashSet<Player>(currentGame.getPlayers().values()),
             basePlayer.getNumberOfStoredMentalHealthSnapshots());
-    add(mhc.getNewChartInstance("chart"));
+    Label startingTimeLabel =
+        new Label("startingTime", "Start: " + currentGame.getStartingTimeAsString());
+    Label endingTimeLabel = new Label("endingTime", "End: " + currentGame.getEndingTimeAsString());
+    add(startingTimeLabel);
+    add(endingTimeLabel);
+    add(mhcf.getNewChartInstance("chart"));
  }
 
   private AttributeModifier getDiscardingAnimationForPlayer(

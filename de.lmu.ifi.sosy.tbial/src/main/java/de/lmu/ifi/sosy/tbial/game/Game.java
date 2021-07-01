@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,9 +47,10 @@ public class Game implements Serializable {
   private String hash;
   private byte[] salt;
 
-  private boolean hasStarted;
-  
-  private boolean hasEnded;
+  private static final DateTimeFormatter timeFormatter =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+  private LocalDateTime startingTime;
+  private LocalDateTime endingTime;
 
   private StackAndHeap stackAndHeap;
 
@@ -74,7 +77,9 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-
+    addNewPlayer("A");
+    addNewPlayer("B");
+    addNewPlayer("C");
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
       requireNonNull(password);
@@ -84,7 +89,8 @@ public class Game implements Serializable {
       this.salt = saltByteArray;
       this.hash = getHashedPassword(password, saltByteArray);
     }
-    this.hasStarted = false;
+    this.startingTime = null;
+    this.endingTime = null;
   }
 
   /**
@@ -110,7 +116,7 @@ public class Game implements Serializable {
     } else if (players.size() < 4) {
       LOGGER.info("Checking if user is allowed to start game: Game has less than four players.");
       return false;
-    } else if (hasStarted) {
+    } else if (hasStarted()) {
       LOGGER.info("Checking if user is allowed to start game: Game has already started.");
       return false;
     }
@@ -119,10 +125,10 @@ public class Game implements Serializable {
 
   /** Starts the game. */
   public synchronized void startGame() {
-    if (hasStarted) {
+    if (hasStarted()) {
       return;
     }
-    hasStarted = true;
+    startingTime = LocalDateTime.now();
     chatMessages.clear();
     distributeRoleCards();
     for (Player player : getInGamePlayersList()) {
@@ -400,15 +406,15 @@ public class Game implements Serializable {
   }
 
   public boolean hasStarted() {
-    return hasStarted;
+    return startingTime != null;
+  }
+
+  public void setStartingTimeForTestingOnly(LocalDateTime time) {
+    startingTime = time;
   }
 
   public boolean hasEnded() {
-    return hasEnded;
-  }
-
-  public void setHasStarted(boolean hasStarted) {
-    this.hasStarted = hasStarted;
+    return endingTime != null;
   }
 
   public String getHost() {
@@ -641,10 +647,10 @@ public class Game implements Serializable {
 
   /** Ends the game. */
   public synchronized void endGame() {
-    if (hasEnded) {
+    if (hasEnded()) {
       return;
     }
-    hasEnded = true;
+    endingTime = LocalDateTime.now();
 
     // Consultant wins
     if (manager.isFired() && allMonkeysFired(monkeys)) {
@@ -743,5 +749,16 @@ public class Game implements Serializable {
     for (Player player : players.values()) {
       player.snapshotOfMentalHealth();
     }
+  }
+
+  public String getStartingTimeAsString() {
+    return startingTime.format(timeFormatter);
+  }
+
+  public String getEndingTimeAsString() {
+    if (endingTime == null) { // TODO: Remove. Only for testing
+      return LocalDateTime.now().format(timeFormatter);
+    }
+    return endingTime.format(timeFormatter);
   }
 }
