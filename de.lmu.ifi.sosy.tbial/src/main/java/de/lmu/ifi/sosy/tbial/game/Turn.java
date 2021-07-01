@@ -19,7 +19,6 @@ public class Turn implements Serializable {
   private List<Player> players;
   private int currentPlayerIndex;
   private TurnStage stage;
-  private int drawnCardsInDrawingStage;
   private int bugsPlayedThisTurn;
 
   private Player lastPlayedBugCardBy;
@@ -29,7 +28,6 @@ public class Turn implements Serializable {
     this.players = players;
     this.currentPlayerIndex = 0;
     this.stage = TurnStage.DRAWING_CARDS;
-    this.drawnCardsInDrawingStage = 0;
     this.bugsPlayedThisTurn = 0;
   }
 
@@ -57,7 +55,6 @@ public class Turn implements Serializable {
   /** Switches the turn to the next player who is not fired yet. */
   public void switchToNextPlayer() {
     stage = TurnStage.DRAWING_CARDS;
-    this.drawnCardsInDrawingStage = 0;
     this.bugsPlayedThisTurn = 0;
     currentPlayerIndex++;
     if (currentPlayerIndex == players.size()) {
@@ -94,32 +91,11 @@ public class Turn implements Serializable {
     WAITING_FOR_PLAYER_RESPONSE
   }
 
-  /*
-   * Increases the counter for already drawn cards in current draw stage by 1.
-   */
-  public void incrementDrawnCardsInDrawingStage() {
-    this.drawnCardsInDrawingStage++;
-
-    LOGGER.info(
-        players.get(currentPlayerIndex).getUserName()
-            + " has drawn a card in "
-            + TurnStage.DRAWING_CARDS.toString());
-  }
-
   /** Increases the counter for already played bug cars in this turn by 1. */
   public void incrementPlayedBugCardsThisTurn() {
     this.bugsPlayedThisTurn++;
 
     LOGGER.info(players.get(currentPlayerIndex).getUserName() + " has played a bug card");
-  }
-
-  /**
-   * Returns the number of cards the current player has already drawn in the drawing stage.
-   *
-   * @return the number of drawn cards in the current drawing stage
-   */
-  public int getDrawnCardsInDrawingStage() {
-    return this.drawnCardsInDrawingStage;
   }
 
   /**

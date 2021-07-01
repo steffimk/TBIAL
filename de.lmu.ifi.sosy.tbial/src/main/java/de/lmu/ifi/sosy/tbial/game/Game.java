@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -188,24 +189,24 @@ public class Game implements Serializable {
    *
    * @param player The player who wants to discard the card.
    * @param card The card the player wants to discard.
+   * @param isNormalDiscard <code>true</code> if the card is added to the heap in the discard stage
    * @return <code>true</code> if the discarding was successful, <code>false</code> otherwise
    */
-  public boolean discardHandCard(Player player, StackCard card) {
+  public boolean discardHandCard(Player player, StackCard card, boolean isNormalDiscard) {
     if (player.removeHandCard(card)) {
-      stackAndHeap.addToHeap(card, player);
+      stackAndHeap.addToHeap(card, player, isNormalDiscard);
       return true;
     }
     return false;
   }
 
   public void putCardOnHeap(Player player, StackCard card) {
-    stackAndHeap.addToHeap(card, player);
+    stackAndHeap.addToHeap(card, player, false);
   }
 
   /**
-   * Removes the card from the player's hand cards and adds it to the receiver's received cards. If
-   * the card is a bug and the receiver owns a bug delegation card, there's a 25% chance the card
-   * will get blocked and added to the heap immediately.
+   * Removes the card from the player's hand cards and adds it to the receiver's received cards.
+   * Deals with the different types of cards respectively.
    *
    * @param card The card to be played
    * @param player The player who is playing the card.
@@ -213,28 +214,68 @@ public class Game implements Serializable {
    * @return <code>true</code> if the action was successful, <code>false</code> otherwise
    */
   public boolean putCardToPlayer(StackCard card, Player player, Player receiver) {
-    if (turn.getCurrentPlayer() != player) return false;
     if (player.removeHandCard(card)) {
-      if (card.isBug() && receiver.bugGetsBlockedByBugDelegationCard()) {
-        // Receiver moves card to heap immediately without having to react
-        stackAndHeap.addToHeap(card, receiver);
-        chatMessages.add(
-            new ChatMessage(
-                receiver.getUserName()
-                    + " blocked \""
-                    + card.toString()
-                    + "\" with a bug delegation card."));
-        LOGGER.info(
-            receiver.getUserName()
-                + " blocked "
-                + card.toString()
-                + " with his bug delegation card.");
+      if (card.isBug()) {
+        playBug(card, player, receiver);
+        return true;
+      }
+      if (((Card) card).getCardType() == CardType.ACTION && ((ActionCard) card).isSolution()) {
+        playSolution(card, player, receiver);
         return true;
       }
       receiver.receiveCard(card);
-      return true; // TODO: maybe receiver needs to respond to this action immediately
+      return false;
     }
     return false;
+  }
+
+  /**
+   * Call when a player plays a solution card.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playSolution(StackCard card, Player player, Player receiver) {
+    receiver.addToMentalHealth(1);
+    stackAndHeap.addToHeap(card, receiver, false);
+    String message = "the solution \"" + card.toString() + "\"";
+    if(player.equals(receiver)) {
+    	message = player.getUserName() + " played " + message + ".";
+    } else {
+    	message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
+    }
+    chatMessages.add(new ChatMessage(message));
+  }
+
+  /**
+   * Call when a player plays a bug. If the card is a bug and the receiver owns a bug delegation
+   * card, there's a 25% chance the card will get blocked and added to the heap immediately.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playBug(StackCard card, Player player, Player receiver) {
+    if (receiver.bugGetsBlockedByBugDelegationCard()) {
+      // Receiver moves card to heap immediately without having to react
+      stackAndHeap.addToHeap(card, receiver, false);
+      chatMessages.add(
+          new ChatMessage(
+              receiver.getUserName()
+                  + " blocked \""
+                  + card.toString()
+                  + "\" with a bug delegation card."));
+      return;
+    }
+    receiver.receiveCard(card);
+    turn.incrementPlayedBugCardsThisTurn();
+    turn.setLastPlayedBugCard((ActionCard) card);
+    turn.setLastPlayedBugCardBy(player);
+    LOGGER.info(player.getUserName() + " played bug card " + card.toString());
+
+    receiver.blockBug(new BugBlock(player.getUserName()));
+    receiver.addToMentalHealth(-1);
   }
 
   /**
@@ -317,10 +358,6 @@ public class Game implements Serializable {
     return chatMessages;
   }
 
-  public String getWinners() {
-    return winners;
-  }
-
   public int getCurrentNumberOfPlayers() {
     return players.size();
   }
@@ -401,7 +438,7 @@ public class Game implements Serializable {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS)
       return false;
     if (player.getSelectedHandCard() != null) {
-      return discardHandCard(player, player.getSelectedHandCard());
+      return discardHandCard(player, player.getSelectedHandCard(), true);
     }
     return false;
   }
@@ -414,33 +451,23 @@ public class Game implements Serializable {
    * @param receiverOfCard The player who should receive the previously selected card.
    */
   public void clickedOnAddCardToPlayer(Player player, Player receiverOfCard) {
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
- 
-    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) return;
 
-    if (turn.getPlayedBugCardsInThisTurn() == Turn.MAX_BUG_CARDS_PER_TURN) {
+    StackCard selectedCard = player.getSelectedHandCard();
+
+    if (turn.getCurrentPlayer() != player
+        || turn.getStage() != TurnStage.PLAYING_CARDS
+        || selectedCard == null) {
+      return;
+    }
+
+    if (selectedCard.isBug() && turn.getPlayedBugCardsInThisTurn() >= Turn.MAX_BUG_CARDS_PER_TURN) {
       chatMessages.add(
           new ChatMessage(
               "You cannot play another bug.")); // TODO: Only show player who played card?
       return;
     }
-    
-    StackCard selectedCard = player.getSelectedHandCard();
-    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
-      if (((ActionCard) selectedCard).isBug()) {
-        turn.incrementPlayedBugCardsThisTurn();
-        turn.setLastPlayedBugCard((ActionCard) selectedCard);
-        turn.setLastPlayedBugCardBy(player);
-        LOGGER.info(player.getUserName() + " played bug card " + selectedCard.toString());
 
-        receiverOfCard.blockBug(new BugBlock(player.getUserName()));
-
-        int decreasedMentalHealthPoints = receiverOfCard.getMentalHealthInt() - 1;
-        receiverOfCard.setMentalHealth(decreasedMentalHealthPoints);
-      }
-    }
-
-    if (selectedCard != null && ((Card) selectedCard).getCardType() != CardType.ABILITY) {
+    if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
   }
@@ -454,7 +481,7 @@ public class Game implements Serializable {
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        discardHandCard(player, selectedCard);
+        discardHandCard(player, selectedCard, false);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
         chatMessages.add(
@@ -520,12 +547,29 @@ public class Game implements Serializable {
   }
 
   /**
+   * A player clicked on the draw cards button to get two cards from the stack.
+   *
+   * @param player The player who clicked on the button.
+   */
+  public void clickedOnDrawCardsButton(Player player) {
+    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
+      LOGGER.debug(
+          "Player clicked on draw cards button but not his turn or not in the right stage");
+      return;
+    }
+    drawCardsFromStack(player);
+    turn.setStage(TurnStage.PLAYING_CARDS);
+  }
+
+  /**
    * A player clicked on the end turn button.
    *
    * @param player The player who clicked on the button.
    */
   public void clickedOnEndTurnButton(Player player) {
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DISCARDING_CARDS) {
+    if (turn.getCurrentPlayer() != player
+        || !(turn.getStage() == TurnStage.DISCARDING_CARDS
+            || turn.getStage() == TurnStage.PLAYING_CARDS)) {
       LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
       return;
     }
@@ -535,30 +579,9 @@ public class Game implements Serializable {
     }
   }
 
-  /**
-   * A player clicked on the play cards button.
-   *
-   * @param player The player who clicked on the button.
-   */
-  public void clickedOnPlayCardsButton(Player player) {
-    if (turn.getDrawnCardsInDrawingStage() != Turn.DRAW_LIMIT_IN_DRAWING_STAGE) {
-      LOGGER.debug("Player hasn't drawn enough cards from stack.");
-      return;
-    }
-    if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.DRAWING_CARDS) {
-      LOGGER.debug("Player clicked on end turn button but not his turn or not in the right stage");
-      return;
-    }
-    turn.setStage(TurnStage.PLAYING_CARDS);
-  }
-
-  public void drawCardFromStack(Player player) {
-	if (stackAndHeap.getStack().size() == 0) {
-      stackAndHeap.refillStack();
-    }
-    StackCard drawnCard = stackAndHeap.drawCard();
-    turn.incrementDrawnCardsInDrawingStage();
-    player.addToHandCards(drawnCard);
+  private void drawCardsFromStack(Player player) {
+    player.addToHandCards(stackAndHeap.drawCard());
+    player.addToHandCards(stackAndHeap.drawCard());
   }
 
   public void firePlayer(Player player, Set<StackCard> handCards) {
@@ -590,7 +613,16 @@ public class Game implements Serializable {
     }
     return true;
   }
-  
+
+  public boolean allMonkeysWon(List<Player> monkeys) {
+    for (Player monkey : monkeys) {
+      if (!monkey.hasWon()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public Player getManager() {
     return manager;
   }
@@ -624,22 +656,17 @@ public class Game implements Serializable {
       if (developer != null) {
         developer.win(false);
       }
-      winners = consultant.getUserName() + " has won.";
     }
     // Evil Code Monkeys win
     else if (manager.isFired()) {
       for (Player monkey : monkeys) {
         monkey.win(true);
-        winners += monkey.getUserName() + ", ";
       }
       manager.win(false);
       consultant.win(false);
       if (developer != null) {
         developer.win(false);
       }
-      // remove , at end of string
-      winners = winners.substring(0, winners.length() - 2);
-      winners += " have won.";
     }
     // Manager and Honest Developers win
     else if (consultant.isFired() && allMonkeysFired(monkeys)) {
@@ -648,14 +675,67 @@ public class Game implements Serializable {
       for (Player monkey : monkeys) {
         monkey.win(false);
       }
-      if (developer == null) {
-        winners = manager.getUserName() + " has won.";
-      } else {
+      if (developer != null) {
         developer.win(true);
-        winners += developer.getUserName();
-        winners += " & " + manager.getUserName() + " have won.";
       }
     }
+  }
+
+  public String getWinners(Player basePlayer) {
+    winners = "";
+    // Consultant wins
+    if (consultant.hasWon()) {
+      if (basePlayer.getRole() == Role.CONSULTANT) {
+        winners = "You have won.";
+      } else {
+        winners = consultant.getUserName() + " has won.";
+      }
+    }
+    // Evil Code Monkeys win
+    else if (allMonkeysWon(monkeys)) {
+      for (Player monkey : monkeys) {
+        if (basePlayer.getUserName() == monkey.getUserName()) {
+          winners += "You, ";
+        } else {
+          winners += monkey.getUserName() + ", ";
+        }
+      }
+      // remove , at end of string
+      winners = winners.substring(0, winners.length() - 2);
+      winners += " have won.";
+    }
+    // Manager and Honest Developers win
+    else if (manager.hasWon()) {
+      if (developer == null) {
+        if (basePlayer.getRole() == Role.MANAGER) {
+          winners = "You have won.";
+        } else {
+          winners = manager.getUserName() + " has won.";
+        }
+      } else {
+        if (basePlayer.getRole() == Role.HONEST_DEVELOPER) {
+          winners += "You";
+          winners += " & " + manager.getUserName() + " have won.";
+        } else if (basePlayer.getRole() == Role.MANAGER) {
+          winners += developer.getUserName();
+          winners += " & you have won.";
+        } else {
+          winners += developer.getUserName();
+          winners += " & " + manager.getUserName() + " have won.";
+        }
+      }
+    }
+    return winners;
+  }
+
+  public String getGroupWon() {
+    if (manager.hasWon() && developer == null) {
+      return "The Manager has won!";
+    } else if (consultant.hasWon()) {
+      return "The Consultant has won!";
+    } else if (allMonkeysWon(monkeys)) {
+      return "The Evil Code Monkeys have won!";
+    } else return "The Manager and the Honest Developer have won!";
   }
 
   /** Each player saves his current count of mental health points. */

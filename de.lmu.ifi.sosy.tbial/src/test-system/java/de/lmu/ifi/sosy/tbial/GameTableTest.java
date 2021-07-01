@@ -30,7 +30,6 @@ import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
-import de.lmu.ifi.sosy.tbial.game.Turn;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 public class GameTableTest extends PageTestBase {
@@ -213,8 +212,10 @@ public class GameTableTest extends PageTestBase {
     // End Game
     tester.assertComponent("ceremony", WebMarkupContainer.class);
     tester.assertComponent("ceremony:ceremonyTitle", Label.class);
+    tester.assertComponent("ceremony:groupWon", Label.class);
+    tester.assertModelValue("ceremony:groupWon", game.getGroupWon());
     tester.assertComponent("ceremony:winners", Label.class);
-    tester.assertModelValue("ceremony:winners", game.getWinners());
+    tester.assertModelValue("ceremony:winners", game.getWinners(basePlayer));
     tester.assertComponent("ceremony:confetti", WebMarkupContainer.class);
     FormTester form = tester.newFormTester("ceremony:endGameForm");
   }
@@ -398,19 +399,20 @@ public class GameTableTest extends PageTestBase {
   }
 
   @Test
-  public void clickOnPlayCardButtonWorks() {
+  public void clickOnDrawCardsButtonWorks() {
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.DRAWING_CARDS);
-
-    for (int i = 0; i < Turn.DRAW_LIMIT_IN_DRAWING_STAGE; i++) {
-      game.getTurn().incrementDrawnCardsInDrawingStage();
-    }
+    int handCardCount = basePlayer.getHandCards().size();
+    int stackSize = game.getStackAndHeap().getStack().size();
 
     tester.startPage(GameTable.class);
-    tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:playCardsButton"));
+    tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:drawCardsButton"));
 
+    // Player received two handcards, two cards have been removed from the stack and the player is
+    // in the turn stage "playing card"
+    assertEquals(basePlayer.getHandCards().size(), handCardCount + 2);
+    assertEquals(game.getStackAndHeap().getStack().size(), stackSize - 2);
     assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
-    
   }
 
   @Test
@@ -430,26 +432,31 @@ public class GameTableTest extends PageTestBase {
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.DRAWING_CARDS);
 
-    ArrayList<StackCard> handCards = new ArrayList<>(basePlayer.getHandCards());
-    int handSizeBefore = handCards.size();
+    int handSizeBefore = basePlayer.getHandCards().size();
 
     List<StackCard> stack = game.getStackAndHeap().getStack();
-    int stackSizeBefore = stack.size();
+    int stackSizeBefore = game.getStackAndHeap().getStack().size();
 
     // Draw two cards from stack
-    tester.executeAjaxEvent("table:stackContainer", "click");
     tester.executeAjaxEvent("table:stackContainer", "click");
 
     // stack size should be decreased by two
     assertEquals(stackSizeBefore - 2, stack.size());
     // hand size should be increased by two
     assertEquals(handSizeBefore + 2, basePlayer.getHandCards().size());
+    // turn stage should be playing cards
+    assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
   }
 
   @Test
-  public void clickOnEndTurnButtonWorks() {
+  public void clickOnEndTurnButtonWorksInPlayingAndDiscardingStage() {
+    clickOnEndTurnButtonWorks(TurnStage.PLAYING_CARDS);
+    clickOnEndTurnButtonWorks(TurnStage.DISCARDING_CARDS);
+  }
+
+  private void clickOnEndTurnButtonWorks(TurnStage stage) {
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
-    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
+    game.getTurn().setStage(stage);
     int mentalHealth = basePlayer.getMentalHealthInt();
     int handCardSize = basePlayer.getHandCards().size();
 
@@ -457,13 +464,11 @@ public class GameTableTest extends PageTestBase {
     basePlayer.addToMentalHealth(-mentalHealth);
 
     tester.startPage(GameTable.class);
-    tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:endTurnButton"));
-
-    assertEquals(game.getTurn().getCurrentPlayer(), basePlayer);
-    assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+    assertFalse(tester.getComponentFromLastRenderedPage("gameflow:endTurnButton").isEnabled());
 
     // Make mental health bigger than amount of hand cards -> player can end turn
     basePlayer.addToMentalHealth(handCardSize + 1);
+    tester.startPage(GameTable.class);
     tester.clickLink(tester.getComponentFromLastRenderedPage("gameflow:endTurnButton"));
 
     assertFalse(game.getTurn().getCurrentPlayer() == basePlayer);
@@ -529,9 +534,11 @@ public class GameTableTest extends PageTestBase {
 
     if (basePlayer.hasWon()) {
       tester.assertModelValue("ceremony:ceremonyTitle", "Congratulations!");
+      tester.assertModelValue("ceremony:groupWon", "The Manager has won!");
       tester.assertModelValue("ceremony:winners", "You have won.");
     } else {
       tester.assertModelValue("ceremony:ceremonyTitle", "You lost!");
+      tester.assertModelValue("ceremony:groupWon", "The Manager has won!");
       tester.assertModelValue("ceremony:winners", game.getManager().getUserName() + " has won.");
     }
 

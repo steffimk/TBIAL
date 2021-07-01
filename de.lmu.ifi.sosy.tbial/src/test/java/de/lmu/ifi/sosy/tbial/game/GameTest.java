@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 /** Tests referring to the Game class. */
@@ -165,7 +166,7 @@ public class GameTest {
   public void discardHandCard_returnsFalseIfCardNotInHandCards() {
     Game game = getNewGameThatHasStarted();
     StackCard testCard = new AbilityCard(Ability.GOOGLE);
-    assertThat(game.discardHandCard(game.getPlayers().get("A"), testCard), is(false));
+    assertThat(game.discardHandCard(game.getPlayers().get("A"), testCard, true), is(false));
   }
 
   @Test
@@ -174,7 +175,7 @@ public class GameTest {
     Player player = game.getPlayers().get("A");
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
-    game.discardHandCard(player, testCard);
+    game.discardHandCard(player, testCard, true);
     assertThat(game.getStackAndHeap().getHeap().contains(testCard), is(true));
   }
 
@@ -184,7 +185,7 @@ public class GameTest {
     Player player = game.getPlayers().get("A");
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
-    game.discardHandCard(player, testCard);
+    game.discardHandCard(player, testCard, true);
     assertThat(player.getHandCards().contains(testCard), is(false));
   }
   
@@ -218,8 +219,8 @@ public class GameTest {
       receivingPlayer = game.getPlayers().get("A");
     }
 
-    ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
-    StackCard testCard = handCards.get(0);
+    StackCard testCard = new ActionCard(Action.NOT_FOUND);
+    player.addToHandCards(testCard);
     game.putCardToPlayer(testCard, player, receivingPlayer);
     assertThat(receivingPlayer.getReceivedCards().contains(testCard), is(true));
   }
@@ -241,6 +242,34 @@ public class GameTest {
   }
 
   @Test
+  public void putCardToPlayer_addsMentalHealthIfCardIsSolution() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    receivingPlayer.addToMentalHealth(-1);
+    int prevMentalHealth = receivingPlayer.getMentalHealthInt();
+    StackCard testCard = new ActionCard(Action.REGEX);
+    player.addToHandCards(testCard);
+    game.putCardToPlayer(testCard, player, receivingPlayer);
+    assertEquals(receivingPlayer.getMentalHealthInt(), prevMentalHealth + 1);
+  }
+
+  @Test
+  public void playSolution_addsSolutionToHeap() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    StackCard testCard = new ActionCard(Action.REGEX);
+    player.addToHandCards(testCard);
+    game.putCardToPlayer(testCard, player, player);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard);
+  }
+
+  @Test
   public void endGame_setsHasEndedToTrue() {
     Game game = getNewGameThatHasStarted();
     game.endGame();
@@ -256,7 +285,14 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
 
     game.firePlayer(game.getManager(), game.getManager().getHandCards());
-    assertEquals(game.getWinners(), game.getConsultant().getUserName() + " has won.");
+    if (game.getPlayers().get("username").getRole() == Role.CONSULTANT) {
+      assertEquals(game.getWinners(game.getPlayers().get("username")), "You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getConsultant().getUserName() + " has won.");
+    }
+    assertEquals(game.getGroupWon(), "The Consultant has won!");
   }
 
   @Test
@@ -273,7 +309,14 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
     game.firePlayer(game.getHonestDeveloper(), game.getHonestDeveloper().getHandCards());
     game.firePlayer(game.getManager(), game.getManager().getHandCards());
-    assertEquals(game.getWinners(), game.getConsultant().getUserName() + " has won.");
+    if (game.getPlayers().get("username").getRole() == Role.CONSULTANT) {
+      assertEquals(game.getWinners(game.getPlayers().get("username")), "You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getConsultant().getUserName() + " has won.");
+    }
+    assertEquals(game.getGroupWon(), "The Consultant has won!");
   }
 
   @Test
@@ -284,7 +327,14 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    assertEquals(game.getWinners(), game.getManager().getUserName() + " has won.");
+    if (game.getPlayers().get("username").getRole() == Role.MANAGER) {
+      assertEquals(game.getWinners(game.getPlayers().get("username")), "You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getManager().getUserName() + " has won.");
+    }
+    assertEquals(game.getGroupWon(), "The Manager has won!");
   }
 
   @Test
@@ -294,12 +344,23 @@ public class GameTest {
     // wins even though he is fired
     game.firePlayer(
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
-    assertEquals(
-        game.getWinners(),
-        game.getEvilCodeMonkeys().get(0).getUserName()
-            + ", "
-            + game.getEvilCodeMonkeys().get(1).getUserName()
-            + " have won.");
+    if (game.getEvilCodeMonkeys().get(0).getUserName() == "username") {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          "You, " + game.getEvilCodeMonkeys().get(1).getUserName() + " have won.");
+    } else if (game.getEvilCodeMonkeys().get(1).getUserName() == "username") {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getEvilCodeMonkeys().get(0).getUserName() + ", You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getEvilCodeMonkeys().get(0).getUserName()
+              + ", "
+              + game.getEvilCodeMonkeys().get(1).getUserName()
+              + " have won.");
+    }
+    assertEquals(game.getGroupWon(), "The Evil Code Monkeys have won!");
   }
 
   @Test
@@ -315,12 +376,23 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    assertEquals(
-        game.getWinners(),
-        game.getHonestDeveloper().getUserName()
-            + " & "
-            + game.getManager().getUserName()
-            + " have won.");
+    if (game.getPlayers().get("username").getRole() == Role.HONEST_DEVELOPER) {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          "You & " + game.getManager().getUserName() + " have won.");
+    } else if (game.getPlayers().get("username").getRole() == Role.MANAGER) {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getHonestDeveloper().getUserName() + " & you have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getHonestDeveloper().getUserName()
+              + " & "
+              + game.getManager().getUserName()
+              + " have won.");
+    }
+    assertEquals(game.getGroupWon(), "The Manager and the Honest Developer have won!");
   }
 
   // ---------------------- Helper Methods ----------------------
