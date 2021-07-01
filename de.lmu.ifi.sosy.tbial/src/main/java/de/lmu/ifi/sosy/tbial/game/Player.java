@@ -141,13 +141,10 @@ public class Player implements Serializable {
     if (roleCard.getRole() == Role.MANAGER) {
       mentalHealth += 1;
     }
-<<<<<<< HEAD
+    mentalHealthMax = mentalHealth;
     if (mentalHealthDevelopment.size() == 0) {
       mentalHealthDevelopment.add(mentalHealth);
     }
-=======
-    mentalHealthMax = mentalHealth;
->>>>>>> master
   }
 
   public int getMentalHealthInt() {
