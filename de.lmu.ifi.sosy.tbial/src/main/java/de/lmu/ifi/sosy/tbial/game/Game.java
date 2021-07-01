@@ -257,6 +257,11 @@ public class Game implements Serializable {
    * @param receiver The player who is receiving the card.
    */
   private void playBug(StackCard card, Player player, Player receiver) {
+    turn.incrementPlayedBugCardsThisTurn();
+    turn.setLastPlayedBugCard((ActionCard) card);
+    turn.setLastPlayedBugCardBy(player);
+    LOGGER.info(player.getUserName() + " played bug card " + card.toString());
+
     if (receiver.bugGetsBlockedByBugDelegationCard()) {
       // Receiver moves card to heap immediately without having to react
       stackAndHeap.addToHeap(card, receiver, false);
@@ -268,12 +273,13 @@ public class Game implements Serializable {
                   + "\" with a bug delegation card."));
       return;
     }
+    else {
+      chatMessages.add(
+          new ChatMessage(
+              "Oh no! Bug delegation of " + receiver.getUserName() + " had no effect!"));
+    }
+    
     receiver.receiveCard(card);
-    turn.incrementPlayedBugCardsThisTurn();
-    turn.setLastPlayedBugCard((ActionCard) card);
-    turn.setLastPlayedBugCardBy(player);
-    LOGGER.info(player.getUserName() + " played bug card " + card.toString());
-
     receiver.blockBug(new BugBlock(player.getUserName()));
     receiver.addToMentalHealth(-1);
   }

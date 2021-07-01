@@ -264,6 +264,7 @@ public class Player implements Serializable {
   public boolean bugGetsBlockedByBugDelegationCard() {
     Stream<AbilityCard> bugDelCards =
         playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
+
     return bugDelCards.count() > 0 && Math.random() < 0.25;
   }
 }
