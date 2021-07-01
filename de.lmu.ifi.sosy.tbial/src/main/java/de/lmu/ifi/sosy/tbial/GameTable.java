@@ -577,8 +577,10 @@ public class GameTable extends BasePage {
     Label startingTimeLabel =
         new Label("startingTime", "Start: " + currentGame.getStartingTimeAsString());
     Label endingTimeLabel = new Label("endingTime", "End: " + currentGame.getEndingTimeAsString());
+    Label durationLabel = new Label("duration", "Duration: " + currentGame.getDurationAsString());
     add(startingTimeLabel);
     add(endingTimeLabel);
+    add(durationLabel);
     add(mhcf.getNewChartInstance("chart"));
  }
 

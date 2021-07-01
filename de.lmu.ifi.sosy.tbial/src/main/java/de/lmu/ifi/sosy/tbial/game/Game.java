@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -65,6 +66,8 @@ public class Game implements Serializable {
 
   private String winners = "";
 
+  private GameStatistics statistics;
+
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
@@ -91,6 +94,7 @@ public class Game implements Serializable {
     }
     this.startingTime = null;
     this.endingTime = null;
+    this.statistics = new GameStatistics();
   }
 
   /**
@@ -272,6 +276,7 @@ public class Game implements Serializable {
                   + " blocked \""
                   + card.toString()
                   + "\" with a bug delegation card."));
+      statistics.bugDelegationCardBlockedBug();
       return;
     }
     receiver.receiveCard(card);
@@ -475,6 +480,7 @@ public class Game implements Serializable {
 
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
+      statistics.playedCard(selectedCard);
     }
   }
 
@@ -535,6 +541,7 @@ public class Game implements Serializable {
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
       if (player.removeHandCard(selectedCard)) {
         receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
+        statistics.playedCard(selectedCard);
       }
     }
   }
@@ -760,5 +767,25 @@ public class Game implements Serializable {
       return LocalDateTime.now().format(timeFormatter);
     }
     return endingTime.format(timeFormatter);
+  }
+
+  public String getDurationAsString() {
+    String duration;
+    if (endingTime == null) { // TODO: Remove. Only for testing
+      duration =
+          Duration.between(startingTime, startingTime.plusHours(2).plusMinutes(31).plusSeconds(4))
+              .toString();
+    } else {
+      duration = Duration.between(startingTime, endingTime).toString();
+    }
+    return duration
+        .substring(2)
+        .replaceFirst("H", "h ")
+        .replaceFirst("M", "min ")
+        .replaceFirst("S", "sec");
+  }
+
+  public GameStatistics getStatistics() {
+    return statistics;
   }
 }
