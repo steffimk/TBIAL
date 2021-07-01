@@ -759,30 +759,30 @@ public class Game implements Serializable {
   }
 
   public String getStartingTimeAsString() {
+    if (endingTime == null) {
+      return "Game has not started yet.";
+    }
     return startingTime.format(timeFormatter);
   }
 
   public String getEndingTimeAsString() {
-    if (endingTime == null) { // TODO: Remove. Only for testing
-      return LocalDateTime.now().format(timeFormatter);
+    if (endingTime == null) {
+      return "Game not over yet.";
     }
     return endingTime.format(timeFormatter);
   }
 
   public String getDurationAsString() {
-    String duration;
-    if (endingTime == null) { // TODO: Remove. Only for testing
-      duration =
-          Duration.between(startingTime, startingTime.plusHours(2).plusMinutes(31).plusSeconds(4))
-              .toString();
-    } else {
-      duration = Duration.between(startingTime, endingTime).toString();
+    if (endingTime == null || startingTime == null) {
+      return "Game not over yet.";
     }
-    return duration
-        .substring(2)
-        .replaceFirst("H", "h ")
-        .replaceFirst("M", "min ")
-        .replaceFirst("S", "s");
+    Duration duration = Duration.between(startingTime, endingTime);
+    return duration.toHours()
+        + "h "
+        + duration.toMinutesPart()
+        + "min "
+        + duration.toSecondsPart()
+        + "s";
   }
 
   public GameStatistics getStatistics() {

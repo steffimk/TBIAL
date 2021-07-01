@@ -53,5 +53,7 @@ public class GameStatisticsContainer extends Panel {
     add(bugDelegationLabel);
     add(blockedCardsLabel);
     add(mhcf.getNewChartInstance("chart"));
+    
+    setOutputMarkupId(true);
   }
 }
