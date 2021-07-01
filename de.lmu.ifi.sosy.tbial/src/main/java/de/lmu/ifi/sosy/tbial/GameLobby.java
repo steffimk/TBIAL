@@ -16,7 +16,10 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
+
+import com.googlecode.wicket.jquery.ui.form.dropdown.DropDownChoice;
 
 import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
@@ -33,6 +36,7 @@ public class GameLobby extends BasePage {
   private final Link<Game> startGameLink;
   private final Label isHostLabel;
   private final Label currentStatusLabel;
+  private final String selected = "A";
 
   public GameLobby() {
 
@@ -127,6 +131,7 @@ public class GameLobby extends BasePage {
           }
         };
     menuForm.add(showPlayersButton);
+
     add(leaveForm);
     add(menuForm);
 
@@ -148,6 +153,26 @@ public class GameLobby extends BasePage {
           }
         };
 
+    DropDownChoice<String> removeChoice =
+        new DropDownChoice<String>(
+            "removeSelect",
+            new PropertyModel<String>(this, "selected"),
+            getGame().getInGamePlayerNames());
+
+    removeChoice.setOutputMarkupId(true);
+    removeChoice.setVisible(isHost());
+
+    Button removePlayerButton =
+        new Button("removePlayerButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            removePlayer(selected);
+          }
+        };
+    removePlayerButton.setVisible(isHost());
+
     WebMarkupContainer lockedIcon = new WebMarkupContainer("lockedIcon");
     lockedIcon.setOutputMarkupId(true);
     lockedIcon.setVisible(getGame().isPrivate());
@@ -165,6 +190,8 @@ public class GameLobby extends BasePage {
     gameLobbyInfoForm.add(lockedIcon);
     gameLobbyInfoForm.add(unlockedIcon);
     gameLobbyInfoForm.add(gameInfoContainer);
+    leaveForm.add(removeChoice);
+    leaveForm.add(removePlayerButton);
     add(gameLobbyInfoForm);
 
     startGameLink.setOutputMarkupId(true);
@@ -219,6 +246,12 @@ public class GameLobby extends BasePage {
 
     String hostName = getGame().getHost();
     return session.getUser().getName().equals(hostName);
+  }
+
+  private void removePlayer(String player) {
+    Game game = getGame();
+    game.getPlayers().remove(player);
+    getGameManager().removeUserFromGame(player);
   }
 
   /**

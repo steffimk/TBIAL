@@ -33,16 +33,29 @@
 	<div wicket:id="unlockedIcon" class=centered ><i class="fas fa-unlock"></i>
 	<span><i>The Game is public!</i></span></div>
 	<br>
-	<div wicket:id="gameInfoContainer">
 	<b>Current Players:</b>
-		<ul wicket:id="gameInfos">
-			<li wicket:id="playerName"></li>
-		</ul>
-	</div>
+	<table style="width: 10%">
+				<thead> 
+					<tr>
+					</tr>
+				</thead>
+				<tbody wicket:id="gameInfoContainer">
+					<tr wicket:id="gameInfos">
+						<td><span wicket:id="playerName"></span></td>
+					</tr>
+				</tbody>
+			</table>
 	</form>
-		
+	
     <form wicket:id="leaveForm">
     	<input type="submit" class="buttonStyle" value="Leave Game"/>
+    	<input wicket:id="removePlayerButton" type="submit" class="buttonStyle" value="Remove" />
+        <br>
+        <select wicket:id="removeSelect">
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        </select>
     </form>
     <br> 
     <label wicket:id="isHostLabel">Information whether the player is the host of the game.</label>
