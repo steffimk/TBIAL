@@ -567,7 +567,11 @@ public class GameTable extends BasePage {
     int playerIndex = 2 + otherPlayers.indexOf(player);
     // If basePlayer
     if (playerIndex == 1) {
-      return new AttributeModifier("style", "animation-name: none;");
+      if (currentGame.getStackAndHeap().wasNormalDiscard()) {
+        return new AttributeModifier("style", "animation-name: none;");
+      } else {
+        return new AttributeModifier("style", "animation-name: discardAnimation");
+      }
     }
     return new AttributeModifier(
         "style", "animation-name: discardAnimation" + numberOfPlayers + "-" + playerIndex);

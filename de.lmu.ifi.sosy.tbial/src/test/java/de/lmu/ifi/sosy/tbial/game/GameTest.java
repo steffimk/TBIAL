@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 
 /** Tests referring to the Game class. */
 public class GameTest {
@@ -165,7 +165,7 @@ public class GameTest {
   public void discardHandCard_returnsFalseIfCardNotInHandCards() {
     Game game = getNewGameThatHasStarted();
     StackCard testCard = new AbilityCard(Ability.GOOGLE);
-    assertThat(game.discardHandCard(game.getPlayers().get("A"), testCard), is(false));
+    assertThat(game.discardHandCard(game.getPlayers().get("A"), testCard, true), is(false));
   }
 
   @Test
@@ -174,7 +174,7 @@ public class GameTest {
     Player player = game.getPlayers().get("A");
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
-    game.discardHandCard(player, testCard);
+    game.discardHandCard(player, testCard, true);
     assertThat(game.getStackAndHeap().getHeap().contains(testCard), is(true));
   }
 
@@ -184,7 +184,7 @@ public class GameTest {
     Player player = game.getPlayers().get("A");
     ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
     StackCard testCard = handCards.get(0);
-    game.discardHandCard(player, testCard);
+    game.discardHandCard(player, testCard, true);
     assertThat(player.getHandCards().contains(testCard), is(false));
   }
   
@@ -218,8 +218,8 @@ public class GameTest {
       receivingPlayer = game.getPlayers().get("A");
     }
 
-    ArrayList<StackCard> handCards = new ArrayList<StackCard>(player.getHandCards());
-    StackCard testCard = handCards.get(0);
+    StackCard testCard = new ActionCard(Action.NOT_FOUND);
+    player.addToHandCards(testCard);
     game.putCardToPlayer(testCard, player, receivingPlayer);
     assertThat(receivingPlayer.getReceivedCards().contains(testCard), is(true));
   }
@@ -238,6 +238,34 @@ public class GameTest {
     StackCard testCard = handCards.get(0);
     game.putCardToPlayer(testCard, player, receivingPlayer);
     assertThat(player.getHandCards().contains(testCard), is(false));
+  }
+
+  @Test
+  public void putCardToPlayer_addsMentalHealthIfCardIsSolution() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    receivingPlayer.addToMentalHealth(-1);
+    int prevMentalHealth = receivingPlayer.getMentalHealthInt();
+    StackCard testCard = new ActionCard(Action.REGEX);
+    player.addToHandCards(testCard);
+    game.putCardToPlayer(testCard, player, receivingPlayer);
+    assertEquals(receivingPlayer.getMentalHealthInt(), prevMentalHealth + 1);
+  }
+
+  @Test
+  public void playSolution_addsSolutionToHeap() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    StackCard testCard = new ActionCard(Action.REGEX);
+    player.addToHandCards(testCard);
+    game.putCardToPlayer(testCard, player, player);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard);
   }
 
   @Test

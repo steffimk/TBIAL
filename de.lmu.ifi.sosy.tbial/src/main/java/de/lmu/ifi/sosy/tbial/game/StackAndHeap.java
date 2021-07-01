@@ -25,6 +25,8 @@ public class StackAndHeap implements Serializable {
   /** The last player to add a card to the heap. Needed for the animation of the discard */
   private Player lastPlayerToDiscardCard;
 
+  private boolean wasNormalDiscard;
+
   public StackAndHeap() {
     this.stack = Collections.synchronizedList(new LinkedList<StackCard>());
     this.heap = Collections.synchronizedList(new LinkedList<StackCard>());
@@ -81,10 +83,13 @@ public class StackAndHeap implements Serializable {
    * Adds the card to the heap
    *
    * @param card The card to be added to the heap
+   * @param player The player from whose area the card is added to the heap
+   * @param isNormalDiscard <code>true</code> if the card is added to the heap in the discard stage
    */
-  public void addToHeap(StackCard card, Player player) {
+  public void addToHeap(StackCard card, Player player, boolean isNormalDiscard) {
     heap.add(card);
     lastPlayerToDiscardCard = player;
+    wasNormalDiscard = isNormalDiscard;
   }
 
   /**
@@ -130,5 +135,15 @@ public class StackAndHeap implements Serializable {
 
   public int getHeapMaxSize() {
     return HEAP_MAX_SIZE;
+  }
+
+  /**
+   * Information needed to trigger or not trigger an animation of the discard for the base player
+   *
+   * @return <code>true</code> if the last card added to the heap was a normal discard and <code>
+   *     false</code> otherwise.
+   */
+  public boolean wasNormalDiscard() {
+    return wasNormalDiscard;
   }
 }
