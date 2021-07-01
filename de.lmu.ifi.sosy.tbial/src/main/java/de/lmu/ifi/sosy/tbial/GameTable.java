@@ -492,24 +492,25 @@ public class GameTable extends BasePage {
                 return "Congratulations!";
               } else return "You lost!";
             });
+    Label groupWon =
+        new Label(
+            "groupWon",
+            () -> {
+              return currentGame.getGroupWon();
+            });
+    
     Label winner =
         new Label(
             "winners",
             () -> {
-              if (basePlayer.hasWon()
-                  && (basePlayer.getRole() == Role.MANAGER
-                      || (basePlayer.getRole() == Role.CONSULTANT
-                          && currentGame.allMonkeysFired(otherPlayers)))) {
-                return currentGame
-                    .getWinners()
-                    .replace("has", "have")
-                    .replace(basePlayer.getUserName(), "You");
-              }
-              return currentGame.getWinners().replace(basePlayer.getUserName(), "you");
+              return currentGame.getWinners(basePlayer);
             });
+
     winner.setOutputMarkupId(true);
+    groupWon.setOutputMarkupId(true);
     WebMarkupContainer confetti = new WebMarkupContainer("confetti");
     ceremony.add(winner);
+    ceremony.add(groupWon);
     ceremony.add(ceremonyTitle);
     ceremony.add(confetti);
     Form<?> endGameForm = new Form<>("endGameForm");

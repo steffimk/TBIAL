@@ -256,7 +256,14 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
 
     game.firePlayer(game.getManager(), game.getManager().getHandCards());
-    assertEquals(game.getWinners(), game.getConsultant().getUserName() + " has won.");
+    if (game.getPlayers().get("username").getRole() == Role.CONSULTANT) {
+      assertEquals(game.getWinners(game.getPlayers().get("username")), "You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getConsultant().getUserName() + " has won.");
+    }
+    assertEquals(game.getGroupWon(), "The Consultant has won!");
   }
 
   @Test
@@ -273,7 +280,14 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
     game.firePlayer(game.getHonestDeveloper(), game.getHonestDeveloper().getHandCards());
     game.firePlayer(game.getManager(), game.getManager().getHandCards());
-    assertEquals(game.getWinners(), game.getConsultant().getUserName() + " has won.");
+    if (game.getPlayers().get("username").getRole() == Role.CONSULTANT) {
+      assertEquals(game.getWinners(game.getPlayers().get("username")), "You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getConsultant().getUserName() + " has won.");
+    }
+    assertEquals(game.getGroupWon(), "The Consultant has won!");
   }
 
   @Test
@@ -284,7 +298,14 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    assertEquals(game.getWinners(), game.getManager().getUserName() + " has won.");
+    if (game.getPlayers().get("username").getRole() == Role.MANAGER) {
+      assertEquals(game.getWinners(game.getPlayers().get("username")), "You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getManager().getUserName() + " has won.");
+    }
+    assertEquals(game.getGroupWon(), "The Manager has won!");
   }
 
   @Test
@@ -294,12 +315,23 @@ public class GameTest {
     // wins even though he is fired
     game.firePlayer(
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
-    assertEquals(
-        game.getWinners(),
-        game.getEvilCodeMonkeys().get(0).getUserName()
-            + ", "
-            + game.getEvilCodeMonkeys().get(1).getUserName()
-            + " have won.");
+    if (game.getEvilCodeMonkeys().get(0).getUserName() == "username") {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          "You, " + game.getEvilCodeMonkeys().get(1).getUserName() + " have won.");
+    } else if (game.getEvilCodeMonkeys().get(1).getUserName() == "username") {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getEvilCodeMonkeys().get(0).getUserName() + ", You have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getEvilCodeMonkeys().get(0).getUserName()
+              + ", "
+              + game.getEvilCodeMonkeys().get(1).getUserName()
+              + " have won.");
+    }
+    assertEquals(game.getGroupWon(), "The Evil Code Monkeys have won!");
   }
 
   @Test
@@ -315,12 +347,23 @@ public class GameTest {
         game.getEvilCodeMonkeys().get(0), game.getEvilCodeMonkeys().get(0).getHandCards());
     game.firePlayer(
         game.getEvilCodeMonkeys().get(1), game.getEvilCodeMonkeys().get(1).getHandCards());
-    assertEquals(
-        game.getWinners(),
-        game.getHonestDeveloper().getUserName()
-            + " & "
-            + game.getManager().getUserName()
-            + " have won.");
+    if (game.getPlayers().get("username").getRole() == Role.HONEST_DEVELOPER) {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          "You & " + game.getManager().getUserName() + " have won.");
+    } else if (game.getPlayers().get("username").getRole() == Role.MANAGER) {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getHonestDeveloper().getUserName() + " & you have won.");
+    } else {
+      assertEquals(
+          game.getWinners(game.getPlayers().get("username")),
+          game.getHonestDeveloper().getUserName()
+              + " & "
+              + game.getManager().getUserName()
+              + " have won.");
+    }
+    assertEquals(game.getGroupWon(), "The Manager and the Honest Developer have won!");
   }
 
   // ---------------------- Helper Methods ----------------------

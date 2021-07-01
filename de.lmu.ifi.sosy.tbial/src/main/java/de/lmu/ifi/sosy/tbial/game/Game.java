@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
+import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -317,10 +318,6 @@ public class Game implements Serializable {
     return chatMessages;
   }
 
-  public String getWinners() {
-    return winners;
-  }
-
   public int getCurrentNumberOfPlayers() {
     return players.size();
   }
@@ -589,7 +586,16 @@ public class Game implements Serializable {
     }
     return true;
   }
-  
+
+  public boolean allMonkeysWon(List<Player> monkeys) {
+    for (Player monkey : monkeys) {
+      if (!monkey.hasWon()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public Player getManager() {
     return manager;
   }
@@ -623,22 +629,17 @@ public class Game implements Serializable {
       if (developer != null) {
         developer.win(false);
       }
-      winners = consultant.getUserName() + " has won.";
     }
     // Evil Code Monkeys win
     else if (manager.isFired()) {
       for (Player monkey : monkeys) {
         monkey.win(true);
-        winners += monkey.getUserName() + ", ";
       }
       manager.win(false);
       consultant.win(false);
       if (developer != null) {
         developer.win(false);
       }
-      // remove , at end of string
-      winners = winners.substring(0, winners.length() - 2);
-      winners += " have won.";
     }
     // Manager and Honest Developers win
     else if (consultant.isFired() && allMonkeysFired(monkeys)) {
@@ -647,13 +648,66 @@ public class Game implements Serializable {
       for (Player monkey : monkeys) {
         monkey.win(false);
       }
-      if (developer == null) {
-        winners = manager.getUserName() + " has won.";
-      } else {
+      if (developer != null) {
         developer.win(true);
-        winners += developer.getUserName();
-        winners += " & " + manager.getUserName() + " have won.";
       }
     }
+  }
+
+  public String getWinners(Player basePlayer) {
+    winners = "";
+    // Consultant wins
+    if (consultant.hasWon()) {
+      if (basePlayer.getRole() == Role.CONSULTANT) {
+        winners = "You have won.";
+      } else {
+        winners = consultant.getUserName() + " has won.";
+      }
+    }
+    // Evil Code Monkeys win
+    else if (allMonkeysWon(monkeys)) {
+      for (Player monkey : monkeys) {
+        if (basePlayer.getUserName() == monkey.getUserName()) {
+          winners += "You, ";
+        } else {
+          winners += monkey.getUserName() + ", ";
+        }
+      }
+      // remove , at end of string
+      winners = winners.substring(0, winners.length() - 2);
+      winners += " have won.";
+    }
+    // Manager and Honest Developers win
+    else if (manager.hasWon()) {
+      if (developer == null) {
+        if (basePlayer.getRole() == Role.MANAGER) {
+          winners = "You have won.";
+        } else {
+          winners = manager.getUserName() + " has won.";
+        }
+      } else {
+        if (basePlayer.getRole() == Role.HONEST_DEVELOPER) {
+          winners += "You";
+          winners += " & " + manager.getUserName() + " have won.";
+        } else if (basePlayer.getRole() == Role.MANAGER) {
+          winners += developer.getUserName();
+          winners += " & you have won.";
+        } else {
+          winners += developer.getUserName();
+          winners += " & " + manager.getUserName() + " have won.";
+        }
+      }
+    }
+    return winners;
+  }
+
+  public String getGroupWon() {
+    if (manager.hasWon() && developer == null) {
+      return "The Manager has won!";
+    } else if (consultant.hasWon()) {
+      return "The Consultant has won!";
+    } else if (allMonkeysWon(monkeys)) {
+      return "The Evil Code Monkeys have won!";
+    } else return "The Manager and the Honest Developer have won!";
   }
 }

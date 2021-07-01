@@ -213,8 +213,10 @@ public class GameTableTest extends PageTestBase {
     // End Game
     tester.assertComponent("ceremony", WebMarkupContainer.class);
     tester.assertComponent("ceremony:ceremonyTitle", Label.class);
+    tester.assertComponent("ceremony:groupWon", Label.class);
+    tester.assertModelValue("ceremony:groupWon", game.getGroupWon());
     tester.assertComponent("ceremony:winners", Label.class);
-    tester.assertModelValue("ceremony:winners", game.getWinners());
+    tester.assertModelValue("ceremony:winners", game.getWinners(basePlayer));
     tester.assertComponent("ceremony:confetti", WebMarkupContainer.class);
     FormTester form = tester.newFormTester("ceremony:endGameForm");
   }
@@ -529,9 +531,11 @@ public class GameTableTest extends PageTestBase {
 
     if (basePlayer.hasWon()) {
       tester.assertModelValue("ceremony:ceremonyTitle", "Congratulations!");
+      tester.assertModelValue("ceremony:groupWon", "The Manager has won!");
       tester.assertModelValue("ceremony:winners", "You have won.");
     } else {
       tester.assertModelValue("ceremony:ceremonyTitle", "You lost!");
+      tester.assertModelValue("ceremony:groupWon", "The Manager has won!");
       tester.assertModelValue("ceremony:winners", game.getManager().getUserName() + " has won.");
     }
 
