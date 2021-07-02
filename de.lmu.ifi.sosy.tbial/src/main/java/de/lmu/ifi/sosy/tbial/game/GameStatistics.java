@@ -6,6 +6,7 @@ import de.lmu.ifi.sosy.tbial.game.AbilityCard.AbilityType;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.ActionType;
 import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 
+/** This class contains information about all cards that were played during a game. */
 public class GameStatistics implements Serializable {
 
   private static final long serialVersionUID = 1L;
