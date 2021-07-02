@@ -110,5 +110,8 @@ public class TBIALSession extends AuthenticatedWebSession {
   public void setUser(User user) {
     this.user = user;
   }
-  
+
+  public Game getGame() {
+    return getTbialApplication().getGameManager().getGameOfUser(user.getName());
+  }
 }

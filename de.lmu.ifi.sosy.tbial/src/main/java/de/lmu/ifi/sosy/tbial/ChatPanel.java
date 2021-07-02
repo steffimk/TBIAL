@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -12,8 +13,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
@@ -27,7 +29,7 @@ public class ChatPanel extends Panel {
 
   private MarkupContainer chatMessagesContainer;
 
-  public ChatPanel(String id, LinkedList<ChatMessage> chatMessages) {
+  public ChatPanel(String id, TBIALSession session) {
     super(id);
 
     final TextField<String> textField = new TextField<String>("message", new Model<String>());
@@ -35,8 +37,11 @@ public class ChatPanel extends Panel {
 
     chatMessagesContainer = new WebMarkupContainer("chatMessages");
 
-    final ListView<ChatMessage> listView =
-        new ListView<ChatMessage>("messages", chatMessages) {
+    IModel<List<ChatMessage>> chatMessageModel =
+        (IModel<List<ChatMessage>>) () -> session.getGame().getChatMessages();
+
+    final PropertyListView<ChatMessage> listView =
+        new PropertyListView<ChatMessage>("messages", chatMessageModel) {
           private static final long serialVersionUID = 1L;
 
           @Override
@@ -74,6 +79,8 @@ public class ChatPanel extends Panel {
             ChatMessage chatMessage = new ChatMessage(username, text);
 
             if (chatMessage.isMessageEmpty()) return;
+
+            LinkedList<ChatMessage> chatMessages = session.getGame().getChatMessages();
 
             synchronized (chatMessages) {
               if (chatMessages.size() >= maxMessages) {

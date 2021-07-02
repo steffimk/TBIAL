@@ -32,7 +32,6 @@ import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -86,7 +85,7 @@ public class GameTable extends BasePage {
               throw new RestartResponseAtInterceptPageException(Lobby.class);
             }
             // For debugging:
-            // System.out.println("GameId: " + System.identityHashCode(currentGame) + "\n");
+            System.out.println("GameId: " + System.identityHashCode(currentGame) + "\n");
             super.onBeforeRender();
           }
         };
@@ -490,7 +489,7 @@ public class GameTable extends BasePage {
     gameFlowContainer.add(endTurnButton);
     add(gameFlowContainer);
 
-    add(new ChatPanel("chatPanel", currentGame.getChatMessages()));
+    add(new ChatPanel("chatPanel", getSession()));
 
     WebMarkupContainer ceremony = new WebMarkupContainer("ceremony");
     Label ceremonyTitle =
