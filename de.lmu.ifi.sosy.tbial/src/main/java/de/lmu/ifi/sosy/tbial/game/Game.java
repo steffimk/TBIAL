@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -223,6 +224,15 @@ public class Game implements Serializable {
         playSolution(card, player, receiver);
         return true;
       }
+      if (((Card) card).getCardType() == CardType.ACTION && ((ActionCard) card).isSpecial()) {
+        if (((ActionCard) card).getAction() == Action.COFFEE_MACHINE) {
+          playCoffeeMachine(card, player, receiver);
+          return true;
+        } else if (((ActionCard) card).getAction() == Action.RED_BULL) {
+          playRedBull(card, player, receiver);
+          return true;
+        }
+      }
       receiver.receiveCard(card);
       return false;
     }
@@ -276,6 +286,44 @@ public class Game implements Serializable {
 
     receiver.blockBug(new BugBlock(player.getUserName()));
     receiver.addToMentalHealth(-1);
+  }
+
+  /**
+   * Call when a player plays a Personal Coffee Machine card. Player gets 2 new cards from the
+   * stack.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playCoffeeMachine(StackCard card, Player player, Player receiver) {
+    drawCardsFromStack(player);
+    stackAndHeap.addToHeap(card, receiver, false);
+    String message =
+        player.getUserName()
+            + " played "
+            + card.toString()
+            + " and received 2 new cards from the stack.";
+    chatMessages.add(new ChatMessage(message));
+  }
+
+  /**
+   * Call when a player plays a Red Bull Dispenser card. Player gets 3 new cards from the stack.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playRedBull(StackCard card, Player player, Player receiver) {
+    drawCardsFromStack(player);
+    player.addToHandCards(stackAndHeap.drawCard());
+    stackAndHeap.addToHeap(card, receiver, false);
+    String message =
+        player.getUserName()
+            + " played "
+            + card.toString()
+            + " and received 3 new cards from the stack.";
+    chatMessages.add(new ChatMessage(message));
   }
 
   /**
@@ -468,6 +516,11 @@ public class Game implements Serializable {
     }
 
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
+      if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
+              || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
+          && player != receiverOfCard) {
+        return;
+      }
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
   }
