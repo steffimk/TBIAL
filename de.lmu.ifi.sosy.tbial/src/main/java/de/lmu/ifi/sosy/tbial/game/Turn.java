@@ -88,7 +88,8 @@ public class Turn implements Serializable {
     DRAWING_CARDS,
     PLAYING_CARDS,
     DISCARDING_CARDS,
-    WAITING_FOR_PLAYER_RESPONSE
+    WAITING_FOR_PLAYER_RESPONSE,
+    CHOOSING_CARD_TO_BLOCK_WITH
   }
 
   /** Increases the counter for already played bug cars in this turn by 1. */

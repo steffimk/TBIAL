@@ -424,8 +424,24 @@ public class Game implements Serializable {
   }
 
   public void clickedOnHandCard(Player player, StackCard handCard) {
-    if (turn.getCurrentPlayer() != player) return;
+    if (turn.getCurrentPlayer() != player && turn.getStage() != TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) return;
+
     player.setSelectedHandCard(handCard);
+
+    if (turn.getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH
+        && player.getReceivedCards().contains(turn.getLastPlayedBugCard())) {
+
+      if (((ActionCard) player.getSelectedHandCard()).isLameExcuse()
+          || ((ActionCard) player.getSelectedHandCard()).isSolution()) {
+        defendBugImmediately(player, (ActionCard) player.getSelectedHandCard());
+
+        if (player.getSelectedHandCard() != null) {
+          player.removeHandCard(player.getSelectedHandCard());
+        }
+
+        turn.setStage(Turn.TurnStage.PLAYING_CARDS);
+      }
+    }
   }
 
   /**
@@ -473,7 +489,7 @@ public class Game implements Serializable {
   }
 
   public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
-    if (!player.hasSelectedCard()) {
+    if (!player.hasSelectedCard() || !isTurnOfPlayer(player)) {
       return;
     }
     
@@ -497,8 +513,8 @@ public class Game implements Serializable {
     ActionCard bugCard = turn.getLastPlayedBugCard();
     Player basePlayer = turn.getLastPlayedBugCardBy();
 
-    putCardOnHeap(player, lameExcuseCard);
     putCardOnHeap(basePlayer, bugCard);
+    putCardOnHeap(player, lameExcuseCard);
     player.getReceivedCards().remove(lameExcuseCard);
     player.getReceivedCards().remove(bugCard);
 
