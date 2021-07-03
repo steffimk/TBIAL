@@ -311,6 +311,50 @@ public class GameTest {
   }
 
   @Test
+  public void playPersonalCoffeeMachineCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    StackCard testCard = new ActionCard(Action.COFFEE_MACHINE);
+    player.addToHandCards(testCard);
+    int prevHandCardsReceiving = receivingPlayer.getHandCards().size();
+    int prevHandCardsPlayer = player.getHandCards().size();
+    // nothing happens; only playable for oneself
+    game.putCardToPlayer(testCard, player, receivingPlayer);
+    assertEquals(receivingPlayer.getHandCards().size(), prevHandCardsReceiving);
+    game.putCardToPlayer(testCard, player, player);
+    assertEquals(player.getHandCards().size(), prevHandCardsPlayer + 1);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard);
+  }
+
+  @Test
+  public void playRedBullDispenserCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    StackCard testCard = new ActionCard(Action.RED_BULL);
+    player.addToHandCards(testCard);
+    int prevHandCardsReceiving = receivingPlayer.getHandCards().size();
+    int prevHandCardsPlayer = player.getHandCards().size();
+    // nothing happens; only playable for oneself
+    game.putCardToPlayer(testCard, player, receivingPlayer);
+    assertEquals(receivingPlayer.getHandCards().size(), prevHandCardsReceiving);
+    game.putCardToPlayer(testCard, player, player);
+    assertEquals(player.getHandCards().size(), prevHandCardsPlayer + 2);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard);
+  }
+
+  @Test
   public void endGame_setsHasEndedToTrue() {
     Game game = getNewGameThatHasStarted();
     game.endGame();
