@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -264,7 +265,16 @@ public class Game implements Serializable {
 
     if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
-      stackAndHeap.addToHeap(card, receiver, false);
+      stackAndHeap.addToHeap(card, player, false);
+
+      for (AbilityCard abilityCard : receiver.getPlayedAbilityCards()) {
+        if (abilityCard.getAbility() == Ability.BUG_DELEGATION) {
+          stackAndHeap.addToHeap(abilityCard, receiver, false);
+          receiver.removeAbilityCard(abilityCard);
+          break;
+        }
+      }
+
       chatMessages.add(
           new ChatMessage(
               receiver.getUserName()
@@ -482,8 +492,8 @@ public class Game implements Serializable {
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
       if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        discardHandCard(player, selectedCard, false);
         putCardOnHeap(player, clickedCard);
+        discardHandCard(player, selectedCard, false);
         player.getReceivedCards().remove(clickedCard);
         chatMessages.add(
             new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
@@ -498,8 +508,9 @@ public class Game implements Serializable {
     ActionCard bugCard = turn.getLastPlayedBugCard();
     Player basePlayer = turn.getLastPlayedBugCardBy();
 
-    putCardOnHeap(player, lameExcuseCard);
     putCardOnHeap(basePlayer, bugCard);
+    putCardOnHeap(player, lameExcuseCard);
+    
     player.getReceivedCards().remove(lameExcuseCard);
     player.getReceivedCards().remove(bugCard);
 

@@ -194,6 +194,10 @@ public class Player implements Serializable {
     return handCards.remove(card);
   }
 
+  public boolean removeAbilityCard(AbilityCard card) {
+    return playedAbilityCards.remove(card);
+  }
+
   /**
    * Adds this card to the set of received cards.
    *
@@ -271,7 +275,7 @@ public class Player implements Serializable {
         playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
     
     isBugDelegationCardPlayed = bugDelCards.count() > 0;
-    isBugDelegationCardTriggered = Math.random() < 1;
+    isBugDelegationCardTriggered = Math.random() < 0.25;
 
     if (isBugDelegationCardPlayed && !isBugDelegationCardTriggered) {
       chatMessages.add(
