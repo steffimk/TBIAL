@@ -232,10 +232,10 @@ public class Game implements Serializable {
         }
 
         if (((ActionCard) card).getAction() == Action.COFFEE_MACHINE) {
-          playCoffeeMachine(card, player, receiver);
+          playCoffeeMachine(card, player);
           return true;
         } else if (((ActionCard) card).getAction() == Action.RED_BULL) {
-          playRedBull(card, player, receiver);
+          playRedBull(card, player);
           return true;
         }
       }
@@ -318,9 +318,9 @@ public class Game implements Serializable {
    * @param player The player who is playing the card.
    * @param receiver The player who is receiving the card.
    */
-  private void playCoffeeMachine(StackCard card, Player player, Player receiver) {
+  private void playCoffeeMachine(StackCard card, Player player) {
     drawCardsFromStack(player);
-    stackAndHeap.addToHeap(card, receiver, false);
+    stackAndHeap.addToHeap(card, player, false);
     String message =
         player.getUserName()
             + " played "
@@ -336,10 +336,10 @@ public class Game implements Serializable {
    * @param player The player who is playing the card.
    * @param receiver The player who is receiving the card.
    */
-  private void playRedBull(StackCard card, Player player, Player receiver) {
+  private void playRedBull(StackCard card, Player player) {
     drawCardsFromStack(player);
     player.addToHandCards(stackAndHeap.drawCard());
-    stackAndHeap.addToHeap(card, receiver, false);
+    stackAndHeap.addToHeap(card, player, false);
     String message =
         player.getUserName()
             + " played "
@@ -538,10 +538,15 @@ public class Game implements Serializable {
     }
 
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
-      if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
-              || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
-          && player != receiverOfCard) {
-        return;
+      if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+        if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
+                || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
+            && player != receiverOfCard) {
+          chatMessages.add(
+              new ChatMessage(
+                  "You can only play a " + selectedCard.toString() + " card for yourself."));
+          return;
+        }
       }
       putCardToPlayer(selectedCard, player, receiverOfCard);
     }
