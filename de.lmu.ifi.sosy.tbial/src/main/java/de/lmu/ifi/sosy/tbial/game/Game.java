@@ -224,7 +224,13 @@ public class Game implements Serializable {
         playSolution(card, player, receiver);
         return true;
       }
+
       if (((Card) card).getCardType() == CardType.ACTION && ((ActionCard) card).isSpecial()) {
+        if (((ActionCard) card).getAction() == Action.LAN) {
+          playLanParty(card, player, receiver);
+          return true;
+        }
+
         if (((ActionCard) card).getAction() == Action.COFFEE_MACHINE) {
           playCoffeeMachine(card, player, receiver);
           return true;
@@ -286,6 +292,22 @@ public class Game implements Serializable {
 
     receiver.blockBug(new BugBlock(player.getUserName()));
     receiver.addToMentalHealth(-1);
+  }
+
+  /**
+   * Call when a player plays a LAN Party card. Adds 1 mental health point to everyone!
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playLanParty(StackCard card, Player player, Player receiver) {
+    for (Player p : getPlayers().values()) {
+      p.addToMentalHealth(1);
+    }
+    stackAndHeap.addToHeap(card, receiver, false);
+    String message = player.getUserName() + " played " + card.toString() + ".";
+    chatMessages.add(new ChatMessage(message));
   }
 
   /**

@@ -270,6 +270,47 @@ public class GameTest {
   }
 
   @Test
+  public void playLanPartyCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer1;
+    Player receivingPlayer2;
+    Player receivingPlayer3;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer1 = game.getPlayers().get("B");
+      receivingPlayer2 = game.getPlayers().get("C");
+      receivingPlayer3 = game.getPlayers().get("username");
+    } else if (player == game.getPlayers().get("B")) {
+      receivingPlayer1 = game.getPlayers().get("A");
+      receivingPlayer2 = game.getPlayers().get("C");
+      receivingPlayer3 = game.getPlayers().get("username");
+    } else if (player == game.getPlayers().get("C")) {
+      receivingPlayer1 = game.getPlayers().get("A");
+      receivingPlayer2 = game.getPlayers().get("B");
+      receivingPlayer3 = game.getPlayers().get("username");
+    } else {
+      receivingPlayer1 = game.getPlayers().get("A");
+      receivingPlayer2 = game.getPlayers().get("B");
+      receivingPlayer3 = game.getPlayers().get("C");
+    }
+
+    receivingPlayer1.addToMentalHealth(-1);
+    player.addToMentalHealth(-2);
+    int prevMentalHealthPlayer = player.getMentalHealthInt();
+    int prevMentalHealthReceiver1 = receivingPlayer1.getMentalHealthInt();
+    int prevMentalHealthReceiver2 = receivingPlayer2.getMentalHealthInt();
+    int prevMentalHealthReceiver3 = receivingPlayer3.getMentalHealthInt();
+    StackCard testCard = new ActionCard(Action.LAN);
+    player.addToHandCards(testCard);
+    game.putCardToPlayer(testCard, player, receivingPlayer1);
+    assertEquals(player.getMentalHealthInt(), prevMentalHealthPlayer + 1);
+    assertEquals(receivingPlayer1.getMentalHealthInt(), prevMentalHealthReceiver1 + 1);
+    assertEquals(receivingPlayer2.getMentalHealthInt(), prevMentalHealthReceiver2);
+    assertEquals(receivingPlayer3.getMentalHealthInt(), prevMentalHealthReceiver3);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard);
+  }
+
+  @Test
   public void playPersonalCoffeeMachineCard() {
     Game game = getNewGameThatHasStarted();
     Player player = game.getTurn().getCurrentPlayer();
