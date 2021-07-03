@@ -2,7 +2,10 @@ package de.lmu.ifi.sosy.tbial.game;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
+
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
@@ -194,6 +197,17 @@ public class Player implements Serializable {
   }
 
   /**
+   * Removal of a received card. Removes the card if it is contained in this player's received
+   * cards.
+   *
+   * @param card The card to be removed from the received cards.
+   * @return <code>true</code> if the removal was successful, <code>false</code> otherwise
+   */
+  public boolean removeReceivedCard(StackCard card) {
+    return receivedCards.remove(card);
+  }
+
+  /**
    * Adds this card to the set of received cards.
    *
    * @param card The card the player is receiving.
@@ -265,5 +279,38 @@ public class Player implements Serializable {
     Stream<AbilityCard> bugDelCards =
         playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
     return bugDelCards.count() > 0 && Math.random() < 0.25;
+  }
+
+  /**
+   * Checks whether player has the fortran maintenance card. If he does, there's a 15% chance this
+   * method returns true.
+   *
+   * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
+   */
+  public boolean hasFortranMaintenanceCard() {
+    Stream<StackCard> maintenanceCard =
+        receivedCards
+            .stream()
+            .filter(card -> ((Card) card).getCardType() == CardType.STUMBLING_BLOCK)
+            .filter(
+                card ->
+                    ((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.MAINTENANCE);
+    return maintenanceCard.count() > 0 && Math.random() < 0.15;
+  }
+
+  /**
+   * Checks whether player has the off-the-job-training card. If he does, there's a 25% chance this
+   * method returns true.
+   *
+   * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
+   */
+  public boolean hasOffTheJobTrainingCard() {
+    Stream<StackCard> trainingCard =
+        receivedCards
+            .stream()
+            .filter(card -> ((Card) card).getCardType() == CardType.STUMBLING_BLOCK)
+            .filter(
+                card -> ((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.TRAINING);
+    return trainingCard.count() > 0 && Math.random() < 0.25;
   }
 }

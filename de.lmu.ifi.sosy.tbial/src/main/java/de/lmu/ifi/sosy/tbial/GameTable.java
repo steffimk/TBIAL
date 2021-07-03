@@ -301,18 +301,9 @@ public class GameTable extends BasePage {
         new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
 
           private static final long serialVersionUID = 1L;
-          private TurnStage previousTurnStage = null;
-          private boolean playerCanEndTurn = false;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            TurnStage turnStage = currentGame.getTurn().getStage();
-            boolean canEndTurn = currentGame.getTurn().getCurrentPlayer().canEndTurn();
-            if (previousTurnStage == turnStage && playerCanEndTurn == canEndTurn) {
-              return;
-            }
-            previousTurnStage = turnStage;
-            playerCanEndTurn = canEndTurn;
             target.add(gameFlowContainer);
           }
         });
@@ -327,6 +318,7 @@ public class GameTable extends BasePage {
           public void onConfigure() {
             if (currentGame.isTurnOfPlayer(basePlayer)
                 && currentGame.getTurn().getStage() == TurnStage.DRAWING_CARDS) {
+              currentGame.dealWithStumblingBlocks(basePlayer);
               this.setEnabled(true);
               this.add(getAttributeModifierForLink("#F4731D"));
             } else {

@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,7 @@ import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -514,6 +516,73 @@ public class Game implements Serializable {
                 + "\" with \""
                 + lameExcuseCard.toString()
                 + "\"."));
+  }
+
+  /**
+   * Called at beginning of turn and checks whether player has to deal with stumbling block cards.
+   *
+   * @param player The player whose turn it should be.
+   */
+  public void dealWithStumblingBlocks(Player player) {
+    StumblingBlockCard maintenanceCard = null;
+    StumblingBlockCard trainingCard = null;
+    for (StackCard card : player.getReceivedCards()) {
+      if (((Card) card).getCardType() == CardType.STUMBLING_BLOCK) {
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.MAINTENANCE) {
+        maintenanceCard = (StumblingBlockCard) card;
+        }
+
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.TRAINING) {
+          trainingCard = (StumblingBlockCard) card;
+        }
+      }
+    }
+    if (maintenanceCard != null) {
+    if (player.hasFortranMaintenanceCard()) {
+      player.addToMentalHealth(-3);
+      stackAndHeap.addToHeap(maintenanceCard, player, false);
+        player.removeReceivedCard(maintenanceCard);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
+      return;
+      } else {
+
+        Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
+        p.receiveCard(maintenanceCard);
+        System.out.println(p.getReceivedCards());
+        player.removeReceivedCard(maintenanceCard);
+        System.out.println(player.getReceivedCards());
+        chatMessages.add(
+            new ChatMessage(
+                player.getUserName()
+                    + " doesn't have to do Fortran Maintenance and card moves to "
+                    + p.getUserName()
+                    + "."));
+        return;
+      }
+    
+    }
+    if (trainingCard != null) {
+      if (player.hasOffTheJobTrainingCard()) {
+        stackAndHeap.addToHeap(trainingCard, player, false);
+        player.removeReceivedCard(trainingCard);
+        turn.switchToNextPlayer();
+        chatMessages.add(
+            new ChatMessage(
+                player.getUserName()
+                    + " has to do an off the job training and has to skip his turn."));
+        return;
+
+      } else {
+        stackAndHeap.addToHeap(trainingCard, player, false);
+        player.removeReceivedCard(trainingCard);
+        chatMessages.add(
+            new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
+        return;
+      }
+    }
   }
 
   /**

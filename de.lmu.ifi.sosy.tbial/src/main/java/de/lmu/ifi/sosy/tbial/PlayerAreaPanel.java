@@ -9,6 +9,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -178,6 +179,17 @@ public class PlayerAreaPanel extends Panel {
     addCardDropBox.add(blockCards);
 
     add(addCardDropBox);
+    addCardDropBox.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected boolean shouldTrigger() {
+            // update when it's the baseplayer's turn
+            return game.getTurn().getCurrentPlayer() == basePlayer;
+          }
+        });
 
     // --------------------------- The hand cards ---------------------------
 
