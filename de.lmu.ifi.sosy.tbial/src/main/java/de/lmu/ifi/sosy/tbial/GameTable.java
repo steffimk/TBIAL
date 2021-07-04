@@ -32,7 +32,6 @@ import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -469,13 +468,20 @@ public class GameTable extends BasePage {
               }
             }
 
-            if (!basePlayer.getBugBlocks().isEmpty() && (hasLameExcuse || hasSolution)) {
+            if (basePlayer == currentGame.getTurn().getAttackedPlayer()
+                && (hasLameExcuse || hasSolution)
+                && currentGame.getTurn().getStage() != TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
               if (!modal.isShown()) {
                 currentGame
                     .getChatMessages()
                     .add(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
               }
               modal.show(target);
+            } else {
+              if (!hasLameExcuse && !hasSolution) {
+                currentGame.putCardOnHeap(basePlayer, currentGame.getTurn().getLastPlayedBugCard());
+                basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
+              }
             }
           }
         });

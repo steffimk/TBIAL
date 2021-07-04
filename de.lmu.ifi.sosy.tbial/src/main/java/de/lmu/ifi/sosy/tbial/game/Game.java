@@ -272,6 +272,7 @@ public class Game implements Serializable {
     turn.incrementPlayedBugCardsThisTurn();
     turn.setLastPlayedBugCard((ActionCard) card);
     turn.setLastPlayedBugCardBy(player);
+    turn.setAttackedPlayer(receiver);
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
     receiver.blockBug(new BugBlock(player.getUserName()));
@@ -428,19 +429,25 @@ public class Game implements Serializable {
 
     player.setSelectedHandCard(handCard);
 
-    if (turn.getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH
-        && player.getReceivedCards().contains(turn.getLastPlayedBugCard())) {
+    try {
+      if (turn.getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH
+          && player.getReceivedCards().contains(turn.getLastPlayedBugCard())) {
 
-      if (((ActionCard) player.getSelectedHandCard()).isLameExcuse()
-          || ((ActionCard) player.getSelectedHandCard()).isSolution()) {
-        defendBugImmediately(player, (ActionCard) player.getSelectedHandCard());
+        if (((ActionCard) player.getSelectedHandCard()).isLameExcuse()
+            || ((ActionCard) player.getSelectedHandCard()).isSolution()) {
+          defendBugImmediately(player, (ActionCard) player.getSelectedHandCard());
 
-        if (player.getSelectedHandCard() != null) {
-          player.removeHandCard(player.getSelectedHandCard());
+          if (player.getSelectedHandCard() != null) {
+            player.removeHandCard(player.getSelectedHandCard());
+          }
+
+          player.clearBugBlocks();
+          turn.setAttackedPlayer(null);
+          turn.setStage(Turn.TurnStage.PLAYING_CARDS);
         }
-
-        turn.setStage(Turn.TurnStage.PLAYING_CARDS);
       }
+    } finally {
+    	
     }
   }
 
@@ -488,34 +495,20 @@ public class Game implements Serializable {
     }
   }
 
-  public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
-    if (!player.hasSelectedCard() || !isTurnOfPlayer(player)) {
-      return;
-    }
-    
-    StackCard selectedCard = player.getSelectedHandCard();
-    LOGGER.info(player.getUserName() + " clicked on received Card");
-    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
-      if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        discardHandCard(player, selectedCard, false);
-        putCardOnHeap(player, clickedCard);
-        player.getReceivedCards().remove(clickedCard);
-        chatMessages.add(
-            new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
-        if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
-          player.addToMentalHealth(1);
-        }
-      }
-    }
-  }
-
-  public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
+  /**
+   * Called when player receives a bug and clicks on a lame excuse or solution card in his hand
+   * cards to defend the bug immediately.
+   *
+   * @param player The player who received the bug.
+   * @param blockingCard Either a solution or lame excuse card.
+   */
+  public void defendBugImmediately(Player player, ActionCard blockingCard) {
     ActionCard bugCard = turn.getLastPlayedBugCard();
     Player basePlayer = turn.getLastPlayedBugCardBy();
 
     putCardOnHeap(basePlayer, bugCard);
-    putCardOnHeap(player, lameExcuseCard);
-    player.getReceivedCards().remove(lameExcuseCard);
+    putCardOnHeap(player, blockingCard);
+    player.getReceivedCards().remove(blockingCard);
     player.getReceivedCards().remove(bugCard);
 
     if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
@@ -528,7 +521,7 @@ public class Game implements Serializable {
                 + " blocked \""
                 + bugCard.toString()
                 + "\" with \""
-                + lameExcuseCard.toString()
+                + blockingCard.toString()
                 + "\"."));
   }
 

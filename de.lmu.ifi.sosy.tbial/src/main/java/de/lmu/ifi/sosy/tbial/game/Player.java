@@ -76,6 +76,10 @@ public class Player implements Serializable {
     bugBlocks.add(bugBlock);
   }
 
+  public void clearBugBlocks() {
+    bugBlocks.clear();
+  }
+
   public String getPrestige() {
     return "Prestige: " + prestige;
   }

@@ -28,9 +28,7 @@ import com.googlecode.wicket.jquery.ui.interaction.draggable.Draggable;
 import com.googlecode.wicket.jquery.ui.interaction.droppable.Droppable;
 
 import de.lmu.ifi.sosy.tbial.game.StackCard;
-import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
-import de.lmu.ifi.sosy.tbial.game.ActionCard;
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 
@@ -165,16 +163,6 @@ public class PlayerAreaPanel extends Panel {
                 new Image(
                     "blockCard",
                     new PackageResourceReference(getClass(), blockCard.getResourceFileName())));
-
-            item.add(
-                new AjaxEventBehavior("click") {
-                  private static final long serialVersionUID = 1L;
-
-                  @Override
-                  protected void onEvent(AjaxRequestTarget target) {
-                    game.clickedOnReceivedCard(basePlayer, blockCard);
-                  }
-                });
           }
         };
     addCardDropBox.add(blockCards);
