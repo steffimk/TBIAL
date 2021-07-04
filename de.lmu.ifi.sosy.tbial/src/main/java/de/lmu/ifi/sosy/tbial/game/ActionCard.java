@@ -28,6 +28,10 @@ public class ActionCard extends Card implements StackCard {
     return action.actionType == ActionType.SOLUTION;
   }
 
+  public boolean isSpecial() {
+    return action.actionType == ActionType.SPECIAL;
+  }
+
   public ActionType getActionType() {
     return action.actionType;
   }
