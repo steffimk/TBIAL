@@ -562,7 +562,7 @@ public class Game implements Serializable {
                     + "."));
         return;
       }
-    
+
     }
     if (trainingCard != null) {
       if (player.hasOffTheJobTrainingCard()) {
@@ -644,6 +644,7 @@ public class Game implements Serializable {
     }
     if (player.canEndTurn()) {
       turn.switchToNextPlayer();
+      dealWithStumblingBlocks(turn.getCurrentPlayer());
     }
   }
 

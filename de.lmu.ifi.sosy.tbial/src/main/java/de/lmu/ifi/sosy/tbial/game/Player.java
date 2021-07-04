@@ -197,6 +197,17 @@ public class Player implements Serializable {
   }
 
   /**
+   * For testing only.
+   *
+   * <p>Removal of all hand cards. Helper function for test!
+   *
+   * @param cards The player's hand cards to be removed.
+   */
+  public void removeAllHandCards(Set<StackCard> cards) {
+    handCards.removeAll(cards);
+  }
+
+  /**
    * Removal of a received card. Removes the card if it is contained in this player's received
    * cards.
    *

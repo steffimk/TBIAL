@@ -296,6 +296,17 @@ public class GameTable extends BasePage {
           }
         });
 
+    heapContainer.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          protected boolean shouldTrigger() {
+            // update when it's the baseplayer's turn
+            return currentGame.getTurn().getCurrentPlayer() == basePlayer;
+          }
+        });
+
     WebMarkupContainer gameFlowContainer = new WebMarkupContainer("gameflow");
     gameFlowContainer.add(
         new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
@@ -318,7 +329,6 @@ public class GameTable extends BasePage {
           public void onConfigure() {
             if (currentGame.isTurnOfPlayer(basePlayer)
                 && currentGame.getTurn().getStage() == TurnStage.DRAWING_CARDS) {
-              currentGame.dealWithStumblingBlocks(basePlayer);
               this.setEnabled(true);
               this.add(getAttributeModifierForLink("#F4731D"));
             } else {
