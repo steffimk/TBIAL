@@ -419,7 +419,7 @@ public class GameTest {
       assertEquals(
           game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
           receivingPlayer.getUserName()
-              + " has to do an off the job training and has to skip the turn.");
+              + " has to do an off the job training and has to skip his/her turn.");
       assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
       assertEquals(
           game.getTurn().getCurrentPlayer() == game.getTurn().getNextPlayer(playerIndex), true);

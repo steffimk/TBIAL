@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -652,7 +651,7 @@ public class Game implements Serializable {
         chatMessages.add(
             new ChatMessage(
                 player.getUserName()
-                    + " has to do an off the job training and has to skip his turn."));
+                    + " has to do an off the job training and has to skip his/her turn."));
         return;
 
       } else {
