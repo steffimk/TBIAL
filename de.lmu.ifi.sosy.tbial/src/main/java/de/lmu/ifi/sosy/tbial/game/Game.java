@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -45,9 +49,10 @@ public class Game implements Serializable {
   private String hash;
   private byte[] salt;
 
-  private boolean hasStarted;
-  
-  private boolean hasEnded;
+  private static final DateTimeFormatter timeFormatter =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+  private LocalDateTime startingTime;
+  private LocalDateTime endingTime;
 
   private StackAndHeap stackAndHeap;
 
@@ -61,6 +66,8 @@ public class Game implements Serializable {
   private Player developer;
 
   private String winners = "";
+
+  private GameStatistics statistics;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -84,7 +91,9 @@ public class Game implements Serializable {
       this.salt = saltByteArray;
       this.hash = getHashedPassword(password, saltByteArray);
     }
-    this.hasStarted = false;
+    this.startingTime = null;
+    this.endingTime = null;
+    this.statistics = new GameStatistics();
   }
 
   /**
@@ -110,7 +119,7 @@ public class Game implements Serializable {
     } else if (players.size() < 4) {
       LOGGER.info("Checking if user is allowed to start game: Game has less than four players.");
       return false;
-    } else if (hasStarted) {
+    } else if (hasStarted()) {
       LOGGER.info("Checking if user is allowed to start game: Game has already started.");
       return false;
     }
@@ -119,10 +128,10 @@ public class Game implements Serializable {
 
   /** Starts the game. */
   public synchronized void startGame() {
-    if (hasStarted) {
+    if (hasStarted()) {
       return;
     }
-    hasStarted = true;
+    startingTime = LocalDateTime.now();
     chatMessages.clear();
     distributeRoleCards();
     for (Player player : getInGamePlayersList()) {
@@ -223,6 +232,21 @@ public class Game implements Serializable {
         playSolution(card, player, receiver);
         return true;
       }
+
+      if (((Card) card).getCardType() == CardType.ACTION && ((ActionCard) card).isSpecial()) {
+        if (((ActionCard) card).getAction() == Action.LAN) {
+          playLanParty(card, player, receiver);
+          return true;
+        }
+
+        if (((ActionCard) card).getAction() == Action.COFFEE_MACHINE) {
+          playCoffeeMachine(card, player);
+          return true;
+        } else if (((ActionCard) card).getAction() == Action.RED_BULL) {
+          playRedBull(card, player);
+          return true;
+        }
+      }
       receiver.receiveCard(card);
       return false;
     }
@@ -266,6 +290,7 @@ public class Game implements Serializable {
                   + " blocked \""
                   + card.toString()
                   + "\" with a bug delegation card."));
+      statistics.bugDelegationCardBlockedBug();
       return;
     }
     receiver.receiveCard(card);
@@ -276,6 +301,60 @@ public class Game implements Serializable {
 
     receiver.blockBug(new BugBlock(player.getUserName()));
     receiver.addToMentalHealth(-1);
+  }
+
+  /**
+   * Call when a player plays a LAN Party card. Adds 1 mental health point to everyone!
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playLanParty(StackCard card, Player player, Player receiver) {
+    for (Player p : getPlayers().values()) {
+      p.addToMentalHealth(1);
+    }
+    stackAndHeap.addToHeap(card, receiver, false);
+    String message = player.getUserName() + " played " + card.toString() + ".";
+    chatMessages.add(new ChatMessage(message));
+  }
+
+  /**
+   * Call when a player plays a Personal Coffee Machine card. Player gets 2 new cards from the
+   * stack.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playCoffeeMachine(StackCard card, Player player) {
+    drawCardsFromStack(player);
+    stackAndHeap.addToHeap(card, player, false);
+    String message =
+        player.getUserName()
+            + " played "
+            + card.toString()
+            + " and received 2 new cards from the stack.";
+    chatMessages.add(new ChatMessage(message));
+  }
+
+  /**
+   * Call when a player plays a Red Bull Dispenser card. Player gets 3 new cards from the stack.
+   *
+   * @param card The card that is played.
+   * @param player The player who is playing the card.
+   * @param receiver The player who is receiving the card.
+   */
+  private void playRedBull(StackCard card, Player player) {
+    drawCardsFromStack(player);
+    player.addToHandCards(stackAndHeap.drawCard());
+    stackAndHeap.addToHeap(card, player, false);
+    String message =
+        player.getUserName()
+            + " played "
+            + card.toString()
+            + " and received 3 new cards from the stack.";
+    chatMessages.add(new ChatMessage(message));
   }
 
   /**
@@ -400,15 +479,15 @@ public class Game implements Serializable {
   }
 
   public boolean hasStarted() {
-    return hasStarted;
+    return startingTime != null;
+  }
+
+  public void setStartingTimeForTestingOnly(LocalDateTime time) {
+    startingTime = time;
   }
 
   public boolean hasEnded() {
-    return hasEnded;
-  }
-
-  public void setHasStarted(boolean hasStarted) {
-    this.hasStarted = hasStarted;
+    return endingTime != null;
   }
 
   public String getHost() {
@@ -468,7 +547,18 @@ public class Game implements Serializable {
     }
 
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
+      if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+        if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
+                || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
+            && player != receiverOfCard) {
+          chatMessages.add(
+              new ChatMessage(
+                  "You can only play a " + selectedCard.toString() + " card for yourself."));
+          return;
+        }
+      }
       putCardToPlayer(selectedCard, player, receiverOfCard);
+      statistics.playedCard(selectedCard);
     }
   }
 
@@ -529,6 +619,7 @@ public class Game implements Serializable {
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
       if (player.removeHandCard(selectedCard)) {
         receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
+        statistics.playedCard(selectedCard);
       }
     }
   }
@@ -574,6 +665,7 @@ public class Game implements Serializable {
       return;
     }
     if (player.canEndTurn()) {
+      saveMentalHealthInfo();
       turn.switchToNextPlayer();
     }
   }
@@ -640,10 +732,10 @@ public class Game implements Serializable {
 
   /** Ends the game. */
   public synchronized void endGame() {
-    if (hasEnded) {
+    if (hasEnded()) {
       return;
     }
-    hasEnded = true;
+    endingTime = LocalDateTime.now();
 
     // Consultant wins
     if (manager.isFired() && allMonkeysFired(monkeys)) {
@@ -735,5 +827,43 @@ public class Game implements Serializable {
     } else if (allMonkeysWon(monkeys)) {
       return "The Evil Code Monkeys have won!";
     } else return "The Manager and the Honest Developer have won!";
+  }
+
+  /** Each player saves his current count of mental health points. */
+  private void saveMentalHealthInfo() {
+    for (Player player : players.values()) {
+      player.snapshotOfMentalHealth();
+    }
+  }
+
+  public String getStartingTimeAsString() {
+    if (endingTime == null) {
+      return "Game has not started yet.";
+    }
+    return startingTime.format(timeFormatter);
+  }
+
+  public String getEndingTimeAsString() {
+    if (endingTime == null) {
+      return "Game not over yet.";
+    }
+    return endingTime.format(timeFormatter);
+  }
+
+  public String getDurationAsString() {
+    if (endingTime == null || startingTime == null) {
+      return "Game not over yet.";
+    }
+    Duration duration = Duration.between(startingTime, endingTime);
+    return duration.toHours()
+        + "h "
+        + duration.toMinutesPart()
+        + "min "
+        + duration.toSecondsPart()
+        + "s";
+  }
+
+  public GameStatistics getStatistics() {
+    return statistics;
   }
 }
