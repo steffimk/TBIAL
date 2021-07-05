@@ -587,10 +587,9 @@ public class Game implements Serializable {
 
   public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
     ActionCard bugCard = turn.getLastPlayedBugCard();
-    Player basePlayer = turn.getLastPlayedBugCardBy();
 
     putCardOnHeap(player, lameExcuseCard);
-    putCardOnHeap(basePlayer, bugCard);
+    putCardOnHeap(player, bugCard);
     player.getReceivedCards().remove(lameExcuseCard);
     player.getReceivedCards().remove(bugCard);
 
