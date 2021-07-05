@@ -62,6 +62,8 @@ public class BugBlockPanel extends Panel {
 
                           player.getBugBlocks().remove(bugBlock);
                           remove(bugBlockForm);
+
+                          break;
                         }
                       }
                     }

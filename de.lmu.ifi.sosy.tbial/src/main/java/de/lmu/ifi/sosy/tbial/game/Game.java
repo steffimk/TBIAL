@@ -281,7 +281,11 @@ public class Game implements Serializable {
    * @param receiver The player who is receiving the card.
    */
   private void playBug(StackCard card, Player player, Player receiver) {
-    if (receiver.bugGetsBlockedByBugDelegationCard()) {
+    turn.incrementPlayedBugCardsThisTurn();
+    turn.setLastPlayedBugCard((ActionCard) card);
+    turn.setLastPlayedBugCardBy(player);
+
+    if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
       stackAndHeap.addToHeap(card, receiver, false);
       chatMessages.add(
@@ -294,9 +298,7 @@ public class Game implements Serializable {
       return;
     }
     receiver.receiveCard(card);
-    turn.incrementPlayedBugCardsThisTurn();
-    turn.setLastPlayedBugCard((ActionCard) card);
-    turn.setLastPlayedBugCardBy(player);
+    
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
     receiver.blockBug(new BugBlock(player.getUserName()));
@@ -585,10 +587,9 @@ public class Game implements Serializable {
 
   public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
     ActionCard bugCard = turn.getLastPlayedBugCard();
-    Player basePlayer = turn.getLastPlayedBugCardBy();
 
     putCardOnHeap(player, lameExcuseCard);
-    putCardOnHeap(basePlayer, bugCard);
+    putCardOnHeap(player, bugCard);
     player.getReceivedCards().remove(lameExcuseCard);
     player.getReceivedCards().remove(bugCard);
 
