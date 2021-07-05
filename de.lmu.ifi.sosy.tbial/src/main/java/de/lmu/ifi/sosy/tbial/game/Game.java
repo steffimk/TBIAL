@@ -293,6 +293,7 @@ public class Game implements Serializable {
 
     receiver.blockBug(new BugBlock(player.getUserName()));
     receiver.addToMentalHealth(-1);
+    turn.setStage(Turn.TurnStage.WAITING_FOR_PLAYER_RESPONSE);
   }
 
   /**

@@ -39,7 +39,6 @@ public class BugBlockPanel extends Panel {
             final BugBlock bugBlock = item.getModelObject();
             bugBlockForm.add(new Label("bugBlockSender", bugBlock.getSender()));
             bugBlockForm.add(new Label("bugBlockMessage", bugBlock.getTextMessage()));
-            currentGame.getTurn().setStage(Turn.TurnStage.WAITING_FOR_PLAYER_RESPONSE);
 
             Button blockButton =
                 new Button("blockButton") {
