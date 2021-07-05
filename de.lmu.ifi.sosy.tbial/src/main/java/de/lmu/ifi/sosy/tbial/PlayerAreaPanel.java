@@ -54,6 +54,7 @@ public class PlayerAreaPanel extends Panel {
     role.setOutputMarkupPlaceholderTag(true);
     add(role);
     Label mentalHealth = new Label("mentalHealth");
+
     add(mentalHealth);
     add(new Label("prestige"));
 
