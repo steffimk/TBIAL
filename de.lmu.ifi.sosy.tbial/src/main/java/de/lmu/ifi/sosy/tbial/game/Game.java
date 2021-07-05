@@ -411,7 +411,9 @@ public class Game implements Serializable {
   public List<String> getInGamePlayerNames() {
     ArrayList<String> playerNames = new ArrayList<String>();
     for (Player p : getInGamePlayersList()) {
-      playerNames.add(p.getUserName());
+      if (host != p.getUserName()) {
+        playerNames.add(p.getUserName());
+      }
     }
     return playerNames;
   }
