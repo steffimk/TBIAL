@@ -59,30 +59,38 @@ public class MentalHealthChartFactory implements Serializable {
     int i = 1;
     for (Player player : players) {
       String field;
+      String color;
       switch (i) {
         case 1:
           field = MentalHealthData.PLAYER_1;
+          color = "#33cc33"; // green
           break;
         case 2:
           field = MentalHealthData.PLAYER_2;
+          color = "#ffbf00"; // yellow
           break;
         case 3:
           field = MentalHealthData.PLAYER_3;
+          color = "#e600ac"; // magenta
           break;
         case 4:
           field = MentalHealthData.PLAYER_4;
+          color = "#00aaff"; // blue
           break;
         case 5:
           field = MentalHealthData.PLAYER_5;
+          color = "#FF6600"; // orange
           break;
         case 6:
           field = MentalHealthData.PLAYER_6;
+          color = "#000099"; // darkblue
           break;
         default:
           field = MentalHealthData.PLAYER_7;
+          color = "#fccdfb"; // pink
           break;
       }
-      series.add(new LineSeries(player.getUserName(), field));
+      series.add(new LineSeries(player.getUserName(), field).setColor(color));
       i++;
     }
     return series;

@@ -25,8 +25,8 @@ public class GameStatisticsContainer extends Panel {
     Label durationLabel = new Label("duration", currentGame.getDurationAsString());
     GameStatistics statistics = currentGame.getStatistics();
     Label bugsLabel = new Label("bugs", statistics.getBugCount());
-    Label lameExcusesLabel = new Label("lameExcuses", statistics.getBugCount());
-    Label solutionsLabel = new Label("solutions", statistics.getLameExcuseCount());
+    Label lameExcusesLabel = new Label("lameExcuses", statistics.getLameExcuseCount());
+    Label solutionsLabel = new Label("solutions", statistics.getSolutionCount());
     Label specialActionsLabel = new Label("specialActions", statistics.getSpecialActionCount());
     Label maintenanceLabel = new Label("maintenance", statistics.getMaintenanceCount());
     Label trainingLabel = new Label("training", statistics.getTrainingCount());
