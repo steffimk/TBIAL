@@ -1,9 +1,11 @@
 package de.lmu.ifi.sosy.tbial;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,10 +13,11 @@ import de.lmu.ifi.sosy.tbial.db.User;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
-import org.apache.wicket.util.tester.TagTester;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,11 +102,11 @@ public class LobbyTest extends PageTestBase {
     FormTester form = tester.newFormTester("menuForm");
     form.submit("showGamesButton");
 
-    String htmlDocument = tester.getLastResponse().getDocument();
-    System.out.println(htmlDocument);
-    List<TagTester> tagTesterList =
-        TagTester.createTagsByAttribute(htmlDocument, "wicket:id", "gamename", false);
-    Assert.assertEquals(3, tagTesterList.size());
+    tester.assertComponent("gameListContainer:openGames", ListView.class);
+    @SuppressWarnings("unchecked")
+    ListView<Game> displayedGameList =
+        (ListView<Game>) tester.getComponentFromLastRenderedPage("gameListContainer:openGames");
+    Assert.assertEquals(3, displayedGameList.size());
   }
 
   @Test
@@ -114,21 +117,14 @@ public class LobbyTest extends PageTestBase {
     FormTester form = tester.newFormTester("menuForm");
     form.submit("showGamesButton");
 
-    String htmlDocument = tester.getLastResponse().getDocument();
-    List<TagTester> tagTesterList =
-        TagTester.createTagsByAttribute(htmlDocument, "wicket:id", "gamename", false);
-    List<String> gameNames = new ArrayList<String>();
-    List<String> tagTesterValues = new ArrayList<String>();
-
-    Assert.assertEquals(gameList.size(), tagTesterList.size());
+    List<String> gameNames = gameList.stream().map(g -> g.getName()).collect(Collectors.toList());
 
     for (int i = 0; i < gameList.size(); i++) {
-      gameNames.add(gameList.get(i).getName());
-      tagTesterValues.add(tagTesterList.get(i).getValue());
-    }
-
-    for (String gameName : gameNames) {
-      Assert.assertTrue(tagTesterValues.contains(gameName));
+      Label gameNameLabel =
+          (Label)
+              tester.getComponentFromLastRenderedPage(
+                  "gameListContainer:openGames:" + i + ":gamename");
+      assertTrue(gameNames.contains(gameNameLabel.getDefaultModelObject()));
     }
   }
 }

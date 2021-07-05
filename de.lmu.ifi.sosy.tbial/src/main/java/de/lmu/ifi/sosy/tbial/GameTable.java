@@ -32,7 +32,6 @@ import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -549,25 +548,27 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-              if (currentGame.getManager().isFired()) {
-                ceremony.add(new AttributeModifier("class", "visible"));
-                if (basePlayer.hasWon()) {
-                  confetti.add(new AttributeModifier("style", "display: block;"));
-                }
-                stop(target);
-              } else if (currentGame.getConsultant().isFired()
-                  && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
-                ceremony.add(new AttributeModifier("class", "visible"));
-                if (basePlayer.hasWon()) {
-                  confetti.add(new AttributeModifier("style", "display: block;"));
-                }
-                stop(target);
-              
+            if (currentGame.getManager().isFired()) {
+              ceremony.add(new AttributeModifier("class", "visible"));
+              if (basePlayer.hasWon()) {
+                confetti.add(new AttributeModifier("style", "display: block;"));
+              }
+              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              stop(target);
+            } else if (currentGame.getConsultant().isFired()
+                && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
+              ceremony.add(new AttributeModifier("class", "visible"));
+              if (basePlayer.hasWon()) {
+                confetti.add(new AttributeModifier("style", "display: block;"));
+              }
+              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              stop(target);
             }
             target.add(ceremony);
           }
         });
 
+    ceremony.add(new GameStatisticsContainer(currentGame, basePlayer));
     add(ceremony);
  }
 

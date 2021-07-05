@@ -17,8 +17,11 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.util.time.Duration;
+
+import com.googlecode.wicket.kendo.ui.settings.KendoUILibrarySettings;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.SQLDatabase;
@@ -76,6 +79,12 @@ public class TBIALApplication extends WebApplication {
       getMarkupSettings().setStripComments(true);
       getMarkupSettings().setCompressWhitespace(true);
       getResourceSettings().setDefaultCacheDuration(Duration.NONE);
+
+      KendoUILibrarySettings settings = KendoUILibrarySettings.get();
+      settings.setCommonStyleSheetReference(
+          new CssResourceReference(TBIALApplication.class, "kendo.common.min.css"));
+      settings.setThemeStyleSheetReference(
+          new CssResourceReference(TBIALApplication.class, "kendo.default.min.css"));
     }
   }
 

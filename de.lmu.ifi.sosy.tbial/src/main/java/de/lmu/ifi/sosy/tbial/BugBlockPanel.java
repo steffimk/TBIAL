@@ -68,6 +68,7 @@ public class BugBlockPanel extends Panel {
 
                     if (lameExcuseOrSolutionCard != null) {
                       player.removeHandCard(lameExcuseOrSolutionCard);
+                      currentGame.getStatistics().playedCard(lameExcuseOrSolutionCard);
                     }
 
                     currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
