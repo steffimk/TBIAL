@@ -555,25 +555,27 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-              if (currentGame.getManager().isFired()) {
-                ceremony.add(new AttributeModifier("class", "visible"));
-                if (basePlayer.hasWon()) {
-                  confetti.add(new AttributeModifier("style", "display: block;"));
-                }
-                stop(target);
-              } else if (currentGame.getConsultant().isFired()
-                  && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
-                ceremony.add(new AttributeModifier("class", "visible"));
-                if (basePlayer.hasWon()) {
-                  confetti.add(new AttributeModifier("style", "display: block;"));
-                }
-                stop(target);
-              
+            if (currentGame.getManager().isFired()) {
+              ceremony.add(new AttributeModifier("class", "visible"));
+              if (basePlayer.hasWon()) {
+                confetti.add(new AttributeModifier("style", "display: block;"));
+              }
+              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              stop(target);
+            } else if (currentGame.getConsultant().isFired()
+                && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
+              ceremony.add(new AttributeModifier("class", "visible"));
+              if (basePlayer.hasWon()) {
+                confetti.add(new AttributeModifier("style", "display: block;"));
+              }
+              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              stop(target);
             }
             target.add(ceremony);
           }
         });
 
+    ceremony.add(new GameStatisticsContainer(currentGame, basePlayer));
     add(ceremony);
  }
 
