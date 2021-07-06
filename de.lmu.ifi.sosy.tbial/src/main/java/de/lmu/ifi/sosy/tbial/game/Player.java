@@ -293,35 +293,22 @@ public class Player implements Serializable {
   }
 
   /**
-   * Checks whether player has the fortran maintenance card. If he does, there's a 15% chance this
-   * method returns true.
+   * Checks whether player has to do fortran maintenance. There's a 15% chance this method returns
+   * true.
    *
    * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
    */
-  public boolean hasFortranMaintenanceCard() {
-    Stream<StackCard> maintenanceCard =
-        receivedCards
-            .stream()
-            .filter(card -> ((Card) card).getCardType() == CardType.STUMBLING_BLOCK)
-            .filter(
-                card ->
-                    ((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.MAINTENANCE);
-    return maintenanceCard.count() > 0 && Math.random() < 0.15;
+  public boolean hasToDoFortranMaintenance() {
+    return Math.random() < 0.15;
   }
 
   /**
-   * Checks whether player has the off-the-job-training card. If he does, there's a 25% chance this
-   * method returns true.
+   * Checks whether player has to do the off-the-job-training.There's a 75% chance this method
+   * returns true.
    *
    * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
    */
-  public boolean hasOffTheJobTrainingCard() {
-    Stream<StackCard> trainingCard =
-        receivedCards
-            .stream()
-            .filter(card -> ((Card) card).getCardType() == CardType.STUMBLING_BLOCK)
-            .filter(
-                card -> ((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.TRAINING);
-    return trainingCard.count() > 0 && Math.random() < 0.25;
+  public boolean hasToDoOffTheJobTraining() {
+    return Math.random() < 0.75;
   }
 }
