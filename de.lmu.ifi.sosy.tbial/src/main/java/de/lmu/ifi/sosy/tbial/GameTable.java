@@ -424,6 +424,7 @@ public class GameTable extends BasePage {
     final ModalWindow modal;
     add(modal = new ModalWindow("blockBugModal"));
     modal.setTitle("Bug played against you!");
+    modal.showUnloadConfirmation(false);
     modal.setContent(new BugBlockPanel(modal.getContentId(), currentGame, basePlayer));
     modal.setCloseButtonCallback(
         target -> {
