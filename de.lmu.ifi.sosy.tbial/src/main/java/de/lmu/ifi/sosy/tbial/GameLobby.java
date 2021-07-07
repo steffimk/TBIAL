@@ -14,7 +14,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -38,7 +37,7 @@ public class GameLobby extends BasePage {
   private final Link<Game> startGameLink;
   private final Label isHostLabel;
   private final Label currentStatusLabel;
-  private final String selected = getGame().getInGamePlayerNames().get(0);
+  private String selectedPlayer = null;
 
   public GameLobby() {
 
@@ -157,24 +156,23 @@ public class GameLobby extends BasePage {
 
     Form<Void> removeForm = new Form<>("removeForm");
 
-    FormComponent<String> removeChoice =
+    DropDownChoice<String> removeChoice =
         new DropDownChoice<String>(
             "removeSelect",
-            new PropertyModel<String>(this, "selected"),
-            getGame().getInGamePlayerNames());
-
+            new PropertyModel<String>(this, "selectedPlayer"),
+            () -> getGame().getInGamePlayerNames());
     removeChoice.add(
-        new AjaxFormComponentUpdatingBehavior("onchange") {
+        new AjaxFormComponentUpdatingBehavior("change") {
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onUpdate(AjaxRequestTarget target) {
-            ((DropDownChoice<String>) removeChoice).setChoices(getGame().getInGamePlayerNames());
-            removeForm.add(removeChoice);
+            selectedPlayer = removeChoice.getModelObject();
           }
         });
     removeChoice.setOutputMarkupId(true);
     removeChoice.setVisible(isHost());
+    removeChoice.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
 
     Button removePlayerButton =
         new Button("removePlayerButton") {
@@ -182,7 +180,9 @@ public class GameLobby extends BasePage {
           private static final long serialVersionUID = 1L;
 
           public void onSubmit() {
-            removePlayer(selected);
+            if (selectedPlayer != null) {
+              removePlayer(selectedPlayer);
+            }
           }
         };
     removePlayerButton.setVisible(isHost());
@@ -271,7 +271,7 @@ public class GameLobby extends BasePage {
    */
   private void removePlayer(String player) {
     Game game = getGame();
-    if (player != getSession().getUser().getName()) {
+    if (player != game.getHost()) {
       game.getPlayers().remove(player);
       getGameManager().removeUserFromGame(player);
     }
