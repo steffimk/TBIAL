@@ -478,9 +478,27 @@ public class GameTable extends BasePage {
               }
               modal.show(target);
             } else {
-              if (!hasLameExcuse && !hasSolution) {
-                currentGame.putCardOnHeap(basePlayer, currentGame.getTurn().getLastPlayedBugCard());
-                basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
+              if (!hasLameExcuse
+                  && !hasSolution
+                  && basePlayer == currentGame.getTurn().getAttackedPlayer()) {
+
+                if (basePlayer
+                    .getReceivedCards()
+                    .contains(currentGame.getTurn().getLastPlayedBugCard())) {
+                  currentGame.putCardOnHeap(
+                      basePlayer, currentGame.getTurn().getLastPlayedBugCard());
+                  basePlayer
+                      .getReceivedCards()
+                      .remove(currentGame.getTurn().getLastPlayedBugCard());
+
+                  currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+                  currentGame
+                      .getChatMessages()
+                      .add(
+                          new ChatMessage(
+                              basePlayer.getUserName() + " couldn't block bug (-1 mental health)"));
+                }
               }
             }
           }
