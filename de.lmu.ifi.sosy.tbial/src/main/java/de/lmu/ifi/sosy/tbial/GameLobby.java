@@ -274,6 +274,8 @@ public class GameLobby extends BasePage {
     if (player != game.getHost()) {
       game.getPlayers().remove(player);
       getGameManager().removeUserFromGame(player);
+      game.getChatMessages()
+          .add(new ChatMessage(game.getHost() + " removed " + player + " from the game."));
     }
   }
 
@@ -312,6 +314,9 @@ public class GameLobby extends BasePage {
   }
 
   public Game getGame() {
+    if (getGameManager().getGameOfUser(getSession().getUser().getName()) == null) {
+      throw new RestartResponseAtInterceptPageException(Lobby.class);
+    }
     return getGameManager().getGameOfUser(getSession().getUser().getName());
   }
 }
