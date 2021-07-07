@@ -15,7 +15,7 @@
 <body>
 	<wicket:extend>
 		<div class="ceremony" wicket:id="ceremony">
-			<div style="width: 71%; margin-left: 20px;">
+			<div style="width: 71%; margin-left: 0px; float: left;">
 				<h1 class="congrats" wicket:id="ceremonyTitle">Congratulations!</h1>
 				<h1 class="winner" wicket:id="groupWon">... Won!!</h1>
 				<h1 class="winner" wicket:id="winners">... Won!!</h1>
@@ -39,7 +39,7 @@
 				<div class="confetti"></div>
 				<div class="confetti"></div>
 			</div>
-
+			<div wicket:id="gameStatistics" class=statistics></div>
 		</div>
 		<div class="contentWrapper">
 			<h3 wicket:id="gameName" align="center" style="margin-top: 1%;">Game
@@ -82,11 +82,9 @@
 				<span>End Turn</span>
 			</a>
 		</div>
-			
 		</div>
 		<div wicket:id="chatPanel" class="chatWrapper"></div>
-		
-					<div wicket:id="blockBugModal"></div>
+		<div wicket:id="blockBugModal"></div>
 	</wicket:extend>
 </body>
 </html>
