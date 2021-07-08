@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,8 +31,6 @@ public class GameTest {
 
   private String password;
 
-  private boolean hasStarted;
-
   private Game game;
 
   @Before
@@ -41,7 +40,6 @@ public class GameTest {
     maxPlayers = 4;
     isPrivate = false;
     host = "hostName";
-    hasStarted = true;
 
     game = new Game(name, 7, true, password, "userName");
   }
@@ -86,8 +84,10 @@ public class GameTest {
 
   @Test
   public void hasStarted_returnsHasStarted() {
-    game.setHasStarted(hasStarted);
-    assertThat(game.hasStarted(), is(hasStarted));
+    game.setStartingTimeForTestingOnly(null);
+    assertEquals(game.hasStarted(), false);
+    game.setStartingTimeForTestingOnly(LocalDateTime.now());
+    assertEquals(game.hasStarted(), true);
   }
 
   @Test
@@ -119,7 +119,7 @@ public class GameTest {
   @Test
   public void startGame_returnsIfAlreadyStarted() {
     StackAndHeap prev = game.getStackAndHeap();
-    game.setHasStarted(true);
+    game.setStartingTimeForTestingOnly(LocalDateTime.now());
     game.startGame();
     assertThat(game.getStackAndHeap(), is(prev));
   }
@@ -149,7 +149,7 @@ public class GameTest {
     game.addNewPlayer("A");
     game.addNewPlayer("B");
     game.addNewPlayer("C");
-    game.setHasStarted(true);
+    game.setStartingTimeForTestingOnly(LocalDateTime.now());
     boolean returnValue = game.isAllowedToStartGame("username");
     assertThat(returnValue, is(false));
   }

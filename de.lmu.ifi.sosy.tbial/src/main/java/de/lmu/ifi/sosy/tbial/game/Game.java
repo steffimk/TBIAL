@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,9 +50,10 @@ public class Game implements Serializable {
   private String hash;
   private byte[] salt;
 
-  private boolean hasStarted;
-  
-  private boolean hasEnded;
+  private static final DateTimeFormatter timeFormatter =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+  private LocalDateTime startingTime;
+  private LocalDateTime endingTime;
 
   private StackAndHeap stackAndHeap;
 
@@ -63,6 +67,8 @@ public class Game implements Serializable {
   private Player developer;
 
   private String winners = "";
+
+  private GameStatistics statistics;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -86,7 +92,9 @@ public class Game implements Serializable {
       this.salt = saltByteArray;
       this.hash = getHashedPassword(password, saltByteArray);
     }
-    this.hasStarted = false;
+    this.startingTime = null;
+    this.endingTime = null;
+    this.statistics = new GameStatistics();
   }
 
   /**
@@ -112,7 +120,7 @@ public class Game implements Serializable {
     } else if (players.size() < 4) {
       LOGGER.info("Checking if user is allowed to start game: Game has less than four players.");
       return false;
-    } else if (hasStarted) {
+    } else if (hasStarted()) {
       LOGGER.info("Checking if user is allowed to start game: Game has already started.");
       return false;
     }
@@ -121,10 +129,10 @@ public class Game implements Serializable {
 
   /** Starts the game. */
   public synchronized void startGame() {
-    if (hasStarted) {
+    if (hasStarted()) {
       return;
     }
-    hasStarted = true;
+    startingTime = LocalDateTime.now();
     chatMessages.clear();
     distributeRoleCards();
     for (Player player : getInGamePlayersList()) {
@@ -274,7 +282,11 @@ public class Game implements Serializable {
    * @param receiver The player who is receiving the card.
    */
   private void playBug(StackCard card, Player player, Player receiver) {
-    if (receiver.bugGetsBlockedByBugDelegationCard()) {
+    turn.incrementPlayedBugCardsThisTurn();
+    turn.setLastPlayedBugCard((ActionCard) card);
+    turn.setLastPlayedBugCardBy(player);
+
+    if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
       stackAndHeap.addToHeap(card, receiver, false);
       chatMessages.add(
@@ -283,12 +295,11 @@ public class Game implements Serializable {
                   + " blocked \""
                   + card.toString()
                   + "\" with a bug delegation card."));
+      statistics.bugDelegationCardBlockedBug();
       return;
     }
     receiver.receiveCard(card);
-    turn.incrementPlayedBugCardsThisTurn();
-    turn.setLastPlayedBugCard((ActionCard) card);
-    turn.setLastPlayedBugCardBy(player);
+    
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
     receiver.blockBug(new BugBlock(player.getUserName()));
@@ -471,15 +482,15 @@ public class Game implements Serializable {
   }
 
   public boolean hasStarted() {
-    return hasStarted;
+    return startingTime != null;
+  }
+
+  public void setStartingTimeForTestingOnly(LocalDateTime time) {
+    startingTime = time;
   }
 
   public boolean hasEnded() {
-    return hasEnded;
-  }
-
-  public void setHasStarted(boolean hasStarted) {
-    this.hasStarted = hasStarted;
+    return endingTime != null;
   }
 
   public String getHost() {
@@ -550,6 +561,7 @@ public class Game implements Serializable {
         }
       }
       putCardToPlayer(selectedCard, player, receiverOfCard);
+      statistics.playedCard(selectedCard);
     }
   }
 
@@ -576,10 +588,9 @@ public class Game implements Serializable {
 
   public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
     ActionCard bugCard = turn.getLastPlayedBugCard();
-    Player basePlayer = turn.getLastPlayedBugCardBy();
 
     putCardOnHeap(player, lameExcuseCard);
-    putCardOnHeap(basePlayer, bugCard);
+    putCardOnHeap(player, bugCard);
     player.getReceivedCards().remove(lameExcuseCard);
     player.getReceivedCards().remove(bugCard);
 
@@ -694,6 +705,7 @@ public class Game implements Serializable {
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
       if (player.removeHandCard(selectedCard)) {
         receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
+        statistics.playedCard(selectedCard);
       }
     }
   }
@@ -739,6 +751,7 @@ public class Game implements Serializable {
       return;
     }
     if (player.canEndTurn()) {
+      saveMentalHealthInfo();
       turn.switchToNextPlayer();
       dealWithStumblingBlocks(turn.getCurrentPlayer());
     }
@@ -806,10 +819,10 @@ public class Game implements Serializable {
 
   /** Ends the game. */
   public synchronized void endGame() {
-    if (hasEnded) {
+    if (hasEnded()) {
       return;
     }
-    hasEnded = true;
+    endingTime = LocalDateTime.now();
 
     // Consultant wins
     if (manager.isFired() && allMonkeysFired(monkeys)) {
@@ -901,5 +914,43 @@ public class Game implements Serializable {
     } else if (allMonkeysWon(monkeys)) {
       return "The Evil Code Monkeys have won!";
     } else return "The Manager and the Honest Developer have won!";
+  }
+
+  /** Each player saves his current count of mental health points. */
+  private void saveMentalHealthInfo() {
+    for (Player player : players.values()) {
+      player.snapshotOfMentalHealth();
+    }
+  }
+
+  public String getStartingTimeAsString() {
+    if (endingTime == null) {
+      return "Game has not started yet.";
+    }
+    return startingTime.format(timeFormatter);
+  }
+
+  public String getEndingTimeAsString() {
+    if (endingTime == null) {
+      return "Game not over yet.";
+    }
+    return endingTime.format(timeFormatter);
+  }
+
+  public String getDurationAsString() {
+    if (endingTime == null || startingTime == null) {
+      return "Game not over yet.";
+    }
+    Duration duration = Duration.between(startingTime, endingTime);
+    return duration.toHours()
+        + "h "
+        + duration.toMinutesPart()
+        + "min "
+        + duration.toSecondsPart()
+        + "s";
+  }
+
+  public GameStatistics getStatistics() {
+    return statistics;
   }
 }

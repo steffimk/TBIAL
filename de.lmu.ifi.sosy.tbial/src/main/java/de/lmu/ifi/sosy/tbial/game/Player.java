@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial.game;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
+import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
@@ -52,6 +53,8 @@ public class Player implements Serializable {
 
   private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
 
+  private LinkedList<Integer> mentalHealthDevelopment;
+
   public Player(String userName) {
     this.userName = userName;
     this.prestige = 0;
@@ -61,6 +64,7 @@ public class Player implements Serializable {
     this.handCards = Collections.synchronizedSet(new HashSet<>());
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
+    this.mentalHealthDevelopment = new LinkedList<Integer>();
   }
 
   public String getUserName() {
@@ -142,6 +146,9 @@ public class Player implements Serializable {
       mentalHealth += 1;
     }
     mentalHealthMax = mentalHealth;
+    if (mentalHealthDevelopment.size() == 0) {
+      mentalHealthDevelopment.add(mentalHealth);
+    }
   }
 
   public int getMentalHealthInt() {
@@ -194,6 +201,10 @@ public class Player implements Serializable {
       selectedHandCard = null;
     }
     return handCards.remove(card);
+  }
+
+  public boolean removeAbilityCard(AbilityCard card) {
+    return playedAbilityCards.remove(card);
   }
 
   /**
@@ -286,10 +297,47 @@ public class Player implements Serializable {
    *
    * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
    */
-  public boolean bugGetsBlockedByBugDelegationCard() {
+  public boolean bugGetsBlockedByBugDelegationCard(
+      LinkedList<ChatMessage> chatMessages, Player receiver) {
+    boolean isBugDelegationCardPlayed = false;
+    boolean isBugDelegationCardTriggered = false;
+
     Stream<AbilityCard> bugDelCards =
         playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
-    return bugDelCards.count() > 0 && Math.random() < 0.25;
+    
+    isBugDelegationCardPlayed = bugDelCards.count() > 0;
+    isBugDelegationCardTriggered = Math.random() < 0.25;
+
+    if (isBugDelegationCardPlayed && !isBugDelegationCardTriggered) {
+      chatMessages.add(
+          new ChatMessage("Oh no! Bug delegation of " + receiver.getUserName() + " had no effect"));
+    }
+
+    return isBugDelegationCardPlayed && isBugDelegationCardTriggered;
+  }
+
+  /** Adds the current number of mental health points to the mental health development-list */
+  public void snapshotOfMentalHealth() {
+    mentalHealthDevelopment.add(mentalHealth);
+  }
+
+  /**
+   * Returns the number of mental health points the player had in the requested game round
+   *
+   * @param round The game round. <code>0</code> for the start of the game
+   * @return The number of mental health points in the requested round
+   */
+  public Integer getMentalHealthOfRound(int round) {
+    return mentalHealthDevelopment.get(round);
+  }
+
+  /**
+   * Determines the number of snapshots of the mental health
+   *
+   * @return the number of stored mental health snapshots
+   */
+  public int getNumberOfStoredMentalHealthSnapshots() {
+    return mentalHealthDevelopment.size();
   }
 
   /**

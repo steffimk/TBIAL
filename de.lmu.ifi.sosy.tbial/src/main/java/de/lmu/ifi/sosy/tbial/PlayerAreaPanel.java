@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -55,6 +56,7 @@ public class PlayerAreaPanel extends Panel {
     role.setOutputMarkupPlaceholderTag(true);
     add(role);
     Label mentalHealth = new Label("mentalHealth");
+
     add(mentalHealth);
     add(new Label("prestige"));
 
@@ -276,6 +278,10 @@ public class PlayerAreaPanel extends Panel {
       public void onDragStart(AjaxRequestTarget target, int top, int left) {
         game.clickedOnHandCard(player, card);
         getApplication().getMarkupSettings().setStripWicketTags(true);
+        Component handCard =
+            this.get("handCard")
+                .add(new AttributeModifier("style", "transform: scale(1) !important;"));
+        target.add(handCard);
       }
     };
   }

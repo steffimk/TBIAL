@@ -62,12 +62,15 @@ public class BugBlockPanel extends Panel {
 
                           player.getBugBlocks().remove(bugBlock);
                           remove(bugBlockForm);
+
+                          break;
                         }
                       }
                     }
 
                     if (lameExcuseOrSolutionCard != null) {
                       player.removeHandCard(lameExcuseOrSolutionCard);
+                      currentGame.getStatistics().playedCard(lameExcuseOrSolutionCard);
                     }
 
                     currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
