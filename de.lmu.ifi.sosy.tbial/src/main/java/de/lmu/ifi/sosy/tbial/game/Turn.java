@@ -91,7 +91,7 @@ public class Turn implements Serializable {
     WAITING_FOR_PLAYER_RESPONSE
   }
 
-  /** Increases the counter for already played bug cars in this turn by 1. */
+  /** Increases the counter for already played bug cards in this turn by 1. */
   public void incrementPlayedBugCardsThisTurn() {
     this.bugsPlayedThisTurn++;
 
