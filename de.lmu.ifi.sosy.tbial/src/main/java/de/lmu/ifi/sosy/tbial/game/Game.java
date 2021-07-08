@@ -26,6 +26,7 @@ import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -618,6 +619,90 @@ public class Game implements Serializable {
   }
 
   /**
+   * Called at beginning of turn and checks whether player has to deal with stumbling block cards.
+   *
+   * @param player The player whose turn it should be.
+   */
+  public void dealWithStumblingBlocks(Player player) {
+    StumblingBlockCard maintenanceCard = null;
+    List<StumblingBlockCard> trainingCards = new ArrayList<StumblingBlockCard>();
+    for (StackCard card : player.getReceivedCards()) {
+      if (((Card) card).getCardType() == CardType.STUMBLING_BLOCK) {
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.MAINTENANCE) {
+          maintenanceCard = (StumblingBlockCard) card;
+        }
+
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.TRAINING) {
+          trainingCards.add((StumblingBlockCard) card);
+        }
+      }
+    }
+    if (maintenanceCard != null) {
+      dealWithMaintenance(player, maintenanceCard);
+    }
+    if (!trainingCards.isEmpty()) {
+      for (StumblingBlockCard trainingCard : trainingCards) {
+        if (dealWithTraining(player, trainingCard)) {
+          turn.switchToNextPlayer();
+          dealWithStumblingBlocks(turn.getCurrentPlayer());
+          return;
+        }
+      }
+    }
+  }
+
+  /**
+   * Called when player has to deal with fortran maintenance card.
+   *
+   * @param player The player whose turn it should be.
+   * @param maintenanceCard The fortran maintenance card which has to be dealt with.
+   */
+  public void dealWithMaintenance(Player player, StumblingBlockCard maintenanceCard) {
+    if (player.hasToDoFortranMaintenance()) {
+      player.addToMentalHealth(-3);
+      stackAndHeap.addToHeap(maintenanceCard, player, false);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
+    } else {
+      Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
+      p.receiveCard(maintenanceCard);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " doesn't have to do Fortran Maintenance and card moves to "
+                  + p.getUserName()
+                  + "."));
+    }
+    player.removeReceivedCard(maintenanceCard);
+  }
+
+  /**
+   * Called when player has to deal with off-the-job-training card. Returns true if training takes
+   * place, false if training cancelled.
+   *
+   * @param player The player whose turn it should be.
+   * @param trainingCard The off-the-job-training card which has to be dealt with.
+   */
+  public boolean dealWithTraining(Player player, StumblingBlockCard trainingCard) {
+    stackAndHeap.addToHeap(trainingCard, player, false);
+    player.removeReceivedCard(trainingCard);
+    if (player.hasToDoOffTheJobTraining()) {
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " has to do an off the job training and has to skip his/her turn."));
+      return true;
+
+    } else {
+      chatMessages.add(
+          new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
+      return false;
+    }
+  }
+
+  /**
    * Called when a player clicks on the "Play Ability"-Button. If he has selected a hand card of the
    * type ability, it will be moved to his uncovered cards. No rules are checked yet.
    *
@@ -678,6 +763,7 @@ public class Game implements Serializable {
     if (player.canEndTurn()) {
       saveMentalHealthInfo();
       turn.switchToNextPlayer();
+      dealWithStumblingBlocks(turn.getCurrentPlayer());
     }
   }
 
