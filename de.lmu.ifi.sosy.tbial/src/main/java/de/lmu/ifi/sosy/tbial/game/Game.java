@@ -269,7 +269,7 @@ public class Game implements Serializable {
     } else {
     	message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.add(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -293,7 +293,9 @@ public class Game implements Serializable {
               receiver.getUserName()
                   + " blocked \""
                   + card.toString()
-                  + "\" with a bug delegation card."));
+                  + "\" with a bug delegation card.",
+              false,
+              "all"));
       statistics.bugDelegationCardBlockedBug();
       return;
     }
@@ -318,7 +320,7 @@ public class Game implements Serializable {
     }
     stackAndHeap.addToHeap(card, receiver, false);
     String message = player.getUserName() + " played " + card.toString() + ".";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.add(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -337,7 +339,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 2 new cards from the stack.";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.add(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -356,7 +358,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 3 new cards from the stack.";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.add(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -417,6 +419,14 @@ public class Game implements Serializable {
 
   public List<Player> getInGamePlayersList() {
     return new ArrayList<Player>(getPlayers().values());
+  }
+
+  public List<String> getAllInGamePlayerNames() {
+    ArrayList<String> playerNames = new ArrayList<String>();
+    for (Player p : getInGamePlayersList()) {
+        playerNames.add(p.getUserName());
+    }
+    return playerNames;
   }
 
   public String getName() {
@@ -542,9 +552,7 @@ public class Game implements Serializable {
     }
 
     if (selectedCard.isBug() && turn.getPlayedBugCardsInThisTurn() >= Turn.MAX_BUG_CARDS_PER_TURN) {
-      chatMessages.add(
-          new ChatMessage(
-              "You cannot play another bug.")); // TODO: Only show player who played card?
+      chatMessages.add(new ChatMessage("You cannot play another bug.", true, player.getUserName()));
       return;
     }
 
@@ -555,7 +563,9 @@ public class Game implements Serializable {
             && player != receiverOfCard) {
           chatMessages.add(
               new ChatMessage(
-                  "You can only play a " + selectedCard.toString() + " card for yourself."));
+                  "You can only play a " + selectedCard.toString() + " card for yourself.",
+                  true,
+                  player.getUserName()));
           return;
         }
       }
@@ -577,7 +587,8 @@ public class Game implements Serializable {
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
         chatMessages.add(
-            new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
+            new ChatMessage(
+                player.getUserName() + " defends with " + selectedCard.toString(), false, "all"));
         if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
           player.addToMentalHealth(1);
         }
@@ -604,7 +615,9 @@ public class Game implements Serializable {
                 + bugCard.toString()
                 + "\" with \""
                 + lameExcuseCard.toString()
-                + "\"."));
+                + "\".",
+            false,
+            "all"));
   }
 
   /**
@@ -866,5 +879,16 @@ public class Game implements Serializable {
 
   public GameStatistics getStatistics() {
     return statistics;
+  }
+
+  public String getSenderOfLastPersonalMessageToMe(String receiver) {
+    System.out.println(chatMessages.size());
+    for (int i = chatMessages.size() - 1; i >= 0; i--) {
+      System.out.println(i);
+      if (chatMessages.get(i).isPersonal() && chatMessages.get(i).getReceiver().equals(receiver)) {
+        return chatMessages.get(i).getPureSender();
+      }
+    }
+    return null;
   }
 }

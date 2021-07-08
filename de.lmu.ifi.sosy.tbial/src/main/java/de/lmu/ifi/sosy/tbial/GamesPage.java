@@ -112,12 +112,14 @@ public class GamesPage extends BasePage {
                     if (isInGame) {
                       setResponsePage(getTbialApplication().getGameLobbyPage());
                     } else {
-                     if (getGameManager().joinGame(userName, game, joinGamePw.getModelObject())) {
-                      // send message in game lobby that player joined game
-                      game.getChatMessages()
-                          .add(new ChatMessage(user.getName() + " joined the game."));
-}
-                      setResponsePage(getTbialApplication().getGameLobbyPage());
+                      if (getGameManager().joinGame(userName, game, joinGamePw.getModelObject())) {
+                        // send message in game lobby that player joined game
+                        game.getChatMessages()
+                            .add(
+                                new ChatMessage(
+                                    user.getName() + " joined the game.", false, "all"));
+                        setResponsePage(getTbialApplication().getGameLobbyPage());
+                      }
                     }
                   }
 

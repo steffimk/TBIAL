@@ -285,7 +285,10 @@ public class Player implements Serializable {
 
     if (isBugDelegationCardPlayed && !isBugDelegationCardTriggered) {
       chatMessages.add(
-          new ChatMessage("Oh no! Bug delegation of " + receiver.getUserName() + " had no effect"));
+          new ChatMessage(
+              "Oh no! Bug delegation of " + receiver.getUserName() + " had no effect",
+              false,
+              "all"));
     }
 
     return isBugDelegationCardPlayed && isBugDelegationCardTriggered;

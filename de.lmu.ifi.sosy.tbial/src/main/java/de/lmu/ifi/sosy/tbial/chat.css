@@ -37,10 +37,12 @@ fieldset p {
 
 .username {
 	font-weight: bold;
+	color: grey;
 }
 
 .chatMessage {
 	overflow-wrap: anywhere;
+	color: grey;
 }
 
 .inputWrapper {
@@ -80,4 +82,13 @@ fieldset p {
 
 div.sidebar p {
 	margin:none;
+}
+
+.chatTooltiptext {
+	width: 300px;
+	margin-left: -320px;
+}
+
+.tooltip:hover .chatTooltiptext {
+	visibility: visible;
 }

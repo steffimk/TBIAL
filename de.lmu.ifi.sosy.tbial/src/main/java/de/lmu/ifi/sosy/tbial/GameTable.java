@@ -473,7 +473,9 @@ public class GameTable extends BasePage {
               if (!modal.isShown()) {
                 currentGame
                     .getChatMessages()
-                    .add(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
+                    .add(
+                        new ChatMessage(
+                            basePlayer.getUserName() + " is making a decision.", false, "all"));
               }
               modal.show(target);
             }
@@ -490,7 +492,9 @@ public class GameTable extends BasePage {
     gameFlowContainer.add(endTurnButton);
     add(gameFlowContainer);
 
-    add(new ChatPanel("chatPanel", currentGame.getChatMessages()));
+    add(
+        new ChatPanel(
+            "chatPanel", currentGame.getChatMessages(), currentGame, getSession().getUser()));
 
     WebMarkupContainer ceremony = new WebMarkupContainer("ceremony");
     Label ceremonyTitle =
