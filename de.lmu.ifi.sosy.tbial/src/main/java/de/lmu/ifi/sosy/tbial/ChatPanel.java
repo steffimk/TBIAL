@@ -1,7 +1,6 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
-import java.util.Optional;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -120,49 +119,57 @@ public class ChatPanel extends Panel {
 
             ChatMessage chatMessage = null;
 
-            // whisper private message to other user
-            if (text.contains("/w")) {
-              String receiver =
-                  game.getAllInGamePlayerNames().stream().filter(text::contains).findAny().get();
-              if (receiver != null) {
-                String[] parts = text.split(" ");
-                String textMessage = "";
-                for (int i = 0; i < parts.length; i++) {
-                  if (parts[i].equals(receiver)) {
-                    for (int j = i + 1; j < parts.length; j++) {
-                      textMessage += parts[j] + " ";
+            if (text != null) {
+              // whisper private message to other user
+              if (text.contains("/w")) {
+                if (game.getAllInGamePlayerNames().stream().anyMatch(text::contains)) {
+                  String receiver =
+                      game.getAllInGamePlayerNames()
+                          .stream()
+                          .filter(text::contains)
+                          .findAny()
+                          .get();
+                  String[] parts = text.split(" ");
+                  String textMessage = "";
+                  for (int i = 0; i < parts.length; i++) {
+                    if (parts[i].equals(receiver)) {
+                      for (int j = i + 1; j < parts.length; j++) {
+                        textMessage += parts[j] + " ";
+                      }
+                      break;
                     }
-                    break;
                   }
-                }
-                chatMessage = new ChatMessage(username, textMessage, true, receiver);
-              } else return;
+                  chatMessage = new ChatMessage(username, textMessage, true, receiver);
+                } else return;
 
-            }
-
-            // reply to private message
-            else if (text.contains("/r")) {
-              String textMessage = text.substring(3);
-              String sender = game.getSenderOfLastPersonalMessageToMe(user.getName());
-              System.out.println(sender);
-              if (sender != null) {
-                chatMessage = new ChatMessage(username, textMessage, true, sender);
-              } else return;
-            }
-
-            // all other messages
-            else {
-              chatMessage = new ChatMessage(username, text, false, "all");
-            }
-
-            if (chatMessage.isMessageEmpty()) return;
-
-            synchronized (chatMessages) {
-              if (chatMessages.size() >= maxMessages) {
-                chatMessages.removeFirst();
               }
 
-              chatMessages.addLast(chatMessage);
+              // reply to private message
+              else if (text.contains("/r")) {
+                String textMessage = text.substring(3);
+                String sender = game.getSenderOfLastPersonalMessageToMe(user.getName());
+                System.out.println(sender);
+                if (sender != null) {
+                  chatMessage = new ChatMessage(username, textMessage, true, sender);
+                } else return;
+              }
+
+              // all other messages
+              else {
+                chatMessage = new ChatMessage(username, text, false, "all");
+              }
+            }
+
+            if (chatMessage != null) {
+              if (chatMessage.isMessageEmpty()) return;
+
+              synchronized (chatMessages) {
+                if (chatMessages.size() >= maxMessages) {
+                  chatMessages.removeFirst();
+                }
+
+                chatMessages.addLast(chatMessage);
+              }
             }
 
             textField.setModelObject("");

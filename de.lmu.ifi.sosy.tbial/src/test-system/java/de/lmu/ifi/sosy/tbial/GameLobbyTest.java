@@ -19,12 +19,14 @@ import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 public class GameLobbyTest extends PageTestBase {
 
+  Game game;
+
   @Before
   public void setUp() {
     setupApplication();
     database.register("testuser", "testpassword");
     getSession().authenticate("testuser", "testpassword");
-    Game game = new Game("gamename", 4, true, "123456", "testuser");
+    game = new Game("gamename", 4, true, "123456", "testuser");
     // Add players so that game can be started
     game.addNewPlayer("A");
     game.addNewPlayer("B");
@@ -131,11 +133,125 @@ public class GameLobbyTest extends PageTestBase {
             tester.assertModelValue(
                 item.getPath().substring(2) + ":textMessage",
                 item.getModelObject().getTextMessage());
+            tester.assertVisible(item.getPath().substring(2) + ":sender");
+            tester.assertVisible(item.getPath().substring(2) + ":textMessage");
             visit.dontGoDeeper();
           }
         });
 
     // check if empty messages were not sent
     assertEquals(gameLobby.getGameManager().getGameOfUser("testuser").getChatMessages().size(), 2);
+  }
+
+  @Test
+  public void whisperIsWorking() {
+    GameLobby gameLobby = tester.startPage(GameLobby.class);
+    // basePlayer sends private message to A
+    FormTester form = tester.newFormTester("chatPanel:form");
+    form.setValue("message", "/w A hallo");
+    form.submit("send");
+
+    // check that private message gets displayed
+    @SuppressWarnings("unchecked")
+    ListView<ChatMessage> messageList =
+        (ListView<ChatMessage>)
+            tester.getComponentFromLastRenderedPage("chatPanel:chatMessages:messages");
+
+    messageList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<ChatMessage>, Void>() {
+
+          @Override
+          public void component(ListItem<ChatMessage> item, IVisit<Void> visit) {
+            tester.assertComponent(item.getPath().substring(2) + ":sender", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":sender",
+                item.getModelObject().getPureSender()
+                    + " to "
+                    + item.getModelObject().getReceiver()
+                    + ": ");
+            tester.assertComponent(item.getPath().substring(2) + ":textMessage", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":textMessage",
+                item.getModelObject().getTextMessage());
+            tester.assertVisible(item.getPath().substring(2) + ":sender");
+            tester.assertVisible(item.getPath().substring(2) + ":textMessage");
+            visit.dontGoDeeper();
+          }
+        });
+  }
+
+  @Test
+  public void replyIsWorking() {
+    GameLobby gameLobby = tester.startPage(GameLobby.class);
+    game.getChatMessages().add(new ChatMessage("A", "hallo", true, "testuser"));
+    // basePlayer responds to private message from A
+    FormTester form = tester.newFormTester("chatPanel:form");
+    form.setValue("message", "/r hallo");
+    form.submit("send");
+
+    // check that private message gets displayed
+    @SuppressWarnings("unchecked")
+    ListView<ChatMessage> messageList =
+        (ListView<ChatMessage>)
+            tester.getComponentFromLastRenderedPage("chatPanel:chatMessages:messages");
+
+    messageList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<ChatMessage>, Void>() {
+
+          @Override
+          public void component(ListItem<ChatMessage> item, IVisit<Void> visit) {
+            tester.assertComponent(item.getPath().substring(2) + ":sender", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":sender",
+                item.getModelObject().getPureSender()
+                    + " to "
+                    + item.getModelObject().getReceiver()
+                    + ": ");
+            tester.assertComponent(item.getPath().substring(2) + ":textMessage", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":textMessage",
+                item.getModelObject().getTextMessage());
+            tester.assertVisible(item.getPath().substring(2) + ":sender");
+            tester.assertVisible(item.getPath().substring(2) + ":textMessage");
+            visit.dontGoDeeper();
+          }
+        });
+  }
+
+  @Test
+  public void privateMessageBetweenOtherPlayersDoesNotGetDisplayed() {
+    GameLobby gameLobby = tester.startPage(GameLobby.class);
+    game.getChatMessages().add(new ChatMessage("A", "hallo", true, "B"));
+
+    // check that private message which is not directed at basePlayer does not get displayed
+    @SuppressWarnings("unchecked")
+    ListView<ChatMessage> messageList =
+        (ListView<ChatMessage>)
+            tester.getComponentFromLastRenderedPage("chatPanel:chatMessages:messages");
+
+    messageList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<ChatMessage>, Void>() {
+
+          @Override
+          public void component(ListItem<ChatMessage> item, IVisit<Void> visit) {
+            tester.assertComponent(item.getPath().substring(2) + ":sender", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":sender",
+                item.getModelObject().getPureSender()
+                    + " to "
+                    + item.getModelObject().getReceiver()
+                    + ": ");
+            tester.assertComponent(item.getPath().substring(2) + ":textMessage", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":textMessage",
+                item.getModelObject().getTextMessage());
+            tester.assertInvisible(item.getPath().substring(2) + ":sender");
+            tester.assertInvisible(item.getPath().substring(2) + ":textMessage");
+            visit.dontGoDeeper();
+          }
+        });
   }
 }
