@@ -55,7 +55,7 @@ public class GameTable extends BasePage {
     getApplication().getMarkupSettings().setStripWicketTags(true);
 
     // get current game
-    currentGame = getGameManager().getGameOfUser(getSession().getUser().getName());
+    currentGame = getSession().getGame();
 
     // get number of players in current game
     int numberOfPlayers = currentGame.getCurrentNumberOfPlayers();
