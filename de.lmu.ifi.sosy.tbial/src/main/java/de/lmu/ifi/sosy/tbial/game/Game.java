@@ -69,6 +69,8 @@ public class Game implements Serializable {
 
   private GameStatistics statistics;
 
+  private boolean hasPlayedBugBeenDefended;
+
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
@@ -94,6 +96,7 @@ public class Game implements Serializable {
     this.startingTime = null;
     this.endingTime = null;
     this.statistics = new GameStatistics();
+    this.hasPlayedBugBeenDefended = false;
   }
 
   /**
@@ -614,6 +617,8 @@ public class Game implements Serializable {
                 + "\" with \""
                 + blockingCard.toString()
                 + "\"."));
+
+    this.setHasPlayedBugBeenDefended(true);
   }
 
   /**
@@ -875,5 +880,13 @@ public class Game implements Serializable {
 
   public GameStatistics getStatistics() {
     return statistics;
+  }
+
+  public boolean getHasPlayedBugBeenDefended() {
+    return hasPlayedBugBeenDefended;
+  }
+
+  public void setHasPlayedBugBeenDefended(boolean hasPlayedBugBeenDefended) {
+    this.hasPlayedBugBeenDefended = hasPlayedBugBeenDefended;
   }
 }

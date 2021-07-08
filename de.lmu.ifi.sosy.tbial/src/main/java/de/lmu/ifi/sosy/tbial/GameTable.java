@@ -51,7 +51,6 @@ public class GameTable extends BasePage {
   private Player basePlayer;
 
   public GameTable() {
-
     getApplication().getMarkupSettings().setStripWicketTags(true);
 
     // get current game
@@ -456,6 +455,13 @@ public class GameTable extends BasePage {
           protected void onTimer(AjaxRequestTarget target) {
             boolean hasLameExcuse = false;
             boolean hasSolution = false;
+
+            // Update exclusively player's table who played the bug
+            if (currentGame.getHasPlayedBugBeenDefended()
+                && currentGame.getTurn().getCurrentPlayer() == basePlayer) {
+              currentGame.setHasPlayedBugBeenDefended(false);
+              setResponsePage(getPage());
+            }
 
             for (StackCard card : basePlayer.getHandCards()) {
               if (((Card) card).getCardType() == CardType.ACTION) {
