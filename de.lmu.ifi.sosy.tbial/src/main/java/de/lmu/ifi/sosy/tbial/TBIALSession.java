@@ -2,6 +2,7 @@ package de.lmu.ifi.sosy.tbial;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +31,7 @@ public class TBIALSession extends AuthenticatedWebSession {
 
   public TBIALSession(Request request) {
     super(request);
+    this.setLocale(Locale.ENGLISH);
   }
 
   @Override

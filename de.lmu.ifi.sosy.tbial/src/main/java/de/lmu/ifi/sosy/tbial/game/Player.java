@@ -3,7 +3,10 @@ package de.lmu.ifi.sosy.tbial.game;
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
+
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
@@ -209,6 +212,28 @@ public class Player implements Serializable {
   }
 
   /**
+   * For testing only.
+   *
+   * <p>Removal of all hand cards. Helper function for test!
+   *
+   * @param cards The player's hand cards to be removed.
+   */
+  public void removeAllHandCards(Set<StackCard> cards) {
+    handCards.removeAll(cards);
+  }
+
+  /**
+   * Removal of a received card. Removes the card if it is contained in this player's received
+   * cards.
+   *
+   * @param card The card to be removed from the received cards.
+   * @return <code>true</code> if the removal was successful, <code>false</code> otherwise
+   */
+  public boolean removeReceivedCard(StackCard card) {
+    return receivedCards.remove(card);
+  }
+
+  /**
    * Adds this card to the set of received cards.
    *
    * @param card The card the player is receiving.
@@ -317,5 +342,25 @@ public class Player implements Serializable {
    */
   public int getNumberOfStoredMentalHealthSnapshots() {
     return mentalHealthDevelopment.size();
+  }
+
+  /**
+   * Checks whether player has to do fortran maintenance. There's a 15% chance this method returns
+   * true.
+   *
+   * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
+   */
+  public boolean hasToDoFortranMaintenance() {
+    return Math.random() < 0.15;
+  }
+
+  /**
+   * Checks whether player has to do the off-the-job-training.There's a 75% chance this method
+   * returns true.
+   *
+   * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
+   */
+  public boolean hasToDoOffTheJobTraining() {
+    return Math.random() < 0.75;
   }
 }

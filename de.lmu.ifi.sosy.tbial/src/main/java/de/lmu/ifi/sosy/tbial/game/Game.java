@@ -26,6 +26,7 @@ import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -267,10 +268,10 @@ public class Game implements Serializable {
     receiver.addToMentalHealth(1);
     stackAndHeap.addToHeap(card, receiver, false);
     String message = "the solution \"" + card.toString() + "\"";
-    if(player.equals(receiver)) {
-    	message = player.getUserName() + " played " + message + ".";
+    if (player.equals(receiver)) {
+      message = player.getUserName() + " played " + message + ".";
     } else {
-    	message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
+      message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
     chatMessages.add(new ChatMessage(message));
   }
@@ -422,6 +423,16 @@ public class Game implements Serializable {
 
   public List<Player> getInGamePlayersList() {
     return new ArrayList<Player>(getPlayers().values());
+  }
+
+  public List<String> getInGamePlayerNames() {
+    ArrayList<String> playerNames = new ArrayList<String>();
+    for (Player p : getInGamePlayersList()) {
+      if (host != p.getUserName()) {
+        playerNames.add(p.getUserName());
+      }
+    }
+    return playerNames;
   }
 
   public String getName() {
@@ -591,6 +602,27 @@ public class Game implements Serializable {
     }
   }
 
+  public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
+    if (!player.hasSelectedCard()) {
+      return;
+    }
+
+    StackCard selectedCard = player.getSelectedHandCard();
+    LOGGER.info(player.getUserName() + " clicked on received Card");
+    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+      if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
+        discardHandCard(player, selectedCard, false);
+        putCardOnHeap(player, clickedCard);
+        player.getReceivedCards().remove(clickedCard);
+        chatMessages.add(
+            new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
+        if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
+          player.addToMentalHealth(1);
+        }
+      }
+    }
+  }
+
   /**
    * Called when player receives a bug and clicks on a lame excuse or solution card in his hand
    * cards to defend the bug immediately.
@@ -619,6 +651,90 @@ public class Game implements Serializable {
                 + "\"."));
 
     this.setHasPlayedBugBeenDefended(true);
+  }
+
+  /**
+   * Called at beginning of turn and checks whether player has to deal with stumbling block cards.
+   *
+   * @param player The player whose turn it should be.
+   */
+  public void dealWithStumblingBlocks(Player player) {
+    StumblingBlockCard maintenanceCard = null;
+    List<StumblingBlockCard> trainingCards = new ArrayList<StumblingBlockCard>();
+    for (StackCard card : player.getReceivedCards()) {
+      if (((Card) card).getCardType() == CardType.STUMBLING_BLOCK) {
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.MAINTENANCE) {
+          maintenanceCard = (StumblingBlockCard) card;
+        }
+
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.TRAINING) {
+          trainingCards.add((StumblingBlockCard) card);
+        }
+      }
+    }
+    if (maintenanceCard != null) {
+      dealWithMaintenance(player, maintenanceCard);
+    }
+    if (!trainingCards.isEmpty()) {
+      for (StumblingBlockCard trainingCard : trainingCards) {
+        if (dealWithTraining(player, trainingCard)) {
+          turn.switchToNextPlayer();
+          dealWithStumblingBlocks(turn.getCurrentPlayer());
+          return;
+        }
+      }
+    }
+  }
+
+  /**
+   * Called when player has to deal with fortran maintenance card.
+   *
+   * @param player The player whose turn it should be.
+   * @param maintenanceCard The fortran maintenance card which has to be dealt with.
+   */
+  public void dealWithMaintenance(Player player, StumblingBlockCard maintenanceCard) {
+    if (player.hasToDoFortranMaintenance()) {
+      player.addToMentalHealth(-3);
+      stackAndHeap.addToHeap(maintenanceCard, player, false);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
+    } else {
+      Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
+      p.receiveCard(maintenanceCard);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " doesn't have to do Fortran Maintenance and card moves to "
+                  + p.getUserName()
+                  + "."));
+    }
+    player.removeReceivedCard(maintenanceCard);
+  }
+
+  /**
+   * Called when player has to deal with off-the-job-training card. Returns true if training takes
+   * place, false if training cancelled.
+   *
+   * @param player The player whose turn it should be.
+   * @param trainingCard The off-the-job-training card which has to be dealt with.
+   */
+  public boolean dealWithTraining(Player player, StumblingBlockCard trainingCard) {
+    stackAndHeap.addToHeap(trainingCard, player, false);
+    player.removeReceivedCard(trainingCard);
+    if (player.hasToDoOffTheJobTraining()) {
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " has to do an off the job training and has to skip his/her turn."));
+      return true;
+
+    } else {
+      chatMessages.add(
+          new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
+      return false;
+    }
   }
 
   /**
@@ -682,6 +798,7 @@ public class Game implements Serializable {
     if (player.canEndTurn()) {
       saveMentalHealthInfo();
       turn.switchToNextPlayer();
+      dealWithStumblingBlocks(turn.getCurrentPlayer());
     }
   }
 
@@ -699,8 +816,8 @@ public class Game implements Serializable {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
           || manager.isFired() && allMonkeysFired(monkeys) && developer.isFired()) {
-      endGame();
-    }
+        endGame();
+      }
     } else {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
@@ -708,7 +825,6 @@ public class Game implements Serializable {
         endGame();
       }
     }
-    
   }
 
   public boolean allMonkeysFired(List<Player> monkeys) {
