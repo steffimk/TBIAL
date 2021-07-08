@@ -265,10 +265,10 @@ public class Game implements Serializable {
     receiver.addToMentalHealth(1);
     stackAndHeap.addToHeap(card, receiver, false);
     String message = "the solution \"" + card.toString() + "\"";
-    if(player.equals(receiver)) {
-    	message = player.getUserName() + " played " + message + ".";
+    if (player.equals(receiver)) {
+      message = player.getUserName() + " played " + message + ".";
     } else {
-    	message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
+      message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
     chatMessages.add(new ChatMessage(message));
   }
@@ -299,7 +299,7 @@ public class Game implements Serializable {
       return;
     }
     receiver.receiveCard(card);
-    
+
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
     receiver.blockBug(new BugBlock(player.getUserName()));
@@ -418,6 +418,16 @@ public class Game implements Serializable {
 
   public List<Player> getInGamePlayersList() {
     return new ArrayList<Player>(getPlayers().values());
+  }
+
+  public List<String> getInGamePlayerNames() {
+    ArrayList<String> playerNames = new ArrayList<String>();
+    for (Player p : getInGamePlayersList()) {
+      if (host != p.getUserName()) {
+        playerNames.add(p.getUserName());
+      }
+    }
+    return playerNames;
   }
 
   public String getName() {
@@ -569,7 +579,7 @@ public class Game implements Serializable {
     if (!player.hasSelectedCard()) {
       return;
     }
-    
+
     StackCard selectedCard = player.getSelectedHandCard();
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
@@ -771,8 +781,8 @@ public class Game implements Serializable {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
           || manager.isFired() && allMonkeysFired(monkeys) && developer.isFired()) {
-      endGame();
-    }
+        endGame();
+      }
     } else {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
@@ -780,7 +790,6 @@ public class Game implements Serializable {
         endGame();
       }
     }
-    
   }
 
   public boolean allMonkeysFired(List<Player> monkeys) {
