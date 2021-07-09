@@ -570,6 +570,22 @@ public class Game implements Serializable {
           return;
         }
       }
+      if(((Card) selectedCard).getCardType() == CardType.STUMBLING_BLOCK) {
+        if (((StumblingBlockCard) selectedCard).getStumblingBlock() == StumblingBlock.MAINTENANCE
+            && player != receiverOfCard) {
+            	chatMessages.add(
+                        new ChatMessage(
+                            "You can only play a " + selectedCard.toString() + " card for yourself."));
+                    return;
+            }
+            if (((StumblingBlockCard) selectedCard).getStumblingBlock() == StumblingBlock.TRAINING
+                    && receiverOfCard.getRole() == Role.MANAGER) {
+                  chatMessages.add(
+                      new ChatMessage(
+                          "You can't play a " + selectedCard.toString() + " card against a Manager."));
+                  return;
+                }
+      }
       putCardToPlayer(selectedCard, player, receiverOfCard);
       statistics.playedCard(selectedCard);
     }
