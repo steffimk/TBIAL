@@ -515,6 +515,7 @@ public class GameTest {
     game.clickedOnHandCard(player, testCard1);
     game.clickedOnPlayAbility(player, player);
     assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(player.getPlayedAbilityCards().contains(testCard1), true);
     assertEquals(player.getPrestigeInt(), 1);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
@@ -526,11 +527,12 @@ public class GameTest {
     game.clickedOnHandCard(player, testCard2);
     game.clickedOnPlayAbility(player, player);
     assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(player.getPlayedAbilityCards().contains(testCard2), true);
     assertEquals(player.getPrestigeInt(), 2);
     assertEquals(
         game.getChatMessages().get(1).getTextMessage(),
         player.getUserName() + " worked at Google and received a prestige of 2.");
-    assertEquals(player.getHandCards().contains(testCard1), true);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard1);
     assertEquals(player.getHandCards().contains(testCard2), false);
   }
 

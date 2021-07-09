@@ -312,7 +312,7 @@ public class GameTableTest extends PageTestBase {
 
   @SuppressWarnings("unlikely-arg-type")
   @Test
-  public void clickOnPlayAbilityWorks() {
+  public void clickOnPlayAbilityWorksForOneself() {
     tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.PLAYING_CARDS);
@@ -351,9 +351,14 @@ public class GameTableTest extends PageTestBase {
             ((PlayerAreaPanel) tester.getComponentFromLastRenderedPage("table:container:0:panel"))
                 .getDefaultModelObject();
 
+    assertTrue(basePlayer.getHandCards().contains(bugDelegationCard));
+    assertFalse(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
+
+    tester.clickLink(pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton");
+
     assertFalse(basePlayer.getHandCards().contains(bugDelegationCard));
     assertNull(basePlayer.getSelectedHandCard());
-    assertTrue(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
+    assertTrue(basePlayer.getPlayedAbilityCards().contains(bugDelegationCard));
     assertEquals(bugDelegationCountBefore + 1, game.getStatistics().getBugDelegationCount());
   }
 

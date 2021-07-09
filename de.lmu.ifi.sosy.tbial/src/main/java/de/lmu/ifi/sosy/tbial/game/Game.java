@@ -412,7 +412,7 @@ public class Game implements Serializable {
       receiver.updateMaxBugCardsPerTurn(1);
       receiver.updatePrestige(0);
       receiver.removeAbilityCard(previousJob);
-      receiver.addToHandCards(previousJob);
+      stackAndHeap.addToHeap(previousJob, receiver, false);
     }
     // may report several bugs per round
     if (card.getAbility() == Ability.ACCENTURE) {
@@ -503,7 +503,7 @@ public class Game implements Serializable {
     if (player != receiver && receiver.wearsTie()) {
       prestige += 1;
     }
-    if (player != receiver && player.wearsSunglasses() && prestige > 0) {
+    if (player != receiver && player.wearsSunglasses()) {
       prestige -= 1;
     }
     return prestige;
@@ -874,9 +874,8 @@ public class Game implements Serializable {
     StackCard selectedCard = player.getSelectedHandCard();
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
 
-      // previous jobs and garments only playable on self
-      if (((AbilityCard) selectedCard).getAbility() != Ability.BUG_DELEGATION
-          && player != receiverOfCard) {
+      // all ability cards only playable on self
+      if (player != receiverOfCard) {
         chatMessages.add(
             new ChatMessage(
                 "You can only play a " + selectedCard.toString() + " card for yourself."));
