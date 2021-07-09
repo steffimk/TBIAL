@@ -677,7 +677,9 @@ public class Game implements Serializable {
       chatMessages.add(
           new ChatMessage(
               player.getUserName()
-                  + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
+                  + " has to do Fortran Maintenance and lost 3 Mental Health Points.",
+              false,
+              "all"));
     } else {
       Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
       p.receiveCard(maintenanceCard);
@@ -686,7 +688,9 @@ public class Game implements Serializable {
               player.getUserName()
                   + " doesn't have to do Fortran Maintenance and card moves to "
                   + p.getUserName()
-                  + "."));
+                  + ".",
+              false,
+              "all"));
     }
     player.removeReceivedCard(maintenanceCard);
   }
@@ -705,12 +709,15 @@ public class Game implements Serializable {
       chatMessages.add(
           new ChatMessage(
               player.getUserName()
-                  + " has to do an off the job training and has to skip his/her turn."));
+                  + " has to do an off the job training and has to skip his/her turn.",
+              false,
+              "all"));
       return true;
 
     } else {
       chatMessages.add(
-          new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
+          new ChatMessage(
+              player.getUserName() + " doesn't have to do an off the job training.", false, "all"));
       return false;
     }
   }
