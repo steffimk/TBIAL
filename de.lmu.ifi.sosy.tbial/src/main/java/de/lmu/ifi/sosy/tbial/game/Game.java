@@ -366,11 +366,10 @@ public class Game implements Serializable {
    * Deals with the different types of cards respectively.
    *
    * @param card The card to be played
-   * @param player The player who is playing the card.
-   * @param receiver The player who is receiving the card.
+   * @param player The player who is playing and receiving the card.
    * @return <code>true</code> if the action was successful, <code>false</code> otherwise
    */
-  public boolean putAbilityCardToPlayer(AbilityCard card, Player player, Player receiver) {
+  public boolean putAbilityCardToPlayer(AbilityCard card, Player player) {
     // check for previous jobs/garments already on the table
     AbilityCard previousJob = null;
     AbilityCard tie = null;
@@ -386,12 +385,12 @@ public class Game implements Serializable {
         sunglasses = ab;
       }
     }
-    receiver.addPlayedAbilityCard((AbilityCard) card);
+    player.addPlayedAbilityCard((AbilityCard) card);
     if (card.isPreviousJob()) {
-      return playPreviousJob(card, previousJob, player, receiver);
+      return playPreviousJob(card, previousJob, player);
     }
     if (card.isGarment()) {
-      return playGarment(card, tie, sunglasses, player, receiver);
+      return playGarment(card, tie, sunglasses, player);
     }
     return false;
   }
@@ -401,50 +400,47 @@ public class Game implements Serializable {
    *
    * @param card The card to be played
    * @param previousJob The Previous Job card to be dealt with
-   * @param player The player who is playing the card.
-   * @param receiver The player who is receiving the card.
+   * @param player The player who is playing and receiving the card.
    * @return <code>true</code> if the action was successful, <code>false</code> otherwise
    */
-  public boolean playPreviousJob(
-      AbilityCard card, AbilityCard previousJob, Player player, Player receiver) {
+  public boolean playPreviousJob(AbilityCard card, AbilityCard previousJob, Player player) {
     // max one previous job allowed -> put previous job back to hand cards
     if (previousJob != null) {
-      receiver.updateMaxBugCardsPerTurn(1);
-      receiver.updatePrestige(0);
-      receiver.removeAbilityCard(previousJob);
-      stackAndHeap.addToHeap(previousJob, receiver, false);
+      player.updateMaxBugCardsPerTurn(1);
+      player.updatePrestige(0);
+      player.removeAbilityCard(previousJob);
+      stackAndHeap.addToHeap(previousJob, player, false);
     }
     // may report several bugs per round
     if (card.getAbility() == Ability.ACCENTURE) {
-      receiver.updateMaxBugCardsPerTurn(Integer.MAX_VALUE);
+      player.updateMaxBugCardsPerTurn(Integer.MAX_VALUE);
       chatMessages.add(
           new ChatMessage(
-              receiver.getUserName()
+              player.getUserName()
                   + " worked at Accenture and can play as many bugs as he/she wants."));
       return true;
     }
     // 1 prestige
     if (card.getAbility() == Ability.MICROSOFT) {
-      receiver.updatePrestige(1);
+      player.updatePrestige(1);
       chatMessages.add(
           new ChatMessage(
-              receiver.getUserName() + " worked at Microsoft and received a prestige of 1."));
+              player.getUserName() + " worked at Microsoft and received a prestige of 1."));
       return true;
     }
     // 2 prestige
     if (card.getAbility() == Ability.GOOGLE) {
-      receiver.updatePrestige(2);
+      player.updatePrestige(2);
       chatMessages.add(
           new ChatMessage(
-              receiver.getUserName() + " worked at Google and received a prestige of 2."));
+              player.getUserName() + " worked at Google and received a prestige of 2."));
       return true;
     }
     // 3 prestige
     if (card.getAbility() == Ability.NASA) {
-      receiver.updatePrestige(3);
+      player.updatePrestige(3);
       chatMessages.add(
-          new ChatMessage(
-              receiver.getUserName() + " worked at Nasa and received a prestige of 3."));
+          new ChatMessage(player.getUserName() + " worked at Nasa and received a prestige of 3."));
       return true;
     }
     return false;
@@ -456,36 +452,35 @@ public class Game implements Serializable {
    * @param card The card to be played
    * @param tie The Tie card to be dealt with
    * @param sunglasses The Sunglasses card to be dealt with
-   * @param player The player who is playing the card.
-   * @param receiver The player who is receiving the card.
+   * @param player The player who is playing and receiving the card.
    * @return <code>true</code> if the action was successful, <code>false</code> otherwise
    */
   public boolean playGarment(
-      AbilityCard card, AbilityCard tie, AbilityCard sunglasses, Player player, Player receiver) {
+      AbilityCard card, AbilityCard tie, AbilityCard sunglasses, Player player) {
     // max one tie allowed
     if (tie != null && card.getAbility() == Ability.TIE) {
-      stackAndHeap.addToHeap(tie, receiver, false);
-      receiver.removeAbilityCard(tie);
+      stackAndHeap.addToHeap(tie, player, false);
+      player.removeAbilityCard(tie);
     }
     // max one pair of sunglasses allowed
     if (sunglasses != null && card.getAbility() == Ability.SUNGLASSES) {
-      stackAndHeap.addToHeap(sunglasses, receiver, false);
-      receiver.removeAbilityCard(sunglasses);
+      stackAndHeap.addToHeap(sunglasses, player, false);
+      player.removeAbilityCard(sunglasses);
     }
     // Sees everybody with -1 prestige
     if (card.getAbility() == Ability.SUNGLASSES) {
-      receiver.putOnSunglasses(true);
+      player.putOnSunglasses(true);
       chatMessages.add(
           new ChatMessage(
-              receiver.getUserName() + " put on sunglasses and sees everybody with -1 prestige."));
+              player.getUserName() + " put on sunglasses and sees everybody with -1 prestige."));
       return true;
     }
     // Is seen with +1 prestige by everyone
     if (card.getAbility() == Ability.TIE) {
-      receiver.putOnTie(true);
+      player.putOnTie(true);
       chatMessages.add(
           new ChatMessage(
-              receiver.getUserName() + " put on a tie and is seen with +1 prestige by everyone."));
+              player.getUserName() + " put on a tie and is seen with +1 prestige by everyone."));
       return true;
     }
     return false;
@@ -883,7 +878,7 @@ public class Game implements Serializable {
       }
 
       if (player.removeHandCard(selectedCard)) {
-        putAbilityCardToPlayer((AbilityCard) selectedCard, player, receiverOfCard);
+        putAbilityCardToPlayer((AbilityCard) selectedCard, player);
         statistics.playedCard(selectedCard);
       }
     }
