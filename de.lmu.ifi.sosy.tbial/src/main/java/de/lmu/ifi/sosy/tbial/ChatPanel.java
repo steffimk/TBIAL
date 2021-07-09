@@ -66,7 +66,7 @@ public class ChatPanel extends Panel {
 
     AjaxSelfUpdatingTimerBehavior ajaxBehavior =
         new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3));
-    // chatMessagesContainer.add(ajaxBehavior);
+    chatMessagesContainer.add(ajaxBehavior);
     add(chatMessagesContainer);
 
     AjaxButton send =
