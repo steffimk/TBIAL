@@ -385,12 +385,12 @@ public class Game implements Serializable {
         sunglasses = ab;
       }
     }
-
+    receiver.addPlayedAbilityCard((AbilityCard) card);
     if (card.isPreviousJob()) {
-      playPreviousJob(card, previousJob, player, receiver);
+      return playPreviousJob(card, previousJob, player, receiver);
     }
     if (card.isGarment()) {
-      playGarment(card, tie, sunglasses, player, receiver);
+      return playGarment(card, tie, sunglasses, player, receiver);
     }
     return false;
   }
@@ -780,18 +780,16 @@ public class Game implements Serializable {
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
 
       // previous jobs and garments only playable on self
-      if (((Card) selectedCard).getCardType() == CardType.ABILITY) {
-        if (((AbilityCard) selectedCard).getAbility() != Ability.BUG_DELEGATION
-            && player != receiverOfCard) {
-          chatMessages.add(
-              new ChatMessage(
-                  "You can only play a " + selectedCard.toString() + " card for yourself."));
-          return;
-        }
+      if (((AbilityCard) selectedCard).getAbility() != Ability.BUG_DELEGATION
+          && player != receiverOfCard) {
+        chatMessages.add(
+            new ChatMessage(
+                "You can only play a " + selectedCard.toString() + " card for yourself."));
+        return;
       }
+
       if (player.removeHandCard(selectedCard)) {
         putAbilityCardToPlayer((AbilityCard) selectedCard, player, receiverOfCard);
-        receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
         statistics.playedCard(selectedCard);
       }
     }

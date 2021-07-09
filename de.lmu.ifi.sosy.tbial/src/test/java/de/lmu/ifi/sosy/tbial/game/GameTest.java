@@ -356,96 +356,15 @@ public class GameTest {
   }
 
   @Test
-  public void playMicrosoftCard() {
-    Game game = getNewGameThatHasStarted();
-    Player player = game.getTurn().getCurrentPlayer();
-    Player receivingPlayer;
-    if (player == game.getPlayers().get("A")) {
-      receivingPlayer = game.getPlayers().get("B");
-    } else {
-      receivingPlayer = game.getPlayers().get("A");
-    }
-    AbilityCard testCard = new AbilityCard(Ability.MICROSOFT);
-    player.addToHandCards(testCard);
-    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+  public void testPreviousJobCards() {
+    AbilityCard microsoft = new AbilityCard(Ability.MICROSOFT);
+    playPreviousJobCard(microsoft, 1, " worked at Microsoft and received a prestige of 1.");
 
-    // nothing happens; only playable for oneself
-    game.clickedOnHandCard(player, testCard);
-    game.clickedOnPlayAbility(player, receivingPlayer);
-    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
-    assertEquals(
-        game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+    AbilityCard google = new AbilityCard(Ability.GOOGLE);
+    playPreviousJobCard(google, 2, " worked at Google and received a prestige of 2.");
 
-    // test card on self
-    game.clickedOnPlayAbility(player, player);
-    assertEquals(player.getPlayedAbilityCards().size(), 1);
-    assertEquals(player.getPrestigeInt(), 1);
-    assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
-        player.getUserName() + " worked at Microsoft and received a prestige of 1.");
-  }
-
-  @Test
-  public void playGoogleCard() {
-    Game game = getNewGameThatHasStarted();
-    Player player = game.getTurn().getCurrentPlayer();
-    Player receivingPlayer;
-    if (player == game.getPlayers().get("A")) {
-      receivingPlayer = game.getPlayers().get("B");
-    } else {
-      receivingPlayer = game.getPlayers().get("A");
-    }
-    AbilityCard testCard = new AbilityCard(Ability.GOOGLE);
-    player.addToHandCards(testCard);
-    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-
-    // nothing happens; only playable for oneself
-    game.clickedOnHandCard(player, testCard);
-    game.clickedOnPlayAbility(player, receivingPlayer);
-    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
-    assertEquals(
-        game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
-
-    // test card on self
-    game.clickedOnPlayAbility(player, player);
-    assertEquals(player.getPlayedAbilityCards().size(), 1);
-    assertEquals(player.getPrestigeInt(), 2);
-    assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
-        player.getUserName() + " worked at Google and received a prestige of 2.");
-  }
-
-  @Test
-  public void playNasaCard() {
-    Game game = getNewGameThatHasStarted();
-    Player player = game.getTurn().getCurrentPlayer();
-    Player receivingPlayer;
-    if (player == game.getPlayers().get("A")) {
-      receivingPlayer = game.getPlayers().get("B");
-    } else {
-      receivingPlayer = game.getPlayers().get("A");
-    }
-    AbilityCard testCard = new AbilityCard(Ability.NASA);
-    player.addToHandCards(testCard);
-    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-
-    // nothing happens; only playable for oneself
-    game.clickedOnHandCard(player, testCard);
-    game.clickedOnPlayAbility(player, receivingPlayer);
-    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
-    assertEquals(
-        game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
-
-    // test card on self
-    game.clickedOnPlayAbility(player, player);
-    assertEquals(player.getPlayedAbilityCards().size(), 1);
-    assertEquals(player.getPrestigeInt(), 3);
-    assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
-        player.getUserName() + " worked at Nasa and received a prestige of 3.");
+    AbilityCard nasa = new AbilityCard(Ability.NASA);
+    playPreviousJobCard(nasa, 3, " worked at Nasa and received a prestige of 3.");
   }
 
   @Test
@@ -853,5 +772,35 @@ public class GameTest {
     game.addNewPlayer("C");
     game.startGame();
     return game;
+  }
+
+  private void playPreviousJobCard(
+      AbilityCard testCard, int expectedPrestige, String expectedSuccessMessage) {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    player.addToHandCards(testCard);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // nothing happens; only playable for oneself
+    game.clickedOnHandCard(player, testCard);
+    game.clickedOnPlayAbility(player, receivingPlayer);
+    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        "You can only play a " + testCard.toString() + " card for yourself.");
+
+    // test card on self
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(player.getPrestigeInt(), expectedPrestige);
+    assertEquals(
+        game.getChatMessages().get(1).getTextMessage(),
+        player.getUserName() + expectedSuccessMessage);
   }
 }
