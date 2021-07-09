@@ -309,7 +309,7 @@ public class Player implements Serializable {
     isBugDelegationCardTriggered = Math.random() < 0.25;
 
     if (isBugDelegationCardPlayed && !isBugDelegationCardTriggered) {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage("Oh no! Bug delegation of " + receiver.getUserName() + " had no effect"));
     }
 

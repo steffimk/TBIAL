@@ -82,6 +82,9 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
+    addNewPlayer("A");
+    addNewPlayer("B");
+    addNewPlayer("C");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -163,8 +166,20 @@ public class Game implements Serializable {
     List<RoleCard> roleCards = RoleCard.getRoleCards(players.size());
     int i = 0;
     for (Player player : players.values()) {
-      player.setRoleCard(roleCards.get(i));
-      i++;
+      switch (player.getUserName()) {
+        case "A":
+          player.setRoleCard(new RoleCard(Role.CONSULTANT));
+          break;
+        case "B":
+          player.setRoleCard(new RoleCard(Role.EVIL_CODE_MONKEY));
+          break;
+        case "C":
+          player.setRoleCard(new RoleCard(Role.HONEST_DEVELOPER));
+          break;
+        default:
+          player.setRoleCard(new RoleCard(Role.MANAGER));
+          break;
+      }
     }
   }
 
@@ -270,7 +285,7 @@ public class Game implements Serializable {
     } else {
       message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -289,7 +304,7 @@ public class Game implements Serializable {
     if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
       stackAndHeap.addToHeap(card, receiver, false);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               receiver.getUserName()
                   + " blocked \""
@@ -319,7 +334,7 @@ public class Game implements Serializable {
     }
     stackAndHeap.addToHeap(card, receiver, false);
     String message = player.getUserName() + " played " + card.toString() + ".";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -338,7 +353,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 2 new cards from the stack.";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -357,7 +372,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 3 new cards from the stack.";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -553,7 +568,7 @@ public class Game implements Serializable {
     }
 
     if (selectedCard.isBug() && turn.getPlayedBugCardsInThisTurn() >= Turn.MAX_BUG_CARDS_PER_TURN) {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               "You cannot play another bug.")); // TODO: Only show player who played card?
       return;
@@ -564,7 +579,7 @@ public class Game implements Serializable {
         if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
                 || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
             && player != receiverOfCard) {
-          chatMessages.add(
+          chatMessages.addFirst(
               new ChatMessage(
                   "You can only play a " + selectedCard.toString() + " card for yourself."));
           return;
@@ -587,7 +602,7 @@ public class Game implements Serializable {
         discardHandCard(player, selectedCard, false);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
-        chatMessages.add(
+        chatMessages.addFirst(
             new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
         if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
           player.addToMentalHealth(1);
@@ -608,7 +623,7 @@ public class Game implements Serializable {
       player.addToMentalHealth(1);
     }
 
-    chatMessages.add(
+    chatMessages.addFirst(
         new ChatMessage(
             player.getUserName()
                 + " blocked \""
@@ -661,14 +676,14 @@ public class Game implements Serializable {
     if (player.hasToDoFortranMaintenance()) {
       player.addToMentalHealth(-3);
       stackAndHeap.addToHeap(maintenanceCard, player, false);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
     } else {
       Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
       p.receiveCard(maintenanceCard);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " doesn't have to do Fortran Maintenance and card moves to "
@@ -689,14 +704,14 @@ public class Game implements Serializable {
     stackAndHeap.addToHeap(trainingCard, player, false);
     player.removeReceivedCard(trainingCard);
     if (player.hasToDoOffTheJobTraining()) {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " has to do an off the job training and has to skip his/her turn."));
       return true;
 
     } else {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
       return false;
     }

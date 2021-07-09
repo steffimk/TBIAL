@@ -2,6 +2,7 @@ package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -50,6 +51,9 @@ public class ChatPanel extends Panel {
 
             Label text =
                 new Label("textMessage", new PropertyModel<String>(chatMessage, "textMessage"));
+            if (chatMessage.isGameUpdate()) {
+              text.add(new AttributeModifier("style", "font-style: italic;"));
+            }
             item.add(text);
           }
         };
@@ -59,7 +63,7 @@ public class ChatPanel extends Panel {
 
     AjaxSelfUpdatingTimerBehavior ajaxBehavior =
         new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3));
-    chatMessagesContainer.add(ajaxBehavior);
+    // chatMessagesContainer.add(ajaxBehavior);
     add(chatMessagesContainer);
 
     AjaxButton send =
@@ -80,7 +84,7 @@ public class ChatPanel extends Panel {
                 chatMessages.removeFirst();
               }
 
-              chatMessages.addLast(chatMessage);
+              chatMessages.addFirst(chatMessage);
             }
 
             textField.setModelObject("");

@@ -5,7 +5,7 @@
 	border-right: 1px dashed #e0e0e0;
 }
 .chatWindow {
-	height: 100%;
+	height: auto;
 	padding-left: 4px;
 	border: 2px solid rgb(221, 221, 221);
 	background: #e6e6e6;
@@ -13,13 +13,12 @@
 }
 
 .chatWrapper {
-	border: 5px solid #f99451;
+	border: 2px solid #ff6600;
 	float: right;
-	padding: 8px;
 	width: 20%;
 	height: 100%;
 	background: #ff8c40;
-	border-radius: 10px;
+	margin-top: 5vh;
 }
 
 fieldset {
