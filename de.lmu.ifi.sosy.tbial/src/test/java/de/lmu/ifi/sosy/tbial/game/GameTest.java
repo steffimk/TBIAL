@@ -16,6 +16,7 @@ import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 
 /** Tests referring to the Game class. */
 public class GameTest {
@@ -353,6 +354,76 @@ public class GameTest {
     game.putCardToPlayer(testCard, player, player);
     assertEquals(player.getHandCards().size(), prevHandCardsPlayer + 2);
     assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard);
+  }
+
+  @Test
+  public void stumblingBlocksMaintenance() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer = game.getTurn().getNextPlayer(game.getTurn().getCurrentPlayerIndex());
+    StackCard testCardMaintenance = new StumblingBlockCard(StumblingBlock.MAINTENANCE);
+    player.addToHandCards(testCardMaintenance);
+    game.putCardToPlayer(testCardMaintenance, player, receivingPlayer);
+    int mentalHealthPrevious = receivingPlayer.getMentalHealthInt();
+    player.removeAllHandCards(player.getHandCards());
+    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
+    game.clickedOnEndTurnButton(player);
+
+    if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardMaintenance) {
+      assertEquals(
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName()
+              + " has to do Fortran Maintenance and lost 3 Mental Health Points.");
+      assertEquals(receivingPlayer.getMentalHealthInt(), mentalHealthPrevious - 3);
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardMaintenance), false);
+    } else {
+      Turn turn = game.getTurn();
+      Player nextPlayer = turn.getNextPlayer(turn.getCurrentPlayerIndex());
+      assertEquals(nextPlayer.getReceivedCards().contains(testCardMaintenance), true);
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardMaintenance), false);
+      assertEquals(
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName()
+              + " doesn't have to do Fortran Maintenance and card moves to "
+              + nextPlayer.getUserName()
+              + ".");
+    }
+  }
+
+  @Test
+  public void stumblingBlocksTraining() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer = game.getTurn().getNextPlayer(game.getTurn().getCurrentPlayerIndex());
+    StackCard testCardTraining = new StumblingBlockCard(StumblingBlock.TRAINING);
+    player.addToHandCards(testCardTraining);
+    game.putCardToPlayer(testCardTraining, player, receivingPlayer);
+    int playerIndex = game.getTurn().getCurrentPlayerIndex();
+    playerIndex++;
+    if (playerIndex == game.getPlayers().size()) {
+      playerIndex = 0;
+    }
+    player.removeAllHandCards(player.getHandCards());
+    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
+    game.clickedOnEndTurnButton(player);
+
+    if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
+        && game.getTurn().getCurrentPlayer() == receivingPlayer) {
+      assertEquals(
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName() + " doesn't have to do an off the job training.");
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
+    }
+    if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
+        && !(game.getTurn().getCurrentPlayer() == receivingPlayer)) {
+      assertEquals(
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName()
+              + " has to do an off the job training and has to skip his/her turn.");
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
+      assertEquals(
+          game.getTurn().getCurrentPlayer() == game.getTurn().getNextPlayer(playerIndex), true);
+    }
   }
 
   @Test
