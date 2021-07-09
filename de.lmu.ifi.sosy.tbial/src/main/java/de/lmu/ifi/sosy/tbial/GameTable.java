@@ -367,7 +367,9 @@ public class GameTable extends BasePage {
 
           @Override
           public void onConfigure() {
-            onConfigureOfGameFlowButtons(this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, null);
+            onConfigureOfGameFlowButtons(
+                this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+            this.setEnabled(false);
             super.onConfigure();
           }
 
@@ -451,13 +453,23 @@ public class GameTable extends BasePage {
         });
 
     table.add(
-        new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
+        new AbstractAjaxTimerBehavior(Duration.seconds(20)) {
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            boolean hasLameExcuse = false;
-            boolean hasSolution = false;
+            if (currentGame.getTurn().getCurrentPlayer() != basePlayer) {
+              setResponsePage(getPage());
+            }
+          }
+        });
+
+    table.add(
+        new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onTimer(AjaxRequestTarget target) {
 
             // Update exclusively player's table who played the bug
             if (currentGame.getHasPlayedBugBeenDefended()
@@ -466,48 +478,30 @@ public class GameTable extends BasePage {
               setResponsePage(getPage());
             }
 
-            for (StackCard card : basePlayer.getHandCards()) {
-              if (((Card) card).getCardType() == CardType.ACTION) {
-                if (((ActionCard) card).isLameExcuse()) {
-                  hasLameExcuse = true;
-                }
-                if (((ActionCard) card).isSolution()) {
-                  hasSolution = true;
-                }
-              }
-            }
+            if (basePlayer == currentGame.getTurn().getAttackedPlayer()) {
+              boolean canDefendBug = basePlayer.canDefendBug();
 
-            if (basePlayer == currentGame.getTurn().getAttackedPlayer()
-                && (hasLameExcuse || hasSolution)
-                && currentGame.getTurn().getStage() != TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
-              if (!modal.isShown()) {
-                currentGame
-                    .getChatMessages()
-                    .add(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
-              }
-              modal.show(target);
-            } else {
-              if (!hasLameExcuse
-                  && !hasSolution
-                  && basePlayer == currentGame.getTurn().getAttackedPlayer()) {
-
-                if (basePlayer
-                    .getReceivedCards()
-                    .contains(currentGame.getTurn().getLastPlayedBugCard())) {
-                  currentGame.putCardOnHeap(
-                      basePlayer, currentGame.getTurn().getLastPlayedBugCard());
-                  basePlayer
-                      .getReceivedCards()
-                      .remove(currentGame.getTurn().getLastPlayedBugCard());
-
-                  currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
-
+              if (canDefendBug
+                  && currentGame.getTurn().getStage() != TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
+                if (!modal.isShown()) {
                   currentGame
                       .getChatMessages()
-                      .add(
-                          new ChatMessage(
-                              basePlayer.getUserName() + " couldn't block bug (-1 mental health)"));
+                      .add(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
                 }
+                modal.show(target);
+              } else if (!canDefendBug
+                  && basePlayer
+                      .getReceivedCards()
+                      .contains(currentGame.getTurn().getLastPlayedBugCard())) {
+                currentGame.putCardOnHeap(basePlayer, currentGame.getTurn().getLastPlayedBugCard());
+                basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
+                currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+                currentGame
+                    .getChatMessages()
+                    .add(
+                        new ChatMessage(
+                            basePlayer.getUserName() + " couldn't block bug (-1 mental health)"));
               }
             }
           }

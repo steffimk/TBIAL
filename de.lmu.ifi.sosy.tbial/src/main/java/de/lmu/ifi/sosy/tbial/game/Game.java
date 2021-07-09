@@ -525,26 +525,22 @@ public class Game implements Serializable {
 
     player.setSelectedHandCard(handCard);
 
-    try {
-      if (turn.getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH
-          && player.getReceivedCards().contains(turn.getLastPlayedBugCard())) {
+    boolean isActionCard = handCard != null && ((Card) handCard).getCardType() == CardType.ACTION;
+    if (turn.getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH
+        && isActionCard
+        && player.getReceivedCards().contains(turn.getLastPlayedBugCard())) {
 
         if (((ActionCard) player.getSelectedHandCard()).isLameExcuse()
             || ((ActionCard) player.getSelectedHandCard()).isSolution()) {
           defendBugImmediately(player, (ActionCard) player.getSelectedHandCard());
 
-          if (player.getSelectedHandCard() != null) {
-            player.removeHandCard(player.getSelectedHandCard());
-          }
+        player.removeHandCard(player.getSelectedHandCard());
 
           player.clearBugBlocks();
           turn.setAttackedPlayer(null);
           turn.setStage(Turn.TurnStage.PLAYING_CARDS);
         }
       }
-    } finally {
-    	
-    }
   }
 
   /**
@@ -602,27 +598,6 @@ public class Game implements Serializable {
     }
   }
 
-  public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
-    if (!player.hasSelectedCard()) {
-      return;
-    }
-
-    StackCard selectedCard = player.getSelectedHandCard();
-    LOGGER.info(player.getUserName() + " clicked on received Card");
-    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
-      if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        discardHandCard(player, selectedCard, false);
-        putCardOnHeap(player, clickedCard);
-        player.getReceivedCards().remove(clickedCard);
-        chatMessages.add(
-            new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
-        if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
-          player.addToMentalHealth(1);
-        }
-      }
-    }
-  }
-
   /**
    * Called when player receives a bug and clicks on a lame excuse or solution card in his hand
    * cards to defend the bug immediately.
@@ -634,12 +609,8 @@ public class Game implements Serializable {
     ActionCard bugCard = turn.getLastPlayedBugCard();
 
     putCardOnHeap(player, blockingCard);
-    player.getReceivedCards().remove(blockingCard);
     player.getReceivedCards().remove(bugCard);
-
-    if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
-      player.addToMentalHealth(1);
-    }
+    player.addToMentalHealth(1);
 
     chatMessages.add(
         new ChatMessage(
@@ -679,6 +650,7 @@ public class Game implements Serializable {
       for (StumblingBlockCard trainingCard : trainingCards) {
         if (dealWithTraining(player, trainingCard)) {
           turn.switchToNextPlayer();
+          turn.setAttackedPlayer(null);
           dealWithStumblingBlocks(turn.getCurrentPlayer());
           return;
         }
@@ -799,6 +771,9 @@ public class Game implements Serializable {
       saveMentalHealthInfo();
       turn.switchToNextPlayer();
       dealWithStumblingBlocks(turn.getCurrentPlayer());
+      turn.setAttackedPlayer(null);
+      turn.setLastPlayedBugCard(null);
+      turn.setLastPlayedBugCardBy(null);
     }
   }
 

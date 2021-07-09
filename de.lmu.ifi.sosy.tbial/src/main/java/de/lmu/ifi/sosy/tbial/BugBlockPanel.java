@@ -37,8 +37,10 @@ public class BugBlockPanel extends Panel {
             Form<?> reject = new Form<>("do nothing");
 
             final BugBlock bugBlock = item.getModelObject();
-            bugBlockForm.add(new Label("bugBlockSender", bugBlock.getSender()));
-            bugBlockForm.add(new Label("bugBlockMessage", bugBlock.getTextMessage()));
+            bugBlockForm.add(
+                new Label(
+                    "bugBlockSenderMessage",
+                    bugBlock.getSender() + " " + bugBlock.getTextMessage()));
 
             Button blockButton =
                 new Button("blockButton") {

@@ -320,6 +320,24 @@ public class Player implements Serializable {
     return isBugDelegationCardPlayed && isBugDelegationCardTriggered;
   }
 
+  public boolean canDefendBug() {
+    boolean hasLameExcuse = false;
+    boolean hasSolution = false;
+
+    for (StackCard card : getHandCards()) {
+      if (((Card) card).getCardType() == CardType.ACTION) {
+        if (((ActionCard) card).isLameExcuse()) {
+          hasLameExcuse = true;
+        }
+        if (((ActionCard) card).isSolution()) {
+          hasSolution = true;
+        }
+      }
+    }
+
+    return (hasLameExcuse || hasSolution);
+  }
+
   /** Adds the current number of mental health points to the mental health development-list */
   public void snapshotOfMentalHealth() {
     mentalHealthDevelopment.add(mentalHealth);
