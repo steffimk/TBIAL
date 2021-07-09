@@ -15,7 +15,7 @@
 .chatWrapper {
 	border: 2px solid #ff6600;
 	float: right;
-	width: 20%;
+	width: 23%;
 	height: 100%;
 	background: #ff8c40;
 	margin-top: 5vh;
@@ -34,17 +34,28 @@ fieldset p {
 	line-height: normal;
 }
 
+.timestamp {
+	display:block;
+	font-size: small;
+	color: grey;
+}
+
 .username {
 	font-weight: bold;
+	vertical-align: baseline;
+	display: inline;
 }
 
 .chatMessage {
 	overflow-wrap: anywhere;
+	display: inline;
 }
 
 .inputWrapper {
 	width: 100%;
 	display: flex;
+	margin-top: 2px;
+	margin-bottom: 2px;
 }
 
 .messageInput {

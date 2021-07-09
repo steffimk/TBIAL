@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class ChatMessage implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+  private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
   private String sender;
   private String textMessage;
@@ -41,14 +41,15 @@ public class ChatMessage implements Serializable {
   }
 
   public String getTextMessage() {
-    if (isGameUpdate) {
-      return "(" + timestamp + ") " + textMessage;
-    }
     return textMessage;
   }
 
   public boolean isMessageEmpty() {
     return textMessage == null;
+  }
+
+  public String getTimestamp() {
+    return this.timestamp;
   }
 
   public boolean isGameUpdate() {

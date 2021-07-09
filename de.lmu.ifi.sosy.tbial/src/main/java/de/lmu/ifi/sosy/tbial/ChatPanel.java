@@ -46,6 +46,9 @@ public class ChatPanel extends Panel {
 
             ChatMessage chatMessage = item.getModelObject();
 
+            Label time = new Label("time", chatMessage.getTimestamp());
+            item.add(time);
+
             Label sender = new Label("sender", new PropertyModel<String>(chatMessage, "sender"));
             item.add(sender);
 

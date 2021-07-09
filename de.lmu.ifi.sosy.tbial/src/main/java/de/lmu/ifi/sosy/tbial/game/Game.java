@@ -82,9 +82,6 @@ public class Game implements Serializable {
     this.players = Collections.synchronizedMap(new HashMap<>());
 
     addNewPlayer(userName);
-    addNewPlayer("A");
-    addNewPlayer("B");
-    addNewPlayer("C");
 
     this.isPrivate = requireNonNull(isPrivate);
     if (isPrivate) {
@@ -166,20 +163,8 @@ public class Game implements Serializable {
     List<RoleCard> roleCards = RoleCard.getRoleCards(players.size());
     int i = 0;
     for (Player player : players.values()) {
-      switch (player.getUserName()) {
-        case "A":
-          player.setRoleCard(new RoleCard(Role.CONSULTANT));
-          break;
-        case "B":
-          player.setRoleCard(new RoleCard(Role.EVIL_CODE_MONKEY));
-          break;
-        case "C":
-          player.setRoleCard(new RoleCard(Role.HONEST_DEVELOPER));
-          break;
-        default:
-          player.setRoleCard(new RoleCard(Role.MANAGER));
-          break;
-      }
+      player.setRoleCard(roleCards.get(i));
+      i++;
     }
   }
 

@@ -14,10 +14,11 @@
 				<input class="messageInput" type="text" wicket:id="message">
 	 			<input class="submitButton" type="submit" value="Send" wicket:id="send">
 	  		</form> 
-			<fieldset wicket:id="chatMessages" style="overflow-y: scroll; max-height: 90vh;">
+			<fieldset wicket:id="chatMessages" style="overflow-y: scroll; max-height: 90vh; min-height: 50px;">
 				<p wicket:id="messages"> 
-					<span class="username" wicket:id="sender" style="vertical-align: baseline;">Username</span>
-					<span class="chatMessage" wicket:id="textMessage" style="display: inline;">Chatmessage</span>
+					<span class="timestamp" wicket:id="time">Timestamp</span>
+					<span class="username" wicket:id="sender">Username</span>
+					<span class="chatMessage" wicket:id="textMessage">Chatmessage</span>
 				</p>	
 			</fieldset>
 		</div>	
