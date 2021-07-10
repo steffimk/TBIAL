@@ -472,14 +472,21 @@ public class GameTest {
     assertEquals(receivingPlayer.getReceivedCards().contains(bugCard1), true);
     assertEquals(receivingPlayer.getBugBlocks().size(), 1);
 
+    game.getTurn().setStage(TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+    ActionCard defend = new ActionCard(Action.COFFEE);
+    receivingPlayer.addToHandCards(defend);
+    game.clickedOnHandCard(receivingPlayer, defend);
+
     // play second bug card against receivingPlayer -> not possible
     game.clickedOnHandCard(player, bugCard2);
     game.clickedOnAddCardToPlayer(player, receivingPlayer);
-    assertEquals(receivingPlayer.getBugBlocks().size(), 1);
-    assertEquals(receivingPlayer.getReceivedCards().size(), 1);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 0);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 0);
     assertEquals(receivingPlayer.getReceivedCards().contains(bugCard2), false);
     assertEquals(player.getHandCards().contains(bugCard2), true);
-    assertEquals(game.getChatMessages().get(1).getTextMessage(), "You cannot play another bug.");
+    assertEquals(
+        game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+        "You cannot play another bug.");
 
     // test Accenture card on self
     game.clickedOnHandCard(player, testCard);
@@ -488,17 +495,16 @@ public class GameTest {
     assertEquals(player.getPrestigeInt(), 0);
     assertEquals(player.getMaxBugCardsPerTurn(), Integer.MAX_VALUE);
     assertEquals(
-        game.getChatMessages().get(2).getTextMessage(),
+        game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
         player.getUserName() + " worked at Accenture and can play as many bugs as he/she wants.");
 
     // play second bug card against receivingPlayer again -> now it works
     game.clickedOnHandCard(player, bugCard2);
     game.clickedOnAddCardToPlayer(player, receivingPlayer);
-    assertEquals(receivingPlayer.getReceivedCards().size(), 2);
-    assertEquals(receivingPlayer.getReceivedCards().contains(bugCard1), true);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 1);
     assertEquals(receivingPlayer.getReceivedCards().contains(bugCard2), true);
     assertEquals(player.getHandCards().contains(bugCard2), false);
-    assertEquals(receivingPlayer.getBugBlocks().size(), 2);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 1);
   }
 
   @Test

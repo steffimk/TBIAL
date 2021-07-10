@@ -489,6 +489,8 @@ public class GameTable extends BasePage {
                 basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
                 currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
                 currentGame.getTurn().setAttackedPlayer(null);
+                currentGame.getTurn().setLastPlayedBugCard(null);
+                currentGame.getTurn().setLastPlayedBugCardBy(null);
 
                 currentGame
                     .getChatMessages()
