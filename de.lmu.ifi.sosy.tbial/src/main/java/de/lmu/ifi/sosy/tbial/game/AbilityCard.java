@@ -16,6 +16,14 @@ public class AbilityCard extends Card implements StackCard {
     return ability;
   }
 
+  public boolean isPreviousJob() {
+    return ability.abilityType == AbilityType.PREVIOUS_JOB;
+  }
+
+  public boolean isGarment() {
+    return ability.abilityType == AbilityType.GARMENT;
+  }
+
   @Override
   public String getResourceFileName() {
     return ability.fileName;
