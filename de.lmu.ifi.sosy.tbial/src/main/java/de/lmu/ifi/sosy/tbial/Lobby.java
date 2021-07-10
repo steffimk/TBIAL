@@ -41,6 +41,8 @@ public class Lobby extends BasePage {
 
     boolean isInGame = getSession().isInGame();
 
+    LobbyManager.instance.addUser(getSession().getUser());
+
     Form<?> menuForm = new Form<>("menuForm");
 
     Button createGameButton =
@@ -182,6 +184,8 @@ public class Lobby extends BasePage {
         .add(passwordContainer)
         .add(newGameButton);
     add(newGameForm);
+
+    add(new ChatPanel("chatPanel", LobbyManager.instance.getChatMessages()));
   }
 
   /**
