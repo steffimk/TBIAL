@@ -295,23 +295,25 @@ public class GameTable extends BasePage {
           }
         });
 
+    heapContainer.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          protected boolean shouldTrigger() {
+            // update when it's the baseplayer's turn
+            return currentGame.getTurn().getCurrentPlayer() == basePlayer;
+          }
+        });
+
     WebMarkupContainer gameFlowContainer = new WebMarkupContainer("gameflow");
     gameFlowContainer.add(
         new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
 
           private static final long serialVersionUID = 1L;
-          private TurnStage previousTurnStage = null;
-          private boolean playerCanEndTurn = false;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            TurnStage turnStage = currentGame.getTurn().getStage();
-            boolean canEndTurn = currentGame.getTurn().getCurrentPlayer().canEndTurn();
-            if (previousTurnStage == turnStage && playerCanEndTurn == canEndTurn) {
-              return;
-            }
-            previousTurnStage = turnStage;
-            playerCanEndTurn = canEndTurn;
             target.add(gameFlowContainer);
           }
         });
@@ -424,6 +426,7 @@ public class GameTable extends BasePage {
     final ModalWindow modal;
     add(modal = new ModalWindow("blockBugModal"));
     modal.setTitle("Bug played against you!");
+    modal.showUnloadConfirmation(false);
     modal.setContent(new BugBlockPanel(modal.getContentId(), currentGame, basePlayer));
     modal.setCloseButtonCallback(
         target -> {
