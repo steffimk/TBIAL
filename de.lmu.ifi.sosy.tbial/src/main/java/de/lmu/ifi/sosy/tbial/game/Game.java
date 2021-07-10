@@ -680,11 +680,13 @@ public class Game implements Serializable {
 
         player.removeHandCard(player.getSelectedHandCard());
 
-          player.clearBugBlocks();
-          turn.setAttackedPlayer(null);
-          turn.setStage(Turn.TurnStage.PLAYING_CARDS);
-        }
+        player.clearBugBlocks();
+        turn.setAttackedPlayer(null);
+        turn.setLastPlayedBugCard(null);
+        turn.setLastPlayedBugCardBy(null);
+        turn.setStage(Turn.TurnStage.PLAYING_CARDS);
       }
+    }
   }
 
   /**
