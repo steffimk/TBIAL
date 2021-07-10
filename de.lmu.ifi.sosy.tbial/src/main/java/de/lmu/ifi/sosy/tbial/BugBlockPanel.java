@@ -64,8 +64,9 @@ public class BugBlockPanel extends Panel {
                     player.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
 
                     currentGame.getTurn().setAttackedPlayer(null);
+                    currentGame.getTurn().setLastPlayedBugCard(null);
+                    currentGame.getTurn().setLastPlayedBugCardBy(null);
 
-                    //
                     currentGame
                         .getChatMessages()
                         .add(new ChatMessage(player.getUserName() + " rejected to block Bug"));
