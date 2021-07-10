@@ -15,8 +15,8 @@ import org.junit.Test;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
-import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 
 /** Tests referring to the Game class. */
 public class GameTest {
@@ -427,6 +427,290 @@ public class GameTest {
   }
 
   @Test
+  public void testPreviousJobCards() {
+    AbilityCard microsoft = new AbilityCard(Ability.MICROSOFT);
+    playPreviousJobCard(microsoft, 1, " worked at Microsoft and received a prestige of 1.");
+
+    AbilityCard google = new AbilityCard(Ability.GOOGLE);
+    playPreviousJobCard(google, 2, " worked at Google and received a prestige of 2.");
+
+    AbilityCard nasa = new AbilityCard(Ability.NASA);
+    playPreviousJobCard(nasa, 3, " worked at Nasa and received a prestige of 3.");
+  }
+
+  @Test
+  public void playAccentureCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    AbilityCard testCard = new AbilityCard(Ability.ACCENTURE);
+    StackCard bugCard1 = new ActionCard(Action.NOT_FOUND);
+    StackCard bugCard2 = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testCard);
+    player.addToHandCards(bugCard1);
+    player.addToHandCards(bugCard2);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // nothing happens; only playable for oneself
+    game.clickedOnHandCard(player, testCard);
+    game.clickedOnPlayAbility(player, receivingPlayer);
+    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        "You can only play a " + testCard.toString() + " card for yourself.");
+
+    // play one bug card against receivingPlayer
+    game.clickedOnHandCard(player, bugCard1);
+    game.clickedOnAddCardToPlayer(player, receivingPlayer);
+    assertEquals(player.getHandCards().contains(bugCard1), false);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 1);
+    assertEquals(receivingPlayer.getReceivedCards().contains(bugCard1), true);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 1);
+
+    // play second bug card against receivingPlayer -> not possible
+    game.clickedOnHandCard(player, bugCard2);
+    game.clickedOnAddCardToPlayer(player, receivingPlayer);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 1);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 1);
+    assertEquals(receivingPlayer.getReceivedCards().contains(bugCard2), false);
+    assertEquals(player.getHandCards().contains(bugCard2), true);
+    assertEquals(game.getChatMessages().get(1).getTextMessage(), "You cannot play another bug.");
+
+    // test Accenture card on self
+    game.clickedOnHandCard(player, testCard);
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(player.getPrestigeInt(), 0);
+    assertEquals(player.getMaxBugCardsPerTurn(), Integer.MAX_VALUE);
+    assertEquals(
+        game.getChatMessages().get(2).getTextMessage(),
+        player.getUserName() + " worked at Accenture and can play as many bugs as he/she wants.");
+
+    // play second bug card against receivingPlayer again -> now it works
+    game.clickedOnHandCard(player, bugCard2);
+    game.clickedOnAddCardToPlayer(player, receivingPlayer);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 2);
+    assertEquals(receivingPlayer.getReceivedCards().contains(bugCard1), true);
+    assertEquals(receivingPlayer.getReceivedCards().contains(bugCard2), true);
+    assertEquals(player.getHandCards().contains(bugCard2), false);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 2);
+  }
+
+  @Test
+  public void playSeveralPreviousJobs() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    AbilityCard testCard1 = new AbilityCard(Ability.MICROSOFT);
+    AbilityCard testCard2 = new AbilityCard(Ability.GOOGLE);
+    player.addToHandCards(testCard1);
+    player.addToHandCards(testCard2);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // Microsoft test card on self
+    game.clickedOnHandCard(player, testCard1);
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(player.getPlayedAbilityCards().contains(testCard1), true);
+    assertEquals(player.getPrestigeInt(), 1);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        player.getUserName() + " worked at Microsoft and received a prestige of 1.");
+    assertEquals(player.getHandCards().contains(testCard1), false);
+    assertEquals(player.getHandCards().contains(testCard2), true);
+
+    // Google test card on self
+    game.clickedOnHandCard(player, testCard2);
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(player.getPlayedAbilityCards().contains(testCard2), true);
+    assertEquals(player.getPrestigeInt(), 2);
+    assertEquals(
+        game.getChatMessages().get(1).getTextMessage(),
+        player.getUserName() + " worked at Google and received a prestige of 2.");
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard1);
+    assertEquals(player.getHandCards().contains(testCard2), false);
+  }
+
+  @Test
+  public void canOnlyAttackPlayerWithLowerPrestige() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    StackCard bugCard = new ActionCard(Action.NOT_FOUND);
+    player.addToHandCards(bugCard);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // player can't attack receivingPlayer because of lower prestige
+    receivingPlayer.updatePrestige(1);
+    game.clickedOnHandCard(player, bugCard);
+    game.clickedOnAddCardToPlayer(player, receivingPlayer);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        player.getUserName()
+            + " can't attack "
+            + receivingPlayer.getUserName()
+            + " because of lower prestige.");
+
+    // player can attack receivingPlayer because of higher/same prestige
+    player.updatePrestige(1);
+    game.clickedOnHandCard(player, bugCard);
+    game.clickedOnAddCardToPlayer(player, receivingPlayer);
+    assertEquals(player.getHandCards().contains(bugCard), false);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 1);
+    assertEquals(receivingPlayer.getReceivedCards().contains(bugCard), true);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 1);
+  }
+
+  @Test
+  public void playSunglassesCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    AbilityCard testCard = new AbilityCard(Ability.SUNGLASSES);
+    player.addToHandCards(testCard);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // nothing happens; only playable for oneself
+    game.clickedOnHandCard(player, testCard);
+    game.clickedOnPlayAbility(player, receivingPlayer);
+    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        "You can only play a " + testCard.toString() + " card for yourself.");
+
+    // test card on self
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    receivingPlayer.updatePrestige(2);
+    assertEquals(player.getPrestigeInt(), 0);
+    // sees other player with 1 prestige even though he actually has 2 prestige
+    assertEquals(game.calculatePrestige(player, receivingPlayer), 1);
+    assertEquals(receivingPlayer.getPrestigeInt(), 2);
+    assertEquals(
+        game.getChatMessages().get(1).getTextMessage(),
+        player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.");
+  }
+
+  @Test
+  public void playTieCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    AbilityCard testCard = new AbilityCard(Ability.TIE);
+    player.addToHandCards(testCard);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // nothing happens; only playable for oneself
+    game.clickedOnHandCard(player, testCard);
+    game.clickedOnPlayAbility(player, receivingPlayer);
+    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        "You can only play a " + testCard.toString() + " card for yourself.");
+
+    // test card on self
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    // player is seen with 1 prestige even though he actually has 0 prestige
+    assertEquals(game.calculatePrestige(receivingPlayer, player), 1);
+    assertEquals(player.getPrestigeInt(), 0);
+    assertEquals(
+        game.getChatMessages().get(1).getTextMessage(),
+        player.getUserName() + " put on a tie and is seen with +1 prestige by everyone.");
+  }
+
+  @Test
+  public void playTwoTiesAndTwoSunglassesCards() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    AbilityCard testCard1 = new AbilityCard(Ability.TIE);
+    AbilityCard testCard2 = new AbilityCard(Ability.TIE);
+    AbilityCard testCard3 = new AbilityCard(Ability.SUNGLASSES);
+    AbilityCard testCard4 = new AbilityCard(Ability.SUNGLASSES);
+    player.addToHandCards(testCard1);
+    player.addToHandCards(testCard2);
+    player.addToHandCards(testCard3);
+    player.addToHandCards(testCard4);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // Ties
+    // test card on self
+    game.clickedOnHandCard(player, testCard1);
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    // player is seen with 1 prestige even though he actually has 0 prestige
+    assertEquals(game.calculatePrestige(receivingPlayer, player), 1);
+    assertEquals(player.getPrestigeInt(), 0);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        player.getUserName() + " put on a tie and is seen with +1 prestige by everyone.");
+    game.clickedOnHandCard(player, testCard2);
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard1);
+    // player is seen with 1 prestige even though he actually has 0 prestige
+    assertEquals(game.calculatePrestige(receivingPlayer, player), 1);
+    assertEquals(player.getPrestigeInt(), 0);
+    assertEquals(
+        game.getChatMessages().get(1).getTextMessage(),
+        player.getUserName() + " put on a tie and is seen with +1 prestige by everyone.");
+
+    // Sunglasses
+    // test card on self
+    game.clickedOnHandCard(player, testCard3);
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 2);
+    // player is seen with 1 prestige even though he actually has 0 prestige
+    assertEquals(game.calculatePrestige(receivingPlayer, player), 1);
+    receivingPlayer.updatePrestige(2);
+    assertEquals(player.getPrestigeInt(), 0);
+    // sees other player with 1 prestige even though he actually has 2 prestige
+    assertEquals(game.calculatePrestige(player, receivingPlayer), 1);
+    assertEquals(receivingPlayer.getPrestigeInt(), 2);
+    assertEquals(
+        game.getChatMessages().get(2).getTextMessage(),
+        player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.");
+    game.clickedOnHandCard(player, testCard4);
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 2);
+    assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard3);
+    receivingPlayer.updatePrestige(2);
+    assertEquals(player.getPrestigeInt(), 0);
+    // sees other player with 1 prestige even though he actually has 2 prestige
+    assertEquals(game.calculatePrestige(player, receivingPlayer), 1);
+    assertEquals(receivingPlayer.getPrestigeInt(), 2);
+    assertEquals(
+        game.getChatMessages().get(3).getTextMessage(),
+        player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.");
+  }
+
+  @Test
   public void endGame_setsHasEndedToTrue() {
     Game game = getNewGameThatHasStarted();
     game.endGame();
@@ -561,5 +845,35 @@ public class GameTest {
     game.addNewPlayer("C");
     game.startGame();
     return game;
+  }
+
+  private void playPreviousJobCard(
+      AbilityCard testCard, int expectedPrestige, String expectedSuccessMessage) {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receivingPlayer;
+    if (player == game.getPlayers().get("A")) {
+      receivingPlayer = game.getPlayers().get("B");
+    } else {
+      receivingPlayer = game.getPlayers().get("A");
+    }
+    player.addToHandCards(testCard);
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    // nothing happens; only playable for oneself
+    game.clickedOnHandCard(player, testCard);
+    game.clickedOnPlayAbility(player, receivingPlayer);
+    assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
+    assertEquals(
+        game.getChatMessages().get(0).getTextMessage(),
+        "You can only play a " + testCard.toString() + " card for yourself.");
+
+    // test card on self
+    game.clickedOnPlayAbility(player, player);
+    assertEquals(player.getPlayedAbilityCards().size(), 1);
+    assertEquals(player.getPrestigeInt(), expectedPrestige);
+    assertEquals(
+        game.getChatMessages().get(1).getTextMessage(),
+        player.getUserName() + expectedSuccessMessage);
   }
 }

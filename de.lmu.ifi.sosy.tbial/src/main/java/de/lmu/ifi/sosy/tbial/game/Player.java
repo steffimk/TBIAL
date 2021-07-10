@@ -51,9 +51,14 @@ public class Player implements Serializable {
 
   private boolean won;
 
+  private boolean sunglasses;
+  private boolean tie;
+
   private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
 
   private LinkedList<Integer> mentalHealthDevelopment;
+
+  private int maxBugCardsPerTurn;
 
   public Player(String userName) {
     this.userName = userName;
@@ -65,6 +70,7 @@ public class Player implements Serializable {
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
     this.mentalHealthDevelopment = new LinkedList<Integer>();
+    this.maxBugCardsPerTurn = 1;
   }
 
   public String getUserName() {
@@ -123,6 +129,14 @@ public class Player implements Serializable {
     return won;
   }
 
+  public boolean wearsSunglasses() {
+    return sunglasses;
+  }
+
+  public boolean wearsTie() {
+    return tie;
+  }
+
   public void setCharacterCard(CharacterCard characterCard) {
     this.characterCard = characterCard;
   }
@@ -137,6 +151,14 @@ public class Player implements Serializable {
 
   public void win(boolean win) {
     this.won = win;
+  }
+
+  public void putOnSunglasses(boolean sunglasses) {
+    this.sunglasses = sunglasses;
+  }
+
+  public void putOnTie(boolean tie) {
+    this.tie = tie;
   }
 
   /**
@@ -163,6 +185,10 @@ public class Player implements Serializable {
     return prestige;
   }
 
+  public int getMaxBugCardsPerTurn() {
+    return maxBugCardsPerTurn;
+  }
+
   /**
    * Adds the value to the mental health points of the player. Use a negative value to decrement the
    * mental health.
@@ -174,6 +200,24 @@ public class Player implements Serializable {
     if (mentalHealth > mentalHealthMax) {
       mentalHealth = mentalHealthMax;
     }
+  }
+
+  /**
+   * Updates the prestige points of the player.
+   *
+   * @param value new prestige points
+   */
+  public synchronized void updatePrestige(int value) {
+    this.prestige = value;
+  }
+
+  /**
+   * Updates the max amount of bug cards playable by the player each turn.
+   *
+   * @param value new max amount of playable bug cards per turn
+   */
+  public synchronized void updateMaxBugCardsPerTurn(int value) {
+    this.maxBugCardsPerTurn = value;
   }
 
   /**

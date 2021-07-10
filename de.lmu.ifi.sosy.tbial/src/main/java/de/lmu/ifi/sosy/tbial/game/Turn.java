@@ -116,7 +116,7 @@ public class Turn implements Serializable {
     CHOOSING_CARD_TO_BLOCK_WITH
   }
 
-  /** Increases the counter for already played bug cars in this turn by 1. */
+  /** Increases the counter for already played bug cards in this turn by 1. */
   public void incrementPlayedBugCardsThisTurn() {
     this.bugsPlayedThisTurn++;
 
