@@ -608,6 +608,7 @@ public class Game implements Serializable {
   public void defendBugImmediately(Player player, ActionCard blockingCard) {
     ActionCard bugCard = turn.getLastPlayedBugCard();
 
+    putCardOnHeap(player, bugCard);
     putCardOnHeap(player, blockingCard);
     player.getReceivedCards().remove(bugCard);
     player.addToMentalHealth(1);
@@ -650,7 +651,6 @@ public class Game implements Serializable {
       for (StumblingBlockCard trainingCard : trainingCards) {
         if (dealWithTraining(player, trainingCard)) {
           turn.switchToNextPlayer();
-          turn.setAttackedPlayer(null);
           dealWithStumblingBlocks(turn.getCurrentPlayer());
           return;
         }

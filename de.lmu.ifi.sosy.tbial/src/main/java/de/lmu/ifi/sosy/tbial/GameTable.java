@@ -369,6 +369,10 @@ public class GameTable extends BasePage {
           public void onConfigure() {
             onConfigureOfGameFlowButtons(
                 this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+            if (currentGame.getTurn().getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
+              onConfigureOfGameFlowButtons(this, TurnStage.CHOOSING_CARD_TO_BLOCK_WITH, null);
+            }
+
             this.setEnabled(false);
             super.onConfigure();
           }
@@ -453,18 +457,6 @@ public class GameTable extends BasePage {
         });
 
     table.add(
-        new AbstractAjaxTimerBehavior(Duration.seconds(20)) {
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          protected void onTimer(AjaxRequestTarget target) {
-            if (currentGame.getTurn().getCurrentPlayer() != basePlayer) {
-              setResponsePage(getPage());
-            }
-          }
-        });
-
-    table.add(
         new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
           private static final long serialVersionUID = 1L;
 
@@ -496,6 +488,7 @@ public class GameTable extends BasePage {
                 currentGame.putCardOnHeap(basePlayer, currentGame.getTurn().getLastPlayedBugCard());
                 basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
                 currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
+                currentGame.getTurn().setAttackedPlayer(null);
 
                 currentGame
                     .getChatMessages()
