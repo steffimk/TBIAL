@@ -721,7 +721,23 @@ public class Game implements Serializable {
           && player != receiverOfCard) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can only play a " + selectedCard.toString() + " card for yourself."));
+                "You can only play the " + selectedCard.toString() + " card for yourself."));
+        return;
+      }
+    }
+    if(((Card) selectedCard).getCardType() == CardType.STUMBLING_BLOCK) {
+      if (((StumblingBlockCard) selectedCard).getStumblingBlock() == StumblingBlock.MAINTENANCE
+              && player != receiverOfCard) {
+        chatMessages.addFirst(
+            new ChatMessage(
+                "You can only play the " + selectedCard.toString() + " card for yourself."));
+        return;
+      }
+      if (((StumblingBlockCard) selectedCard).getStumblingBlock() == StumblingBlock.TRAINING
+              && receiverOfCard.getRole() == Role.MANAGER) {
+        chatMessages.addFirst(
+            new ChatMessage(
+                "You can't play the " + selectedCard.toString() + " card against a Manager."));
         return;
       }
     }
@@ -875,7 +891,7 @@ public class Game implements Serializable {
       if (player != receiverOfCard) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can only play a " + selectedCard.toString() + " card for yourself."));
+                "You can only play the " + selectedCard.toString() + " card for yourself."));
         return;
       }
 
