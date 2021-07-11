@@ -275,7 +275,7 @@ public class GameLobby extends BasePage {
       game.getPlayers().remove(player);
       getGameManager().removeUserFromGame(player);
       game.getChatMessages()
-          .add(new ChatMessage(game.getHost() + " removed " + player + " from the game."));
+          .addFirst(new ChatMessage(game.getHost() + " removed " + player + " from the game."));
     }
   }
 

@@ -475,7 +475,7 @@ public class GameTable extends BasePage {
               if (!modal.isShown()) {
                 currentGame
                     .getChatMessages()
-                    .add(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
+                    .addFirst(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
               }
               modal.show(target);
             }
