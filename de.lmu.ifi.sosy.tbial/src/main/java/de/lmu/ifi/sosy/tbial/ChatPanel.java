@@ -123,25 +123,29 @@ public class ChatPanel extends Panel {
             if (text != null) {
               // whisper private message to other user
               if (text.contains("/w")) {
-                if (game.getAllInGamePlayerNames().stream().anyMatch(text::contains)) {
-                  String receiver =
-                      game.getAllInGamePlayerNames()
-                          .stream()
-                          .filter(text::contains)
-                          .findAny()
-                          .get();
-                  String[] parts = text.split(" ");
-                  String textMessage = "";
-                  for (int i = 0; i < parts.length; i++) {
-                    if (parts[i].equals(receiver)) {
-                      for (int j = i + 1; j < parts.length; j++) {
-                        textMessage += parts[j] + " ";
-                      }
-                      break;
-                    }
+                int smallestIndexOfName = Integer.MAX_VALUE;
+                String receiver = "";
+                for (String name : game.getAllInGamePlayerNames()) {
+                  int indexOfName = text.indexOf(name + " ");
+                  if (indexOfName >= 0 && indexOfName < smallestIndexOfName) {
+                    receiver = name;
+                    smallestIndexOfName = indexOfName;
                   }
-                  chatMessage = new ChatMessage(username, textMessage, true, receiver);
-                } else return;
+                }
+                // If no name found: return
+                if (smallestIndexOfName == Integer.MAX_VALUE) return;
+
+                String[] parts = text.split(" ");
+                String textMessage = "";
+                for (int i = 0; i < parts.length; i++) {
+                  if (parts[i].equals(receiver)) {
+                    for (int j = i + 1; j < parts.length; j++) {
+                      textMessage += parts[j] + " ";
+                    }
+                    break;
+                  }
+                }
+                chatMessage = new ChatMessage(username, textMessage, true, receiver);
 
               }
 
