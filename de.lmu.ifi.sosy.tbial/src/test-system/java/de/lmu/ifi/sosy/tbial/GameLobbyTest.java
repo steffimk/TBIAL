@@ -184,7 +184,7 @@ public class GameLobbyTest extends PageTestBase {
   @Test
   public void replyIsWorking() {
     GameLobby gameLobby = tester.startPage(GameLobby.class);
-    game.getChatMessages().add(new ChatMessage("A", "hallo", true, "testuser"));
+    game.getChatMessages().addFirst(new ChatMessage("A", "hallo", true, "testuser"));
     // basePlayer responds to private message from A
     FormTester form = tester.newFormTester("chatPanel:form");
     form.setValue("message", "/r hallo");
@@ -223,7 +223,7 @@ public class GameLobbyTest extends PageTestBase {
   @Test
   public void privateMessageBetweenOtherPlayersDoesNotGetDisplayed() {
     GameLobby gameLobby = tester.startPage(GameLobby.class);
-    game.getChatMessages().add(new ChatMessage("A", "hallo", true, "B"));
+    game.getChatMessages().addFirst(new ChatMessage("A", "hallo", true, "B"));
 
     // check that private message which is not directed at basePlayer does not get displayed
     @SuppressWarnings("unchecked")
