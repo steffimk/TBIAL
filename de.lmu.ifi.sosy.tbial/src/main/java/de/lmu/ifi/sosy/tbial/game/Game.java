@@ -796,7 +796,6 @@ public class Game implements Serializable {
       }
     }
 
-
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       if (((Card) selectedCard).getCardType() == CardType.ACTION) {
         if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
@@ -813,7 +812,6 @@ public class Game implements Serializable {
       putCardToPlayer(selectedCard, player, receiverOfCard);
       statistics.playedCard(selectedCard);
     }
-
   }
 
   /**
@@ -833,20 +831,20 @@ public class Game implements Serializable {
 	    player.getReceivedCards().remove(bugCard);
 	    player.addToMentalHealth(1);
 
-	    chatMessages.addFirst(
-	            new ChatMessage(
-	                player.getUserName()
-	                    + " blocked \""
-	                    + bugCard.toString()
-	                    + "\" with \""
-	                    + blockingCard.toString()
-	                    + "\".",
-	                false,
-	                "all"));
-
+    chatMessages.addFirst(
+        new ChatMessage(
+            player.getUserName()
+                + " blocked \""
+                + bugCard.toString()
+                + "\" with \""
+                + blockingCard.toString()
+                + "\".",
+            false,
+            "all"));
 
 	    this.setHasPlayedBugBeenDefended(true);
 	  }
+
 
   /**
    * Called at beginning of turn and checks whether player has to deal with stumbling block cards.
