@@ -58,7 +58,10 @@ public class PlayerAreaPanel extends Panel {
     Label mentalHealth = new Label("mentalHealth");
 
     add(mentalHealth);
-    add(new Label("prestige"));
+    add(
+        new Label(
+            "prestige",
+            () -> "Prestige: " + game.calculatePrestige(basePlayer, player.getObject())));
 
     // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
     // table
