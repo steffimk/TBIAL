@@ -1,5 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -20,6 +23,7 @@ public class GamesPageTest extends PageTestBase {
   User testuser2;
   User testuser3;
   User testuser4;
+  Game game;
 
   @Before
   public void setUp() {
@@ -36,7 +40,7 @@ public class GamesPageTest extends PageTestBase {
     database.register("testuser4", "testpassword");
     getSession().authenticate("testuser4", "testpassword");
     testuser4 = database.getUser("testuser4");
-    Game game = new Game("gamename", 4, false, null, "testuser");
+    game = new Game("gamename", 4, false, null, "testuser");
     Game game2 = new Game("gamename2", 4, true, "123456", "testuser2");
     getGameManager().addGame(game);
     getGameManager().addGame(game2);
@@ -144,6 +148,41 @@ public class GamesPageTest extends PageTestBase {
               tester.isEnabled(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
               form.submit("joinGameButton");
               tester.assertRenderedPage(GameLobby.class);
+              assertTrue(game.getInGamePlayerNames().contains("testuser3"));
+            }
+          }
+        });
+  }
+
+  @Test
+  public void joinFullGameNotPossible() {
+    TBIALSession session = getSession();
+    session.setUser(testuser4);
+    game.addNewPlayer("A");
+    game.addNewPlayer("B");
+    game.addNewPlayer("C");
+    tester.startPage(GamesPage.class);
+    tester.assertRenderedPage(GamesPage.class);
+
+    @SuppressWarnings("unchecked")
+    ListView<Game> gameList =
+        (ListView<Game>) tester.getComponentFromLastRenderedPage("gameListContainer:openGames");
+
+    gameList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<Game>, Void>() {
+
+          @Override
+          public void component(ListItem<Game> item, IVisit<Void> visit) {
+            Game game = item.getModelObject();
+
+            FormTester form = tester.newFormTester(item.getPath().substring(2) + ":joinGameForm");
+            // join button navigates to lobby if game is already full
+            if (session.getUser() == testuser4 && game.getName() == "gamename") {
+              tester.isEnabled(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
+              form.submit("joinGameButton");
+              tester.assertRenderedPage(Lobby.class);
+              assertFalse(game.getInGamePlayerNames().contains("testuser4"));
             }
           }
         });
@@ -175,6 +214,7 @@ public class GamesPageTest extends PageTestBase {
               form.setValue("joinGamePw", "123456");
               form.submit("joinGameButton");
               tester.assertRenderedPage(GameLobby.class);
+              assertTrue(game.getInGamePlayerNames().contains("testuser4"));
               // need to switch back to GamesPage otherwise the asserting of the list components of
               // the next game will fail because you were navigated to the GameLobby
               tester.startPage(GamesPage.class);
