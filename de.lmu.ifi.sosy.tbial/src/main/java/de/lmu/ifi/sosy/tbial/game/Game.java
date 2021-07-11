@@ -796,6 +796,7 @@ public class Game implements Serializable {
 
     putCardOnHeap(player, bugCard);
     putCardOnHeap(player, blockingCard);
+    statistics.playedCard(blockingCard);
     player.getReceivedCards().remove(bugCard);
     player.addToMentalHealth(1);
 
