@@ -106,7 +106,14 @@ public class NotificationPanel extends Panel {
                           game.getChatMessages()
                               .addFirst(
                                   new ChatMessage(
-                                      user.getName() + " accepted the game invitation."));
+                                      user.getName() + " accepted your game invitation.",
+                                      true,
+                                      game.getHost()));
+                          // send message in game lobby that player joined game
+                          game.getChatMessages()
+                              .addFirst(
+                                  new ChatMessage(
+                                      user.getName() + " joined the game.", false, "all"));
                           // redirect to game lobby
                           setResponsePage(getTbialApplication().getGameLobbyPage());
                         }
@@ -156,7 +163,10 @@ public class NotificationPanel extends Panel {
                         // send message in game lobby that invitation was rejected
                         game.getChatMessages()
                             .addFirst(
-                                new ChatMessage(user.getName() + " rejected the game invitation."));
+                                new ChatMessage(
+                                    user.getName() + " rejected your game invitation.",
+                                    true,
+                                    game.getHost()));
 
                         setResponsePage(getTbialApplication().getHomePage());
                       }

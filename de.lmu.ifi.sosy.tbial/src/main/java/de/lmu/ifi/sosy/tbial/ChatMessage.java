@@ -10,16 +10,21 @@ public class ChatMessage implements Serializable {
   private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
   private String sender;
+  private String receiver;
   private String textMessage;
   private boolean isGameUpdate;
   private String timestamp;
 
-  public ChatMessage(String sender, String textMessage) {
+  private boolean personal;
+
+  public ChatMessage(String sender, String textMessage, boolean personal, String receiver) {
     super();
     this.sender = sender;
     this.textMessage = textMessage;
     this.isGameUpdate = false;
     this.timestamp = LocalDateTime.now().format(timeFormatter);
+    this.personal = personal;
+    this.receiver = receiver;
   }
 
   /**
@@ -27,17 +32,23 @@ public class ChatMessage implements Serializable {
    *
    * @param textMessage
    */
-  public ChatMessage(String textMessage) {
+  public ChatMessage(String textMessage, boolean personal, String receiver) {
     super();
     this.sender = "UPDATE";
     this.textMessage = textMessage;
     this.isGameUpdate = true;
     this.timestamp = LocalDateTime.now().format(timeFormatter);
+    this.personal = personal;
+    this.receiver = receiver;
   }
 
   public String getSender() {
     if (isGameUpdate) return "";
     return sender + ": ";
+  }
+
+  public String getPureSender() {
+    return sender;
   }
 
   public String getTextMessage() {
@@ -54,5 +65,13 @@ public class ChatMessage implements Serializable {
 
   public boolean isGameUpdate() {
     return this.isGameUpdate;
+  }
+
+  public boolean isPersonal() {
+    return personal;
+  }
+
+  public String getReceiver() {
+    return receiver;
   }
 }
