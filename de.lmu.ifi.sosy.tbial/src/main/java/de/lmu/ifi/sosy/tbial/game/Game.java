@@ -419,7 +419,9 @@ public class Game implements Serializable {
       chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
-                  + " worked at Accenture and can play as many bugs as he/she wants."));
+                  + " worked at Accenture and can play as many bugs as he/she wants.",
+              false,
+              "all"));
       return true;
     }
     // 1 prestige
@@ -427,7 +429,9 @@ public class Game implements Serializable {
       player.updatePrestige(1);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " worked at Microsoft and received a prestige of 1."));
+              player.getUserName() + " worked at Microsoft and received a prestige of 1.",
+              false,
+              "all"));
       return true;
     }
     // 2 prestige
@@ -435,14 +439,19 @@ public class Game implements Serializable {
       player.updatePrestige(2);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " worked at Google and received a prestige of 2."));
+              player.getUserName() + " worked at Google and received a prestige of 2.",
+              false,
+              "all"));
       return true;
     }
     // 3 prestige
     if (card.getAbility() == Ability.NASA) {
       player.updatePrestige(3);
       chatMessages.addFirst(
-          new ChatMessage(player.getUserName() + " worked at Nasa and received a prestige of 3."));
+          new ChatMessage(
+              player.getUserName() + " worked at Nasa and received a prestige of 3.",
+              false,
+              "all"));
       return true;
     }
     return false;
@@ -474,7 +483,9 @@ public class Game implements Serializable {
       player.putOnSunglasses(true);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " put on sunglasses and sees everybody with -1 prestige."));
+              player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.",
+              false,
+              "all"));
       return true;
     }
     // Is seen with +1 prestige by everyone
@@ -482,7 +493,9 @@ public class Game implements Serializable {
       player.putOnTie(true);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " put on a tie and is seen with +1 prestige by everyone."));
+              player.getUserName() + " put on a tie and is seen with +1 prestige by everyone.",
+              false,
+              "all"));
       return true;
     }
     return false;
@@ -718,7 +731,9 @@ public class Game implements Serializable {
               player.getUserName()
                   + " can't attack "
                   + receiverOfCard.getUserName()
-                  + " because of lower prestige."));
+                  + " because of lower prestige.",
+              false,
+              "all"));
     	return;
     }
 
@@ -915,7 +930,9 @@ public class Game implements Serializable {
       if (player != receiverOfCard) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can only play the " + selectedCard.toString() + " card for yourself."));
+                "You can only play the " + selectedCard.toString() + " card for yourself.",
+                true,
+                player.getUserName()));
         return;
       }
 
@@ -1170,9 +1187,7 @@ public class Game implements Serializable {
   }
 
   public String getSenderOfLastPersonalMessageToMe(String receiver) {
-    System.out.println(chatMessages.size());
-    for (int i = chatMessages.size() - 1; i >= 0; i--) {
-      System.out.println(i);
+    for (int i = 0; i < chatMessages.size(); i++) {
       if (chatMessages.get(i).isPersonal() && chatMessages.get(i).getReceiver().equals(receiver)) {
         return chatMessages.get(i).getPureSender();
       }
