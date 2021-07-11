@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
@@ -361,6 +362,149 @@ public class Game implements Serializable {
   }
 
   /**
+   * Removes the card from the player's hand cards and adds it to the receiver's ability cards.
+   * Deals with the different types of cards respectively.
+   *
+   * @param card The card to be played
+   * @param player The player who is playing and receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean putAbilityCardToPlayer(AbilityCard card, Player player) {
+    // check for previous jobs/garments already on the table
+    AbilityCard previousJob = null;
+    AbilityCard tie = null;
+    AbilityCard sunglasses = null;
+    for (AbilityCard ab : player.getPlayedAbilityCards()) {
+      if (ab.isPreviousJob()) {
+        previousJob = ab;
+      }
+      if (ab.isGarment() && ab.getAbility() == Ability.TIE) {
+        tie = ab;
+      }
+      if (ab.isGarment() && ab.getAbility() == Ability.SUNGLASSES) {
+        sunglasses = ab;
+      }
+    }
+    player.addPlayedAbilityCard((AbilityCard) card);
+    if (card.isPreviousJob()) {
+      return playPreviousJob(card, previousJob, player);
+    }
+    if (card.isGarment()) {
+      return playGarment(card, tie, sunglasses, player);
+    }
+    return false;
+  }
+
+  /**
+   * Call when a player plays a Previous Job card. Deals with different previous jobs respectively.
+   *
+   * @param card The card to be played
+   * @param previousJob The Previous Job card to be dealt with
+   * @param player The player who is playing and receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean playPreviousJob(AbilityCard card, AbilityCard previousJob, Player player) {
+    // max one previous job allowed -> put previous job back to hand cards
+    if (previousJob != null) {
+      player.updateMaxBugCardsPerTurn(1);
+      player.updatePrestige(0);
+      player.removeAbilityCard(previousJob);
+      stackAndHeap.addToHeap(previousJob, player, false);
+    }
+    // may report several bugs per round
+    if (card.getAbility() == Ability.ACCENTURE) {
+      player.updateMaxBugCardsPerTurn(Integer.MAX_VALUE);
+      chatMessages.addFirst(
+          new ChatMessage(
+              player.getUserName()
+                  + " worked at Accenture and can play as many bugs as he/she wants."));
+      return true;
+    }
+    // 1 prestige
+    if (card.getAbility() == Ability.MICROSOFT) {
+      player.updatePrestige(1);
+      chatMessages.addFirst(
+          new ChatMessage(
+              player.getUserName() + " worked at Microsoft and received a prestige of 1."));
+      return true;
+    }
+    // 2 prestige
+    if (card.getAbility() == Ability.GOOGLE) {
+      player.updatePrestige(2);
+      chatMessages.addFirst(
+          new ChatMessage(
+              player.getUserName() + " worked at Google and received a prestige of 2."));
+      return true;
+    }
+    // 3 prestige
+    if (card.getAbility() == Ability.NASA) {
+      player.updatePrestige(3);
+      chatMessages.addFirst(
+          new ChatMessage(player.getUserName() + " worked at Nasa and received a prestige of 3."));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Call when a player plays a Garment card. Deals with different garments respectively.
+   *
+   * @param card The card to be played
+   * @param tie The Tie card to be dealt with
+   * @param sunglasses The Sunglasses card to be dealt with
+   * @param player The player who is playing and receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean playGarment(
+      AbilityCard card, AbilityCard tie, AbilityCard sunglasses, Player player) {
+    // max one tie allowed
+    if (tie != null && card.getAbility() == Ability.TIE) {
+      stackAndHeap.addToHeap(tie, player, false);
+      player.removeAbilityCard(tie);
+    }
+    // max one pair of sunglasses allowed
+    if (sunglasses != null && card.getAbility() == Ability.SUNGLASSES) {
+      stackAndHeap.addToHeap(sunglasses, player, false);
+      player.removeAbilityCard(sunglasses);
+    }
+    // Sees everybody with -1 prestige
+    if (card.getAbility() == Ability.SUNGLASSES) {
+      player.putOnSunglasses(true);
+      chatMessages.addFirst(
+          new ChatMessage(
+              player.getUserName() + " put on sunglasses and sees everybody with -1 prestige."));
+      return true;
+    }
+    // Is seen with +1 prestige by everyone
+    if (card.getAbility() == Ability.TIE) {
+      player.putOnTie(true);
+      chatMessages.addFirst(
+          new ChatMessage(
+              player.getUserName() + " put on a tie and is seen with +1 prestige by everyone."));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Calculates the prestige which is seen of a player because of garments.
+   *
+   * @param player player who sees
+   * @param receiver player who is seen
+   * @return the calculated prestige
+   */
+  public int calculatePrestige(Player player, Player receiver) {
+    int prestige = receiver.getPrestigeInt();
+    if (player != receiver && receiver.wearsTie()) {
+      prestige += 1;
+    }
+    if (player != receiver && player.wearsSunglasses()) {
+      prestige -= 1;
+    }
+    return prestige;
+  }
+
+  /**
    * Checks whether the game already started, is already filled, the player is already inGame and
    * the games privacy
    *
@@ -552,11 +696,22 @@ public class Game implements Serializable {
       return;
     }
 
-    if (selectedCard.isBug() && turn.getPlayedBugCardsInThisTurn() >= Turn.MAX_BUG_CARDS_PER_TURN) {
+    if (selectedCard.isBug()
+        && turn.getPlayedBugCardsInThisTurn() >= player.getMaxBugCardsPerTurn()) {
       chatMessages.addFirst(
           new ChatMessage(
               "You cannot play another bug.")); // TODO: Only show player who played card?
       return;
+    }
+    if (selectedCard.isBug()
+        && player.getPrestigeInt() < calculatePrestige(player, receiverOfCard)) {
+      chatMessages.addFirst(
+          new ChatMessage(
+              player.getUserName()
+                  + " can't attack "
+                  + receiverOfCard.getUserName()
+                  + " because of lower prestige."));
+    	return;
     }
 
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
@@ -715,8 +870,17 @@ public class Game implements Serializable {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
+
+      // all ability cards only playable on self
+      if (player != receiverOfCard) {
+        chatMessages.addFirst(
+            new ChatMessage(
+                "You can only play a " + selectedCard.toString() + " card for yourself."));
+        return;
+      }
+
       if (player.removeHandCard(selectedCard)) {
-        receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
+        putAbilityCardToPlayer((AbilityCard) selectedCard, player);
         statistics.playedCard(selectedCard);
       }
     }
