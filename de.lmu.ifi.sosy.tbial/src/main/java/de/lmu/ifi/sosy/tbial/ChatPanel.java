@@ -2,6 +2,7 @@ package de.lmu.ifi.sosy.tbial;
 
 import java.util.LinkedList;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -45,11 +46,17 @@ public class ChatPanel extends Panel {
 
             ChatMessage chatMessage = item.getModelObject();
 
+            Label time = new Label("time", chatMessage.getTimestamp());
+            item.add(time);
+
             Label sender = new Label("sender", new PropertyModel<String>(chatMessage, "sender"));
             item.add(sender);
 
             Label text =
                 new Label("textMessage", new PropertyModel<String>(chatMessage, "textMessage"));
+            if (chatMessage.isGameUpdate()) {
+              text.add(new AttributeModifier("style", "font-style: italic;"));
+            }
             item.add(text);
           }
         };
@@ -80,7 +87,7 @@ public class ChatPanel extends Panel {
                 chatMessages.removeFirst();
               }
 
-              chatMessages.addLast(chatMessage);
+              chatMessages.addFirst(chatMessage);
             }
 
             textField.setModelObject("");

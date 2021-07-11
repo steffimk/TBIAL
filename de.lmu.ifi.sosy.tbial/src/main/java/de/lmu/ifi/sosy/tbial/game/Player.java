@@ -5,7 +5,6 @@ import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
-import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 
 import static java.util.Objects.requireNonNull;
 
@@ -357,7 +356,7 @@ public class Player implements Serializable {
     isBugDelegationCardTriggered = Math.random() < 0.25;
 
     if (isBugDelegationCardPlayed && !isBugDelegationCardTriggered) {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage("Oh no! Bug delegation of " + receiver.getUserName() + " had no effect"));
     }
 

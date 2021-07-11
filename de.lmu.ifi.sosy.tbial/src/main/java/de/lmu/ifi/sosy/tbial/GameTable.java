@@ -494,9 +494,7 @@ public class GameTable extends BasePage {
 
                 currentGame
                     .getChatMessages()
-                    .add(
-                        new ChatMessage(
-                            basePlayer.getUserName() + " couldn't block bug (-1 mental health)"));
+                    .addFirst(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
               }
             }
           }

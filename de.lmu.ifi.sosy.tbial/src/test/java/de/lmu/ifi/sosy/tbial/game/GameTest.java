@@ -485,9 +485,9 @@ public class GameTest {
     assertEquals(receivingPlayer.getReceivedCards().size(), 0);
     assertEquals(receivingPlayer.getReceivedCards().contains(bugCard2), false);
     assertEquals(player.getHandCards().contains(bugCard2), true);
-    assertEquals(
-        game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
-        "You cannot play another bug.");
+
+    assertEquals(game.getChatMessages().get(0).getTextMessage(), "You cannot play another bug.");
+
 
     // test Accenture card on self
     game.clickedOnHandCard(player, testCard);
@@ -496,7 +496,8 @@ public class GameTest {
     assertEquals(player.getPrestigeInt(), 0);
     assertEquals(player.getMaxBugCardsPerTurn(), Integer.MAX_VALUE);
     assertEquals(
-        game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " worked at Accenture and can play as many bugs as he/she wants.");
 
     // play second bug card against receivingPlayer again -> now it works

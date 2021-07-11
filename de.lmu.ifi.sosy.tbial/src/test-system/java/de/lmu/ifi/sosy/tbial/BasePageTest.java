@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -72,7 +73,7 @@ public class BasePageTest extends PageTestBase {
         " has invited you to join a game.");
     acceptForm.submit("acceptButton");
     assertEquals(testuser2.getInvitations().size(), 0);
-    assertEquals(game.getChatMessages().get(0).getSender(), "UPDATE: ");
+    assertTrue(game.getChatMessages().get(0).getSender().isEmpty());
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(), "testuser2 accepted the game invitation.");
     tester.assertRenderedPage(GameLobby.class);
@@ -96,7 +97,7 @@ public class BasePageTest extends PageTestBase {
         " has invited you to join a game.");
     rejectForm.submit("rejectButton");
     assertEquals(testuser2.getInvitations().size(), 0);
-    assertEquals(game.getChatMessages().get(0).getSender(), "UPDATE: ");
+    assertTrue(game.getChatMessages().get(0).getSender().isEmpty());
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(), "testuser2 rejected the game invitation.");
     tester.assertRenderedPage(Lobby.class);
