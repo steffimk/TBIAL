@@ -1,6 +1,8 @@
 package de.lmu.ifi.sosy.tbial;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
@@ -17,6 +19,7 @@ public class GamesPageTest extends PageTestBase {
   User testuser;
   User testuser2;
   User testuser3;
+  User testuser4;
 
   @Before
   public void setUp() {
@@ -26,18 +29,21 @@ public class GamesPageTest extends PageTestBase {
     testuser = database.getUser("testuser");
     database.register("testuser2", "testpassword");
     getSession().authenticate("testuser2", "testpassword");
-    testuser = database.getUser("testuser2");
+    testuser2 = database.getUser("testuser2");
     database.register("testuser3", "testpassword");
     getSession().authenticate("testuser3", "testpassword");
-    testuser = database.getUser("testuser3");
-    Game game = new Game("gamename", 4, true, "123456", "testuser");
+    testuser3 = database.getUser("testuser3");
+    database.register("testuser4", "testpassword");
+    getSession().authenticate("testuser4", "testpassword");
+    testuser4 = database.getUser("testuser4");
+    Game game = new Game("gamename", 4, false, null, "testuser");
     Game game2 = new Game("gamename2", 4, true, "123456", "testuser2");
     getGameManager().addGame(game);
     getGameManager().addGame(game2);
   }
 
   @Test
-  public void testJoinGame() {
+  public void hasComponents() {
     TBIALSession session = getSession();
     session.setUser(testuser);
     tester.startPage(GamesPage.class);
@@ -55,21 +61,125 @@ public class GamesPageTest extends PageTestBase {
           @Override
           public void component(ListItem<Game> item, IVisit<Void> visit) {
             Game game = item.getModelObject();
+
+            tester.assertComponent(item.getPath().substring(2) + ":gamename", Label.class);
+            tester.assertModelValue(item.getPath().substring(2) + ":gamename", game.getName());
+            tester.assertComponent(item.getPath().substring(2) + ":numberOfPlayers", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":numberOfPlayers",
+                game.getCurrentNumberOfPlayers() + "/" + game.getMaxPlayers());
+            if (game.isPrivate()) {
+              tester.assertComponent(
+                  item.getPath().substring(2) + ":lockedIcon", WebMarkupContainer.class);
+              tester.assertComponent(
+                  item.getPath().substring(2) + ":joinGameForm:joinGamePw",
+                  PasswordTextField.class);
+              tester.isVisible(item.getPath().substring(2) + ":lockedIcon");
+              tester.isVisible(item.getPath().substring(2) + ":joinGameForm:joinGamePw");
+            } else {
+              tester.assertComponent(
+                  item.getPath().substring(2) + ":unlockedIcon", WebMarkupContainer.class);
+              tester.isVisible(item.getPath().substring(2) + ":unlockedIcon");
+            }
+          }
+        });
+  }
+
+  @Test
+  public void navigateBackToGameLobby() {
+    TBIALSession session = getSession();
+    session.setUser(testuser);
+    tester.startPage(GamesPage.class);
+    tester.assertRenderedPage(GamesPage.class);
+
+    @SuppressWarnings("unchecked")
+    ListView<Game> gameList =
+        (ListView<Game>) tester.getComponentFromLastRenderedPage("gameListContainer:openGames");
+
+    gameList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<Game>, Void>() {
+
+          @Override
+          public void component(ListItem<Game> item, IVisit<Void> visit) {
+            Game game = item.getModelObject();
+
             FormTester form = tester.newFormTester(item.getPath().substring(2) + ":joinGameForm");
-            // join Button navigates back to game Lobby if the button is used on the current game
-            if (session.getUser().getName() == "testuser" && game.getName() == "gamename") {
-              form.submit(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
+            // join button navigates back to game lobby if the button is used on the current game
+            if (session.getUser() == testuser && game.getName() == "gamename") {
+              tester.isEnabled(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
+              form.submit("joinGameButton");
               tester.assertRenderedPage(GameLobby.class);
             }
-            // join Button is disabled if user wants to join another game
-            if (session.getUser().getName() == "testuser" && game.getName() == "gamename2") {
+            // join button is disabled if user wants to join another game
+            if (session.getUser() == testuser && game.getName() == "gamename2") {
               tester.isDisabled(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
             }
-            // join Button navigates to the games Lobby if not in game
-            /*if (session.getUser().getName() == "testuser3" && game.getName() == "gamename") {
-              form.submit(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
+          }
+        });
+  }
+
+  @Test
+  public void joinPublicGame() {
+    TBIALSession session = getSession();
+    session.setUser(testuser3);
+    tester.startPage(GamesPage.class);
+    tester.assertRenderedPage(GamesPage.class);
+
+    @SuppressWarnings("unchecked")
+    ListView<Game> gameList =
+        (ListView<Game>) tester.getComponentFromLastRenderedPage("gameListContainer:openGames");
+
+    gameList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<Game>, Void>() {
+
+          @Override
+          public void component(ListItem<Game> item, IVisit<Void> visit) {
+            Game game = item.getModelObject();
+
+            FormTester form = tester.newFormTester(item.getPath().substring(2) + ":joinGameForm");
+            // join button navigates to the game's lobby if not in game
+            if (session.getUser() == testuser3 && game.getName() == "gamename") {
+              tester.isEnabled(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
+              form.submit("joinGameButton");
               tester.assertRenderedPage(GameLobby.class);
-            }*/
+            }
+          }
+        });
+  }
+
+  @Test
+  public void joinPrivateGame() {
+    TBIALSession session = getSession();
+    session.setUser(testuser4);
+    tester.startPage(GamesPage.class);
+    tester.assertRenderedPage(GamesPage.class);
+   
+    @SuppressWarnings("unchecked")
+    ListView<Game> gameList =
+        (ListView<Game>) tester.getComponentFromLastRenderedPage("gameListContainer:openGames");
+
+    gameList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<Game>, Void>() {
+
+          @Override
+          public void component(ListItem<Game> item, IVisit<Void> visit) {
+            Game game = item.getModelObject();
+
+            FormTester form = tester.newFormTester(item.getPath().substring(2) + ":joinGameForm");
+            // join button navigates to the game's lobby if not in game
+            if (session.getUser() == testuser4 && game.getName() == "gamename2") {
+              tester.isEnabled(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
+              form.setValue("joinGamePw", "123456");
+              form.submit("joinGameButton");
+              tester.assertRenderedPage(GameLobby.class);
+              // need to switch back to GamesPage otherwise the asserting of the list components of
+              // the next game will fail because you were navigated to the GameLobby
+              tester.startPage(GamesPage.class);
+            }
+            visit.dontGoDeeper();
           }
         });
   }
