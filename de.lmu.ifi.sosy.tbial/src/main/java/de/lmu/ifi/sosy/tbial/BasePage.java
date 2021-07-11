@@ -88,6 +88,7 @@ public abstract class BasePage extends WebPage {
     final ModalWindow modal;
     add(modal = new ModalWindow("modal"));
     modal.setTitle("Your Notifications");
+    modal.showUnloadConfirmation(false);
     if (((TBIALSession) currentSession).getUser() != null) {
       modal.setContent(
           new NotificationPanel(modal.getContentId(), ((TBIALSession) currentSession).getUser()));

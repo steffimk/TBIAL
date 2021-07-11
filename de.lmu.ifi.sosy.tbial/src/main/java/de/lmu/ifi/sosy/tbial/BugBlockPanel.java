@@ -62,6 +62,8 @@ public class BugBlockPanel extends Panel {
 
                           player.getBugBlocks().remove(bugBlock);
                           remove(bugBlockForm);
+
+                          break;
                         }
                       }
                     }
@@ -86,7 +88,7 @@ public class BugBlockPanel extends Panel {
                     //
                     currentGame
                         .getChatMessages()
-                        .add(new ChatMessage(player.getUserName() + " rejected to block Bug"));
+                        .addFirst(new ChatMessage(player.getUserName() + " rejected to block Bug"));
 
                     currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
                   }

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta charset="utf-8">
+<title>Game Rules</title>
+<wicket:head>
+	<wicket:link>
+		<link rel="stylesheet" href="style.css" type="text/css" />
+		<link rel="stylesheet" href="GameRules.css" type="text/css" />
+	</wicket:link>
+</wicket:head>
+</head>
+<!-- Collapsible section from: https://www.w3schools.com/howto/howto_js_collapsible.asp  -->
+<body>
+
+<wicket:extend>
+ <div class="contentWrapper">
+    <h1 style="text-align: center;">Game Rules</h1>
+    <p>
+    	This turn-based game is a parody on the way software is developed in industry with a sarcastic view on the 
+    	individual roles people take (Manager, Honest Developers and Evil Code Monkeys, and Consultants) and 
+    	how they, more often than not, work against each other. It is based on the game &quot;Bang!&quot;. 
+    	Names of all elements have been changed to be relevant for software engineering.
+    </p>
+    
+		<button type="button" class="collapsible">Aim of the Game</button>
+		<div class="collapsibleContent">
+  			<p>The aim of the game is to stay in game and get others fired by decreasing their mental health points to zero.</p>
+  			<ul>
+  				<li>Manager and Honest Developers win if all Evil Code Monkeys and the Consultant are fired.</li>
+  				<li>Evil Code Monkeys win if the Manager is fired.</li>
+  				<li>The Consultant wins if all others are fired, the Manager last (otherwise, the Evil Code Monkeys win immediately)</li>
+  			</ul>
+  			<p>As soon as somebody is fired, all of their cards are piled onto the heap.</p>
+		</div>
+		
+		<button type="button" class="collapsible">How to play</button>
+		<div class="collapsibleContent">
+  			<p>The distribution of the roles depends on how many players take part in the game:</p>
+  			<ul>
+  				<li>4 Players: 1 Manager, 1 Consultant, 2 Evil Code Monkeys</li>
+  				<li>5 Players: 1 Manager, 1 Consultant, 2 Evil Code Monkeys, 1 Honest Developer</li>
+  				<li>6 Players: 1 Manager, 1 Consultant, 3 Evil Code Monkeys, 1 Honest Developer</li>
+  				<li>7 Players: 1 Manager, 1 Consultant, 3 Evil Code Monkeys, 2 Honest Developers</li>
+  			</ul>
+  			<p>
+  				Each player gets their designated role randomly in the beginning of the game.
+  				<br>Only the role of the manager is visible. The others are unknown to other players.
+  				<br>At the beginning of the game, each player has zero prestige and the number of mental health points is 4, however, the manager has one more point.
+				<br>The shuffled pile of action cards, ability cards and stumbling block cards build the stack. 
+				<br>Cards that are played and are no longer on the table move to the heap. When the stack is depleted, the cards on the heap are shuffled and build the new stack.<br>
+			</p>
+  			
+  			<div class="subsection">A Turn</div>
+  			<p>The manager always begins the game. In each turn, a player performs the following steps:</p>
+
+  			<ul>
+  				<li><p>In the beginning of a players turn, he/she can draw two cards from the stack by clicking on &quot;Draw Cards&quot; or on the stack.</p></li>
+  				<li><p>Other players may willingly or unwillingly place stumbling block cards on a player which he or she needs to take care of before really starting his turn.
+					The player can play as many cards as he/she likes. (Abilities, Actions, Stumbling Blocks)
+					Action Cards: Some of them may be played for oneself or other players.
+					Some action cards are dependent on the prestige of both the player who is playing them and the player at whom they are targeted. 
+					&quot;Attacking&quot; another player with a Bug card, claiming that a bug was found in his code (only a player with the same or lower prestige can be attacked). 
+					He or she must defend himself with a lame excuse card or solution card. If you are attacked and have a &quot;Lame Excuse&quot; and/or a &quot;Solution&quot; card in your hand cards, 
+					you can choose whether to defend the bug immediately with one of your cards or do nothing.
+					If you block the bug, you won&#x27t lose a mental health point. If you choose to do nothing, your mental health points decrease by one.
+					Note that only one Bug card may be used per turn (if not for special ability of a player).
+  				</p></li>
+  				<li><p>At the end, a player may only have as many cards on the hand as he has mental health points left. 
+  					<br>All others must be dropped on the heap. In this case, the player can end his/her turn by clicking on the &quot;End-Turn&quot;-Button.
+  					<br> (Note that between turns, a player may have more cards than mental health points.)
+  				</p></li>
+  			</ul>
+		</div>
+		
+		<button type="button" class="collapsible">Roles</button>
+		<div class="collapsibleContent">
+			<div class="subsection">Manager</div><br>
+			<p>The manager is the head of the software development team. 
+				This person is responsible for shipping the software and can rely on the honest developers and (to a degree)
+				the external consultant. The goal of this player is that the evil code monkeys and the consultant are fired, 
+				so the manager can hire more honest developers.
+			</p>
+			<div class="subsection">Honest Developers</div><br>
+			<p>They believe in good design and shipping software.  
+				<br>Having the same goals as their manager, they help their manager getting the software finished.
+			</p>
+			<div class="subsection">Evil Code Monkeys</div><br>
+			<p>They have no idea how to write good software altogether, but they don&#39;t want to be fired, 
+				so they try to fire the manager instead, hoping for one of them to be promoted.
+			</p>
+			<div class="subsection">Consultant</div><br>
+			<p>The consultant tries to get everyone else fired so he can take over the department. He wins if no one else is left.
+			</p>
+		</div>
+		
+		<button type="button" class="collapsible">Cards</button>
+		<div class="collapsibleContent">
+		<div class="cards"><span style="background-color: black;">Action Cards</span></div>
+		<p>
+			Action Cards are played and have an immediate effect on another player or yourself. 
+			They can be used to immediately defend an attack performed by another player. Note that some cards for attacking someone
+			directly are dependent on prestige. This is indicated on the card. They can be separated as follows:
+		</p>
+		<ul>
+			<li><b>25 Bug</b> (Nullpointer, Off&ndash;by&ndash;one, Not&ndash;found, System&ndash;hangs, Core&ndash;dump, Customer&ndash;hates&ndash;UI)<br>
+				A bug report against another player causes him to lose one mental health point &ndash; if the attacked player has 
+				no &quot;Lame Excuse&quot; or &quot;Solution&quot; card. He/She loses a mental health point.
+			</li>
+			<li><b>12 Lame Excuses</b> (Works for me, It&#39;s a Feature, I&#39;m not responsible)<br>
+				A lame excuse can be played to block a bug report. 
+				You can choose to play this card after being attacked. In this case, the bug and the Lame Excuse card are moved to the heap.
+			</li>
+			<li><b>6 Solution Cards</b> (Coffee, Code-Fix, Regex)<br>
+				A solution can be played to block a bug report. You can choose to play this card after being attacked. 
+				In this case, the bug and the Solution card are moved to the heap. A &quot;Solution&quot; Card can also be played 
+				normally during a turn, in which case the player gains one health point (but no more than his/her maximum health point number).
+			</li>
+			<li><b>4 Special Action Cards</b> (2 Personal Coffee Machine, 1 LAN Party, 1 Red Bull Dispenser)<br>
+					<br>Personal Coffee Machine: Take 2 cards from stack.
+					<br>LAN Party: Mental health increases for everybody by 1!
+					<br>Red Bull Dispenser: Take 3 cards from stack.
+			</li>
+			
+		</ul>
+		
+		<div class="cards"><span style="background-color: blue;">Ability Cards</span></div>
+		<p>
+		They contain a specific ability, which can be used by placing the card on the table in front of a player.
+		There are 13 ability cards. Two increase the player&#39;s protection against bug reports;
+		the other 11 affect the prestige of the player himself and his fellow players.
+		</p>
+		<ul>
+			<li><b>2 Bug Delegation</b><br>
+				This card acts as a shield against bug reports. A player may only place one Bug Delegation card in front of him. 
+				If a bug report comes in, the game calculates a random number. If it lies under 0.25, the player gets lucky and 
+				the bug is delegated (i.e. the card is dropped onto the heap). Otherwise, the bug report has to be dealt with as 
+				usual (with a solution or lame excuse card). The other ability cards all affect the player&#39;s prestige.
+			</li>
+			<li><b>Previous Job</b> (1 Nasa, 2 Google, 3 Microsoft, 2 Accenture)<br>
+				Firstly, there are the &quot;Previous Job&quot; cards which indicate where the player has worked before. 
+				A player may only place <b>one</b> of these in front of him, but he can replace his Previous Job when it is his turn. 
+				They indicate the prestige the player has because of this job. 
+				Note that the standard prestige (if a player has none of these cards) is zero.<br>
+				
+				<br>Nasa: 3 prestige
+				<br>Google: 2 prestige
+				<br>Microsoft: 1 prestige
+				<br>Accenture:  Player may report several bugs in one round.
+			</li>
+			<li><b>Garment</b> (1 Wears a Tie at Work, 2 Wears Sunglasses at Work)<br>
+				The cards Wears a Tie at Work and Wears Sunglasses at Work can be used in a similar way. 
+				A player may wear a tie and sunglasses at the same time, but he cannot wear several ties and several sunglasses 
+				(i.e. a player may only place one card of each type in front of him).<br>
+				<br>Wears a Tie at Work: Is seen with +1 prestige by everybody.
+				<br>Wears Sunglasses at Work: Sees everybody with -1 prestige.
+			</li>
+		</ul>
+		
+		<div class="cards"><span style="background-color: magenta;">Stumbling Block Cards</span></div>
+		<p>
+			A player can use a stumbling block card, placing it at the discard area of the target player.
+			They have to be dealt with by that player when it is their next turn. Before every turn, 
+			it will be checked whether a player has a stumbling block card placed in front of him/her 
+			and if the action of the card must be executed. They must be handled by the player before he/she can do anything else. 	
+		</p>
+		<ul>
+			<li>There are 3 <b>Off&ndash;The&ndash;Job Training</b> cards:
+				<br>The player must pass for a turn with the probability of 0.75. This card will be placed immediately onto the heap after the calculation.
+				This card cannot be played to the manager.
+			</li>
+			<li>There is 1 <b>Fortran Maintenance</b> card:
+				<br>The player loses with a chance of 0.15 three mental health points. If he/she does not lose mental health points, 
+				the card will be placed in the discard area of the next player.
+				This card is only playable on yourself.
+			</li>
+		</ul>
+		</div>
+	</div>
+
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+
+</wicket:extend>
+</body>
+</html>

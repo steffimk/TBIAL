@@ -5,17 +5,21 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.User;
@@ -33,6 +37,7 @@ public class GameLobby extends BasePage {
   private final Link<Game> startGameLink;
   private final Label isHostLabel;
   private final Label currentStatusLabel;
+  private String selectedPlayer = null;
 
   public GameLobby() {
 
@@ -127,6 +132,7 @@ public class GameLobby extends BasePage {
           }
         };
     menuForm.add(showPlayersButton);
+
     add(leaveForm);
     add(menuForm);
 
@@ -147,6 +153,43 @@ public class GameLobby extends BasePage {
             listItem.add(new Label("playerName", player.getUserName()));
           }
         };
+
+    Form<Void> removeForm = new Form<>("removeForm");
+
+    DropDownChoice<String> removeChoice =
+        new DropDownChoice<String>(
+            "removeSelect",
+            new PropertyModel<String>(this, "selectedPlayer"),
+            () -> getGame().getInGamePlayerNames());
+    removeChoice.add(
+        new AjaxFormComponentUpdatingBehavior("change") {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onUpdate(AjaxRequestTarget target) {
+            selectedPlayer = removeChoice.getModelObject();
+          }
+        });
+    removeChoice.setOutputMarkupId(true);
+    removeChoice.setVisible(isHost());
+    removeChoice.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(3)));
+
+    Button removePlayerButton =
+        new Button("removePlayerButton") {
+
+          private static final long serialVersionUID = 1L;
+
+          public void onSubmit() {
+            if (selectedPlayer != null) {
+              removePlayer(selectedPlayer);
+            }
+          }
+        };
+    removePlayerButton.setVisible(isHost());
+
+    removeForm.add(removeChoice);
+    removeForm.add(removePlayerButton);
+    add(removeForm);
 
     WebMarkupContainer lockedIcon = new WebMarkupContainer("lockedIcon");
     lockedIcon.setOutputMarkupId(true);
@@ -222,6 +265,21 @@ public class GameLobby extends BasePage {
   }
 
   /**
+   * Removes the selected player, if it is not the host himself
+   *
+   * @param player
+   */
+  private void removePlayer(String player) {
+    Game game = getGame();
+    if (player != game.getHost()) {
+      game.getPlayers().remove(player);
+      getGameManager().removeUserFromGame(player);
+      game.getChatMessages()
+          .addFirst(new ChatMessage(game.getHost() + " removed " + player + " from the game."));
+    }
+  }
+
+  /**
    * Leaves the current game: Changes host, when leaving player is the host; Removes the game from
    * GamesList; Sets current game of the leaving player null.
    */
@@ -256,6 +314,9 @@ public class GameLobby extends BasePage {
   }
 
   public Game getGame() {
+    if (getSession().getGame() == null) {
+      throw new RestartResponseAtInterceptPageException(Lobby.class);
+    }
     return getSession().getGame();
   }
 }

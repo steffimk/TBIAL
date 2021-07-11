@@ -6,9 +6,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -56,7 +58,10 @@ public class PlayerAreaPanel extends Panel {
     Label mentalHealth = new Label("mentalHealth");
 
     add(mentalHealth);
-    add(new Label("prestige"));
+    add(
+        new Label(
+            "prestige",
+            () -> "Prestige: " + game.calculatePrestige(basePlayer, player.getObject())));
 
     // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
     // table
@@ -67,11 +72,14 @@ public class PlayerAreaPanel extends Panel {
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            if (player.getObject().getMentalHealthInt() == 0) {
+            if (player.getObject().getMentalHealthInt() <= 0) {
               game.firePlayer(player.getObject(), player.getObject().getHandCards());
               role.setVisible(true);
               target.add(role);
               target.add(getParent().add(new AttributeModifier("style", "opacity: 0.4;")));
+              if (game.getTurn().getCurrentPlayer() == player.getObject()) {
+                game.getTurn().switchToNextPlayer();
+              }
               stop(target);
             }
 
@@ -179,6 +187,17 @@ public class PlayerAreaPanel extends Panel {
     addCardDropBox.add(blockCards);
 
     add(addCardDropBox);
+    addCardDropBox.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected boolean shouldTrigger() {
+            // update when it's the baseplayer's turn
+            return game.getTurn().getCurrentPlayer() == basePlayer;
+          }
+        });
 
     // --------------------------- The hand cards ---------------------------
 
@@ -262,6 +281,10 @@ public class PlayerAreaPanel extends Panel {
       public void onDragStart(AjaxRequestTarget target, int top, int left) {
         game.clickedOnHandCard(player, card);
         getApplication().getMarkupSettings().setStripWicketTags(true);
+        Component handCard =
+            this.get("handCard")
+                .add(new AttributeModifier("style", "transform: scale(1) !important;"));
+        target.add(handCard);
       }
     };
   }

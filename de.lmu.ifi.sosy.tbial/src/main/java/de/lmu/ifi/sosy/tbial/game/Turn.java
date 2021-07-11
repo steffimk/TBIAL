@@ -18,6 +18,7 @@ public class Turn implements Serializable {
 
   private List<Player> players;
   private int currentPlayerIndex;
+  private int nextPlayerIndex;
   private TurnStage stage;
   private int bugsPlayedThisTurn;
 
@@ -38,6 +39,15 @@ public class Turn implements Serializable {
    */
   public Player getCurrentPlayer() {
     return players.get(currentPlayerIndex);
+  }
+
+  /**
+   * Gets the index of the current player.
+   *
+   * @return The player whose turn it is.
+   */
+  public int getCurrentPlayerIndex() {
+    return currentPlayerIndex;
   }
 
   /** Determines the index of the player with the manager role. */
@@ -63,6 +73,19 @@ public class Turn implements Serializable {
     while (players.get(currentPlayerIndex).isFired()) {
       switchToNextPlayer();
     }
+  }
+
+  /** Gets the next player who is not fired yet. */
+  public Player getNextPlayer(int index) {
+    nextPlayerIndex = index;
+    nextPlayerIndex++;
+    if (nextPlayerIndex == players.size()) {
+      nextPlayerIndex = 0;
+    }
+    while (players.get(nextPlayerIndex).isFired()) {
+      getNextPlayer(nextPlayerIndex);
+    }
+    return players.get(nextPlayerIndex);
   }
 
   /**
@@ -91,7 +114,7 @@ public class Turn implements Serializable {
     WAITING_FOR_PLAYER_RESPONSE
   }
 
-  /** Increases the counter for already played bug cars in this turn by 1. */
+  /** Increases the counter for already played bug cards in this turn by 1. */
   public void incrementPlayedBugCardsThisTurn() {
     this.bugsPlayedThisTurn++;
 
