@@ -739,12 +739,40 @@ public class Game implements Serializable {
     	return;
     }
 
+    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+      if (((ActionCard) selectedCard).isLameExcuse()) return; // Lame Excuses cannot be played
+      if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
+              || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
+          && player != receiverOfCard) {
+        chatMessages.addFirst(
+            new ChatMessage(
+                "You can only play the " + selectedCard.toString() + " card for yourself."));
+        return;
+      }
+    }
+    if(((Card) selectedCard).getCardType() == CardType.STUMBLING_BLOCK) {
+      if (((StumblingBlockCard) selectedCard).getStumblingBlock() == StumblingBlock.MAINTENANCE
+              && player != receiverOfCard) {
+        chatMessages.addFirst(
+            new ChatMessage(
+                "You can only play the " + selectedCard.toString() + " card for yourself."));
+        return;
+      }
+      if (((StumblingBlockCard) selectedCard).getStumblingBlock() == StumblingBlock.TRAINING
+              && receiverOfCard.getRole() == Role.MANAGER) {
+        chatMessages.addFirst(
+            new ChatMessage(
+                "You can't play the " + selectedCard.toString() + " card against a Manager."));
+        return;
+      }
+    }
+
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       if (((Card) selectedCard).getCardType() == CardType.ACTION) {
         if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
                 || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
             && player != receiverOfCard) {
-          chatMessages.add(
+          chatMessages.addFirst(
               new ChatMessage(
                   "You can only play a " + selectedCard.toString() + " card for yourself."));
           return;
@@ -883,7 +911,7 @@ public class Game implements Serializable {
       if (player != receiverOfCard) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can only play a " + selectedCard.toString() + " card for yourself."));
+                "You can only play the " + selectedCard.toString() + " card for yourself."));
         return;
       }
 

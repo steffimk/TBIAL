@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -463,7 +464,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // play one bug card against receivingPlayer
     game.clickedOnHandCard(player, bugCard1);
@@ -599,7 +600,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // test card on self
     game.clickedOnPlayAbility(player, player);
@@ -634,7 +635,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // test card on self
     game.clickedOnPlayAbility(player, player);
@@ -1107,7 +1108,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // test card on self
     game.clickedOnPlayAbility(player, player);
