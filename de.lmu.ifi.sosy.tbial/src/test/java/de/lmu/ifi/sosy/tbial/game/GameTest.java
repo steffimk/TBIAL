@@ -538,7 +538,7 @@ public class GameTest {
     assertEquals(player.getPlayedAbilityCards().contains(testCard2), true);
     assertEquals(player.getPrestigeInt(), 2);
     assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " worked at Google and received a prestige of 2.");
     assertEquals(game.getStackAndHeap().getUppermostCardOfHeap(), testCard1);
     assertEquals(player.getHandCards().contains(testCard2), false);
@@ -610,7 +610,7 @@ public class GameTest {
     assertEquals(game.calculatePrestige(player, receivingPlayer), 1);
     assertEquals(receivingPlayer.getPrestigeInt(), 2);
     assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.");
   }
 
@@ -643,7 +643,7 @@ public class GameTest {
     assertEquals(game.calculatePrestige(receivingPlayer, player), 1);
     assertEquals(player.getPrestigeInt(), 0);
     assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " put on a tie and is seen with +1 prestige by everyone.");
   }
 
@@ -686,7 +686,7 @@ public class GameTest {
     assertEquals(game.calculatePrestige(receivingPlayer, player), 1);
     assertEquals(player.getPrestigeInt(), 0);
     assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " put on a tie and is seen with +1 prestige by everyone.");
 
     // Sunglasses
@@ -702,7 +702,7 @@ public class GameTest {
     assertEquals(game.calculatePrestige(player, receivingPlayer), 1);
     assertEquals(receivingPlayer.getPrestigeInt(), 2);
     assertEquals(
-        game.getChatMessages().get(2).getTextMessage(),
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.");
     game.clickedOnHandCard(player, testCard4);
     game.clickedOnPlayAbility(player, player);
@@ -714,7 +714,7 @@ public class GameTest {
     assertEquals(game.calculatePrestige(player, receivingPlayer), 1);
     assertEquals(receivingPlayer.getPrestigeInt(), 2);
     assertEquals(
-        game.getChatMessages().get(3).getTextMessage(),
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.");
   }
 
@@ -1114,7 +1114,7 @@ public class GameTest {
     assertEquals(player.getPlayedAbilityCards().size(), 1);
     assertEquals(player.getPrestigeInt(), expectedPrestige);
     assertEquals(
-        game.getChatMessages().get(1).getTextMessage(),
+        game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + expectedSuccessMessage);
   }
 }
