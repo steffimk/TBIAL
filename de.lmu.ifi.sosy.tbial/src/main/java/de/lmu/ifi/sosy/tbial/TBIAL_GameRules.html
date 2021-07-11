@@ -60,11 +60,11 @@
 					The player can play as many cards as he/she likes. (Abilities, Actions, Stumbling Blocks)
 					Action Cards: Some of them may be played for oneself or other players.
 					Some action cards are dependent on the prestige of both the player who is playing them and the player at whom they are targeted. 
-					&quot;Attacking&quot; another player with a Bug card, claiming that a bug was found in his code (only a player with a lower prestige can be attacked). 
+					&quot;Attacking&quot; another player with a Bug card, claiming that a bug was found in his code (only a player with the same or lower prestige can be attacked). 
 					He or she must defend himself with a lame excuse card or solution card. If you are attacked and have a &quot;Lame Excuse&quot; and/or a &quot;Solution&quot; card in your hand cards, 
 					you can choose whether to defend the bug immediately with one of your cards or do nothing.
 					If you block the bug, you won&#x27t lose a mental health point. If you choose to do nothing, your mental health points decrease by one.
-					Otherwise he or she loses mental health. Note that only one Bug card may be used per turn (if not for special ability of a player).
+					Note that only one Bug card may be used per turn (if not for special ability of a player).
   				</p></li>
   				<li><p>At the end, a player may only have as many cards on the hand as he has mental health points left. 
   					<br>All others must be dropped on the heap. In this case, the player can end his/her turn by clicking on the &quot;End-Turn&quot;-Button.
@@ -107,16 +107,21 @@
 				A bug report against another player causes him to lose one mental health point &ndash; if the attacked player has 
 				no &quot;Lame Excuse&quot; or &quot;Solution&quot; card. He/She loses a mental health point.
 			</li>
-			<li><b>12 Lame Excuses</b> (Works for me, It&#39;s a Feature, I&#39;m not responsible)
+			<li><b>12 Lame Excuses</b> (Works for me, It&#39;s a Feature, I&#39;m not responsible)<br>
 				A lame excuse can be played to block a bug report. 
 				You can choose to play this card after being attacked. In this case, the bug and the Lame Excuse card are moved to the heap.
 			</li>
-			<li><b>6 Solution Cards</b> (Coffee, Code-Fix, Regex)
+			<li><b>6 Solution Cards</b> (Coffee, Code-Fix, Regex)<br>
 				A solution can be played to block a bug report. You can choose to play this card after being attacked. 
 				In this case, the bug and the Solution card are moved to the heap. A &quot;Solution&quot; Card can also be played 
-				normally during a turn, in which case the player gains one health point (but no more than the maximum health point number).
+				normally during a turn, in which case the player gains one health point (but no more than his/her maximum health point number).
 			</li>
-			<li><b>4 Special Action Cards</b> (2 Coffee Machine, 1 LAN Party, 1 Red Bull Dispenser)</li>
+			<li><b>4 Special Action Cards</b> (2 Personal Coffee Machine, 1 LAN Party, 1 Red Bull Dispenser)<br>
+					<br>Personal Coffee Machine: Take 2 cards from stack.
+					<br>LAN Party: Mental health increases for everybody by 1!
+					<br>Red Bull Dispenser: Take 3 cards from stack.
+			</li>
+			
 		</ul>
 		
 		<div class="cards"><span style="background-color: blue;">Ability Cards</span></div>
@@ -136,12 +141,19 @@
 				Firstly, there are the &quot;Previous Job&quot; cards which indicate where the player has worked before. 
 				A player may only place <b>one</b> of these in front of him, but he can replace his Previous Job when it is his turn. 
 				They indicate the prestige the player has because of this job. 
-				Note that the standard prestige (if a player has none of these cards) is zero. 
+				Note that the standard prestige (if a player has none of these cards) is zero.<br>
+				
+				<br>Nasa: 3 prestige
+				<br>Google: 2 prestige
+				<br>Microsoft: 1 prestige
+				<br>Accenture:  Player may report several bugs in one round.
 			</li>
 			<li><b>Garment</b> (1 Wears a Tie at Work, 2 Wears Sunglasses at Work)<br>
 				The cards Wears a Tie at Work and Wears Sunglasses at Work can be used in a similar way. 
 				A player may wear a tie and sunglasses at the same time, but he cannot wear several ties and several sunglasses 
-				(i.e. a player may only place one card of each type in front of him).
+				(i.e. a player may only place one card of each type in front of him).<br>
+				<br>Wears a Tie at Work: Is seen with +1 prestige by everybody.
+				<br>Wears Sunglasses at Work: Sees everybody with -1 prestige.
 			</li>
 		</ul>
 		
@@ -154,11 +166,13 @@
 		</p>
 		<ul>
 			<li>There are 3 <b>Off&ndash;The&ndash;Job Training</b> cards:
-				The player loses with a chance of 0.85 three mental health points. If he/she does not lose mental health points, 
-				the card will be placed in the discard area of the next player.
+				<br>The player must pass for a turn with the probability of 0.75. This card will be placed immediately onto the heap after the calculation.
+				This card cannot be played to the manager.
 			</li>
 			<li>There is 1 <b>Fortran Maintenance</b> card:
-				The player must pass for a turn with the probability of 0.75. This card will be immediately placed onto the heap after the calculation.
+				<br>The player loses with a chance of 0.15 three mental health points. If he/she does not lose mental health points, 
+				the card will be placed in the discard area of the next player.
+				This card is only playable on yourself.
 			</li>
 		</ul>
 		</div>
