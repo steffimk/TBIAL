@@ -768,29 +768,13 @@ public class GameTest {
       receiver = game.getPlayers().get("A");
     }
 
-    int receiverMentalHealth = receiver.getMentalHealthInt();
-
     StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
     player.addToHandCards(testBugCard);
 
     StackCard testLameExcuseCard = new ActionCard(Action.FEATURE);
     receiver.addToHandCards(testLameExcuseCard);
 
-    int heapSize = game.getStackAndHeap().getHeap().size();
-
-    game.putCardToPlayer(testBugCard, player, receiver);
-
-    assertThat(receiver.canDefendBug(), is(true));
-    assertNotEquals(receiver.getMentalHealth(), receiverMentalHealth);
-
-    game.defendBugImmediately(receiver, (ActionCard) testLameExcuseCard);
-
-    assertEquals(receiver.getMentalHealthInt(), receiverMentalHealth);
-    assertEquals(game.getStackAndHeap().getHeap().size(), heapSize + 2);
-    assertThat(game.getStackAndHeap().getHeap().contains(testBugCard), is(true));
-    assertThat(game.getStackAndHeap().getHeap().contains(testLameExcuseCard), is(true));
-    assertThat(player.getHandCards().contains(testLameExcuseCard), is(false));
-    assertThat(player.getReceivedCards().contains(testBugCard), is(false));
+    canDefendWithCard(game, player, receiver, testBugCard, testLameExcuseCard);
   }
 
   @Test
@@ -803,8 +787,6 @@ public class GameTest {
     } else {
       receiver = game.getPlayers().get("A");
     }
-    
-    int receiverMentalHealth = receiver.getMentalHealthInt();
 
     StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
     player.addToHandCards(testBugCard);
@@ -812,20 +794,30 @@ public class GameTest {
     StackCard testSolutionCard = new ActionCard(Action.COFFEE);
     receiver.addToHandCards(testSolutionCard);
 
+    canDefendWithCard(game, player, receiver, testBugCard, testSolutionCard);
+  }
+
+  public void canDefendWithCard(
+      Game game,
+      Player player,
+      Player receiver,
+      StackCard testBugCard,
+      StackCard cardToDefendWith) {
     int heapSize = game.getStackAndHeap().getHeap().size();
+    int receiverMentalHealth = receiver.getMentalHealthInt();
 
     game.putCardToPlayer(testBugCard, player, receiver);
 
     assertThat(receiver.canDefendBug(), is(true));
     assertNotEquals(receiver.getMentalHealth(), receiverMentalHealth);
 
-    game.defendBugImmediately(receiver, (ActionCard) testSolutionCard);
+    game.defendBugImmediately(receiver, (ActionCard) cardToDefendWith);
 
     assertEquals(receiver.getMentalHealthInt(), receiverMentalHealth);
     assertEquals(game.getStackAndHeap().getHeap().size(), heapSize + 2);
     assertThat(game.getStackAndHeap().getHeap().contains(testBugCard), is(true));
-    assertThat(game.getStackAndHeap().getHeap().contains(testSolutionCard), is(true));
-    assertThat(player.getHandCards().contains(testSolutionCard), is(false));
+    assertThat(game.getStackAndHeap().getHeap().contains(cardToDefendWith), is(true));
+    assertThat(player.getHandCards().contains(cardToDefendWith), is(false));
     assertThat(player.getReceivedCards().contains(testBugCard), is(false));
   }
 
