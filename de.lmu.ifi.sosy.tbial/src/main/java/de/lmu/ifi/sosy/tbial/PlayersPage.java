@@ -156,6 +156,57 @@ public class PlayersPage extends BasePage {
     playerListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
     playerListContainer.setOutputMarkupId(true);
 
+    Form<?> returnToGameLobbyForm = new Form<>("returnToGameLobbyForm");
+    Button returnToGameLobbyButton =
+        new Button("returnToGameLobbyButton") {
+
+          private static final long serialVersionUID = 1L;
+          private String customCSS = null;
+
+          public void onSubmit() {
+            setResponsePage(getTbialApplication().getGameLobbyPage());
+          }
+
+          @Override
+          public boolean isEnabled() {
+            Game currentGame = getGameManager().getGameOfUser(userName);
+            if (currentGame != null) {
+              return true;
+            }
+            return false;
+          }
+
+          @Override
+          protected void onComponentTag(ComponentTag tag) {
+            if (isEnabled()) {
+              customCSS = "buttonStyle";
+
+            } else {
+              customCSS = null;
+            }
+            super.onComponentTag(tag);
+            tag.put("class", customCSS);
+          }
+        };
+
+    Label gameLobbyTooltip =
+        new Label("gameLobbyTooltip", "No Active game!") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public boolean isVisible() {
+            Game currentGame = getGameManager().getGameOfUser(userName);
+            if (currentGame != null) {
+              return false;
+            }
+            return true;
+          }
+        };
+    returnToGameLobbyForm.add(returnToGameLobbyButton);
+    returnToGameLobbyForm.add(gameLobbyTooltip);
+    add(returnToGameLobbyForm);
     add(playerListContainer);
   }
 }

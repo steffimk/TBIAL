@@ -84,7 +84,9 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent(pathToPanelOfPlayer1 + ":mentalHealth", Label.class);
     tester.assertModelValue(pathToPanelOfPlayer1 + ":mentalHealth", basePlayer.getMentalHealth());
     tester.assertComponent(pathToPanelOfPlayer1 + ":prestige", Label.class);
-    tester.assertModelValue(pathToPanelOfPlayer1 + ":prestige", basePlayer.getPrestige());
+    tester.assertModelValue(
+        pathToPanelOfPlayer1 + ":prestige",
+        "Prestige: " + game.calculatePrestige(basePlayer, basePlayer));
     tester.assertComponent(pathToPanelOfPlayer1 + ":roleName", Label.class);
     tester.assertModelValue(pathToPanelOfPlayer1 + ":roleName", basePlayer.getRoleName());
 
@@ -145,7 +147,7 @@ public class GameTableTest extends PageTestBase {
             tester.assertComponent(player.getPath().substring(2) + ":panel:prestige", Label.class);
             tester.assertModelValue(
                 player.getPath().substring(2) + ":panel:prestige",
-                player.getModelObject().getPrestige());
+                "Prestige: " + game.calculatePrestige(basePlayer, player.getModelObject()));
             tester.assertComponent(
                 player.getPath().substring(2) + ":panel:addCardDropBox", DroppableArea.class);
             tester.assertComponent(
@@ -310,32 +312,37 @@ public class GameTableTest extends PageTestBase {
 
   @SuppressWarnings("unlikely-arg-type")
   @Test
-  public void clickOnPlayAbilityWorks() {
+  public void clickOnPlayAbilityWorksForOneself() {
     tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-
+    
     AbilityCard testCard = new AbilityCard(Ability.GOOGLE);
     basePlayer.addToHandCards(testCard);
     basePlayer.setSelectedHandCard(testCard);
+    int prevJobCountBefore = game.getStatistics().getPreviousJobCount();
 
     tester.clickLink(pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton");
 
     assertTrue(basePlayer.getPlayedAbilityCards().contains(testCard));
     assertNull(basePlayer.getSelectedHandCard());
+    assertEquals(prevJobCountBefore + 1, game.getStatistics().getPreviousJobCount());
 
     ActionCard testCardShouldFail = new ActionCard(Action.COFFEE_MACHINE);
     basePlayer.addToHandCards(testCardShouldFail);
     basePlayer.setSelectedHandCard(testCardShouldFail);
+    prevJobCountBefore = game.getStatistics().getPreviousJobCount();
 
     tester.clickLink(pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton");
 
     assertFalse(basePlayer.getPlayedAbilityCards().contains(testCardShouldFail));
     assertEquals(basePlayer.getSelectedHandCard(), testCardShouldFail);
+    assertEquals(prevJobCountBefore, game.getStatistics().getPreviousJobCount());
 
     AbilityCard bugDelegationCard = new AbilityCard(Ability.BUG_DELEGATION);
     basePlayer.addToHandCards(bugDelegationCard);
     basePlayer.setSelectedHandCard(bugDelegationCard);
+    int bugDelegationCountBefore = game.getStatistics().getBugDelegationCount();
 
     tester.clickLink("table:container:0:panel:playAbilityDropBox:playAbilityButton");
 
@@ -344,9 +351,15 @@ public class GameTableTest extends PageTestBase {
             ((PlayerAreaPanel) tester.getComponentFromLastRenderedPage("table:container:0:panel"))
                 .getDefaultModelObject();
 
+    assertTrue(basePlayer.getHandCards().contains(bugDelegationCard));
+    assertFalse(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
+
+    tester.clickLink(pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton");
+
     assertFalse(basePlayer.getHandCards().contains(bugDelegationCard));
     assertNull(basePlayer.getSelectedHandCard());
-    assertTrue(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
+    assertTrue(basePlayer.getPlayedAbilityCards().contains(bugDelegationCard));
+    assertEquals(bugDelegationCountBefore + 1, game.getStatistics().getBugDelegationCount());
   }
 
   @SuppressWarnings("unchecked")
@@ -355,11 +368,12 @@ public class GameTableTest extends PageTestBase {
     tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-    
-    // Testing with ActionCard because Ability-Bug might get blocked
+
+    // Testing with Special ActionCard because Bug might get blocked
     ActionCard testCard = new ActionCard(Action.BORING);
     basePlayer.addToHandCards(testCard);
     basePlayer.setSelectedHandCard(testCard);
+    int specialActionCountBefore = game.getStatistics().getSpecialActionCount();
 
     ListView<Player> playerPanelListView =
         (ListView<Player>) tester.getComponentFromLastRenderedPage("table:container");
@@ -381,11 +395,13 @@ public class GameTableTest extends PageTestBase {
 
     assertTrue(receivingPlayer.getReceivedCards().contains(testCard));
     assertFalse(basePlayer.getHandCards().contains(testCard));
+    assertEquals(specialActionCountBefore + 1, game.getStatistics().getSpecialActionCount());
 
     // Make sure that ability cards do not get added to the "played cards" area of players
     AbilityCard testCardShouldFail = new AbilityCard(Ability.ACCENTURE);
     basePlayer.addToHandCards(testCardShouldFail);
     basePlayer.setSelectedHandCard(testCardShouldFail);
+    int prevJobCountBefore = game.getStatistics().getPreviousJobCount();
 
     tester.clickLink("table:container:0:panel:addCardDropBox:addCardButton");
 
@@ -396,6 +412,7 @@ public class GameTableTest extends PageTestBase {
 
     assertTrue(basePlayer.getHandCards().contains(testCardShouldFail));
     assertFalse(receivingPlayer.getReceivedCards().contains(testCardShouldFail));
+    assertEquals(prevJobCountBefore, game.getStatistics().getPreviousJobCount());
   }
 
   @Test
@@ -459,12 +476,14 @@ public class GameTableTest extends PageTestBase {
     game.getTurn().setStage(stage);
     int mentalHealth = basePlayer.getMentalHealthInt();
     int handCardSize = basePlayer.getHandCards().size();
+    int mentalHealthSnapshotCount = basePlayer.getNumberOfStoredMentalHealthSnapshots();
 
     // Make mental health smaller than amount of hand cards -> player cannot end turn
     basePlayer.addToMentalHealth(-mentalHealth);
 
     tester.startPage(GameTable.class);
     assertFalse(tester.getComponentFromLastRenderedPage("gameflow:endTurnButton").isEnabled());
+    assertEquals(mentalHealthSnapshotCount, basePlayer.getNumberOfStoredMentalHealthSnapshots());
 
     // Make mental health bigger than amount of hand cards -> player can end turn
     basePlayer.addToMentalHealth(handCardSize + 1);
@@ -473,6 +492,8 @@ public class GameTableTest extends PageTestBase {
 
     assertFalse(game.getTurn().getCurrentPlayer() == basePlayer);
     assertEquals(game.getTurn().getStage(), TurnStage.DRAWING_CARDS);
+    assertEquals(
+        mentalHealthSnapshotCount + 1, basePlayer.getNumberOfStoredMentalHealthSnapshots());
   }
 
   @Test

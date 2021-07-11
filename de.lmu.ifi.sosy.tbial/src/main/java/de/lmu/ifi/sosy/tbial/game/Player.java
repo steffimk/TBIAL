@@ -1,8 +1,12 @@
 package de.lmu.ifi.sosy.tbial.game;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
+import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
+
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
@@ -47,7 +51,14 @@ public class Player implements Serializable {
 
   private boolean won;
 
+  private boolean sunglasses;
+  private boolean tie;
+
   private LinkedList<BugBlock> bugBlocks = new LinkedList<BugBlock>();
+
+  private LinkedList<Integer> mentalHealthDevelopment;
+
+  private int maxBugCardsPerTurn;
 
   public Player(String userName) {
     this.userName = userName;
@@ -58,6 +69,8 @@ public class Player implements Serializable {
     this.handCards = Collections.synchronizedSet(new HashSet<>());
     this.playedAbilityCards = Collections.synchronizedSet(new HashSet<>());
     this.receivedCards = Collections.synchronizedSet(new HashSet<>());
+    this.mentalHealthDevelopment = new LinkedList<Integer>();
+    this.maxBugCardsPerTurn = 1;
   }
 
   public String getUserName() {
@@ -74,10 +87,6 @@ public class Player implements Serializable {
 
   public void blockBug(BugBlock bugBlock) {
     bugBlocks.add(bugBlock);
-  }
-
-  public String getPrestige() {
-    return "Prestige: " + prestige;
   }
 
   public RoleCard getRoleCard() {
@@ -112,6 +121,14 @@ public class Player implements Serializable {
     return won;
   }
 
+  public boolean wearsSunglasses() {
+    return sunglasses;
+  }
+
+  public boolean wearsTie() {
+    return tie;
+  }
+
   public void setCharacterCard(CharacterCard characterCard) {
     this.characterCard = characterCard;
   }
@@ -128,6 +145,14 @@ public class Player implements Serializable {
     this.won = win;
   }
 
+  public void putOnSunglasses(boolean sunglasses) {
+    this.sunglasses = sunglasses;
+  }
+
+  public void putOnTie(boolean tie) {
+    this.tie = tie;
+  }
+
   /**
    * Sets the initial number of mental health points based on the player's character and role card.
    */
@@ -139,6 +164,9 @@ public class Player implements Serializable {
       mentalHealth += 1;
     }
     mentalHealthMax = mentalHealth;
+    if (mentalHealthDevelopment.size() == 0) {
+      mentalHealthDevelopment.add(mentalHealth);
+    }
   }
 
   public int getMentalHealthInt() {
@@ -147,6 +175,10 @@ public class Player implements Serializable {
 
   public int getPrestigeInt() {
     return prestige;
+  }
+
+  public int getMaxBugCardsPerTurn() {
+    return maxBugCardsPerTurn;
   }
 
   /**
@@ -160,6 +192,24 @@ public class Player implements Serializable {
     if (mentalHealth > mentalHealthMax) {
       mentalHealth = mentalHealthMax;
     }
+  }
+
+  /**
+   * Updates the prestige points of the player.
+   *
+   * @param value new prestige points
+   */
+  public synchronized void updatePrestige(int value) {
+    this.prestige = value;
+  }
+
+  /**
+   * Updates the max amount of bug cards playable by the player each turn.
+   *
+   * @param value new max amount of playable bug cards per turn
+   */
+  public synchronized void updateMaxBugCardsPerTurn(int value) {
+    this.maxBugCardsPerTurn = value;
   }
 
   /**
@@ -191,6 +241,32 @@ public class Player implements Serializable {
       selectedHandCard = null;
     }
     return handCards.remove(card);
+  }
+
+  public boolean removeAbilityCard(AbilityCard card) {
+    return playedAbilityCards.remove(card);
+  }
+
+  /**
+   * For testing only.
+   *
+   * <p>Removal of all hand cards. Helper function for test!
+   *
+   * @param cards The player's hand cards to be removed.
+   */
+  public void removeAllHandCards(Set<StackCard> cards) {
+    handCards.removeAll(cards);
+  }
+
+  /**
+   * Removal of a received card. Removes the card if it is contained in this player's received
+   * cards.
+   *
+   * @param card The card to be removed from the received cards.
+   * @return <code>true</code> if the removal was successful, <code>false</code> otherwise
+   */
+  public boolean removeReceivedCard(StackCard card) {
+    return receivedCards.remove(card);
   }
 
   /**
@@ -261,9 +337,66 @@ public class Player implements Serializable {
    *
    * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
    */
-  public boolean bugGetsBlockedByBugDelegationCard() {
+  public boolean bugGetsBlockedByBugDelegationCard(
+      LinkedList<ChatMessage> chatMessages, Player receiver) {
+    boolean isBugDelegationCardPlayed = false;
+    boolean isBugDelegationCardTriggered = false;
+
     Stream<AbilityCard> bugDelCards =
         playedAbilityCards.stream().filter(card -> card.getAbility() == Ability.BUG_DELEGATION);
-    return bugDelCards.count() > 0 && Math.random() < 0.25;
+    
+    isBugDelegationCardPlayed = bugDelCards.count() > 0;
+    isBugDelegationCardTriggered = Math.random() < 0.25;
+
+    if (isBugDelegationCardPlayed && !isBugDelegationCardTriggered) {
+      chatMessages.add(
+          new ChatMessage("Oh no! Bug delegation of " + receiver.getUserName() + " had no effect"));
+    }
+
+    return isBugDelegationCardPlayed && isBugDelegationCardTriggered;
+  }
+
+  /** Adds the current number of mental health points to the mental health development-list */
+  public void snapshotOfMentalHealth() {
+    mentalHealthDevelopment.add(mentalHealth);
+  }
+
+  /**
+   * Returns the number of mental health points the player had in the requested game round
+   *
+   * @param round The game round. <code>0</code> for the start of the game
+   * @return The number of mental health points in the requested round
+   */
+  public Integer getMentalHealthOfRound(int round) {
+    return mentalHealthDevelopment.get(round);
+  }
+
+  /**
+   * Determines the number of snapshots of the mental health
+   *
+   * @return the number of stored mental health snapshots
+   */
+  public int getNumberOfStoredMentalHealthSnapshots() {
+    return mentalHealthDevelopment.size();
+  }
+
+  /**
+   * Checks whether player has to do fortran maintenance. There's a 15% chance this method returns
+   * true.
+   *
+   * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
+   */
+  public boolean hasToDoFortranMaintenance() {
+    return Math.random() < 0.15;
+  }
+
+  /**
+   * Checks whether player has to do the off-the-job-training.There's a 75% chance this method
+   * returns true.
+   *
+   * @return <code>true</code> if the bug gets blocked and <code>false</code> otherwise
+   */
+  public boolean hasToDoOffTheJobTraining() {
+    return Math.random() < 0.75;
   }
 }

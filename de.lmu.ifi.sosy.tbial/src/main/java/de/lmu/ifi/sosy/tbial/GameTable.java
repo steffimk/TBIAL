@@ -32,7 +32,6 @@ import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
 import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
-import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
@@ -296,23 +295,25 @@ public class GameTable extends BasePage {
           }
         });
 
+    heapContainer.add(
+        new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)) {
+
+          private static final long serialVersionUID = 1L;
+
+          protected boolean shouldTrigger() {
+            // update when it's the baseplayer's turn
+            return currentGame.getTurn().getCurrentPlayer() == basePlayer;
+          }
+        });
+
     WebMarkupContainer gameFlowContainer = new WebMarkupContainer("gameflow");
     gameFlowContainer.add(
         new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
 
           private static final long serialVersionUID = 1L;
-          private TurnStage previousTurnStage = null;
-          private boolean playerCanEndTurn = false;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            TurnStage turnStage = currentGame.getTurn().getStage();
-            boolean canEndTurn = currentGame.getTurn().getCurrentPlayer().canEndTurn();
-            if (previousTurnStage == turnStage && playerCanEndTurn == canEndTurn) {
-              return;
-            }
-            previousTurnStage = turnStage;
-            playerCanEndTurn = canEndTurn;
             target.add(gameFlowContainer);
           }
         });
@@ -425,6 +426,7 @@ public class GameTable extends BasePage {
     final ModalWindow modal;
     add(modal = new ModalWindow("blockBugModal"));
     modal.setTitle("Bug played against you!");
+    modal.showUnloadConfirmation(false);
     modal.setContent(new BugBlockPanel(modal.getContentId(), currentGame, basePlayer));
     modal.setCloseButtonCallback(
         target -> {
@@ -549,25 +551,27 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-              if (currentGame.getManager().isFired()) {
-                ceremony.add(new AttributeModifier("class", "visible"));
-                if (basePlayer.hasWon()) {
-                  confetti.add(new AttributeModifier("style", "display: block;"));
-                }
-                stop(target);
-              } else if (currentGame.getConsultant().isFired()
-                  && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
-                ceremony.add(new AttributeModifier("class", "visible"));
-                if (basePlayer.hasWon()) {
-                  confetti.add(new AttributeModifier("style", "display: block;"));
-                }
-                stop(target);
-              
+            if (currentGame.getManager().isFired()) {
+              ceremony.add(new AttributeModifier("class", "visible"));
+              if (basePlayer.hasWon()) {
+                confetti.add(new AttributeModifier("style", "display: block;"));
+              }
+              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              stop(target);
+            } else if (currentGame.getConsultant().isFired()
+                && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
+              ceremony.add(new AttributeModifier("class", "visible"));
+              if (basePlayer.hasWon()) {
+                confetti.add(new AttributeModifier("style", "display: block;"));
+              }
+              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              stop(target);
             }
             target.add(ceremony);
           }
         });
 
+    ceremony.add(new GameStatisticsContainer(currentGame, basePlayer));
     add(ceremony);
  }
 

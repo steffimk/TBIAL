@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,9 +23,11 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
+import de.lmu.ifi.sosy.tbial.game.StumblingBlockCard.StumblingBlock;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 
 /** A game. Contains all information about a game. */
@@ -46,9 +51,10 @@ public class Game implements Serializable {
   private String hash;
   private byte[] salt;
 
-  private boolean hasStarted;
-  
-  private boolean hasEnded;
+  private static final DateTimeFormatter timeFormatter =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+  private LocalDateTime startingTime;
+  private LocalDateTime endingTime;
 
   private StackAndHeap stackAndHeap;
 
@@ -62,6 +68,8 @@ public class Game implements Serializable {
   private Player developer;
 
   private String winners = "";
+
+  private GameStatistics statistics;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -85,7 +93,9 @@ public class Game implements Serializable {
       this.salt = saltByteArray;
       this.hash = getHashedPassword(password, saltByteArray);
     }
-    this.hasStarted = false;
+    this.startingTime = null;
+    this.endingTime = null;
+    this.statistics = new GameStatistics();
   }
 
   /**
@@ -111,7 +121,7 @@ public class Game implements Serializable {
     } else if (players.size() < 4) {
       LOGGER.info("Checking if user is allowed to start game: Game has less than four players.");
       return false;
-    } else if (hasStarted) {
+    } else if (hasStarted()) {
       LOGGER.info("Checking if user is allowed to start game: Game has already started.");
       return false;
     }
@@ -120,10 +130,10 @@ public class Game implements Serializable {
 
   /** Starts the game. */
   public synchronized void startGame() {
-    if (hasStarted) {
+    if (hasStarted()) {
       return;
     }
-    hasStarted = true;
+    startingTime = LocalDateTime.now();
     chatMessages.clear();
     distributeRoleCards();
     for (Player player : getInGamePlayersList()) {
@@ -256,10 +266,10 @@ public class Game implements Serializable {
     receiver.addToMentalHealth(1);
     stackAndHeap.addToHeap(card, receiver, false);
     String message = "the solution \"" + card.toString() + "\"";
-    if(player.equals(receiver)) {
-    	message = player.getUserName() + " played " + message + ".";
+    if (player.equals(receiver)) {
+      message = player.getUserName() + " played " + message + ".";
     } else {
-    	message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
+      message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
     chatMessages.add(new ChatMessage(message));
   }
@@ -273,7 +283,11 @@ public class Game implements Serializable {
    * @param receiver The player who is receiving the card.
    */
   private void playBug(StackCard card, Player player, Player receiver) {
-    if (receiver.bugGetsBlockedByBugDelegationCard()) {
+    turn.incrementPlayedBugCardsThisTurn();
+    turn.setLastPlayedBugCard((ActionCard) card);
+    turn.setLastPlayedBugCardBy(player);
+
+    if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
       stackAndHeap.addToHeap(card, receiver, false);
       chatMessages.add(
@@ -282,12 +296,11 @@ public class Game implements Serializable {
                   + " blocked \""
                   + card.toString()
                   + "\" with a bug delegation card."));
+      statistics.bugDelegationCardBlockedBug();
       return;
     }
     receiver.receiveCard(card);
-    turn.incrementPlayedBugCardsThisTurn();
-    turn.setLastPlayedBugCard((ActionCard) card);
-    turn.setLastPlayedBugCardBy(player);
+
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
     receiver.blockBug(new BugBlock(player.getUserName()));
@@ -349,6 +362,149 @@ public class Game implements Serializable {
   }
 
   /**
+   * Removes the card from the player's hand cards and adds it to the receiver's ability cards.
+   * Deals with the different types of cards respectively.
+   *
+   * @param card The card to be played
+   * @param player The player who is playing and receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean putAbilityCardToPlayer(AbilityCard card, Player player) {
+    // check for previous jobs/garments already on the table
+    AbilityCard previousJob = null;
+    AbilityCard tie = null;
+    AbilityCard sunglasses = null;
+    for (AbilityCard ab : player.getPlayedAbilityCards()) {
+      if (ab.isPreviousJob()) {
+        previousJob = ab;
+      }
+      if (ab.isGarment() && ab.getAbility() == Ability.TIE) {
+        tie = ab;
+      }
+      if (ab.isGarment() && ab.getAbility() == Ability.SUNGLASSES) {
+        sunglasses = ab;
+      }
+    }
+    player.addPlayedAbilityCard((AbilityCard) card);
+    if (card.isPreviousJob()) {
+      return playPreviousJob(card, previousJob, player);
+    }
+    if (card.isGarment()) {
+      return playGarment(card, tie, sunglasses, player);
+    }
+    return false;
+  }
+
+  /**
+   * Call when a player plays a Previous Job card. Deals with different previous jobs respectively.
+   *
+   * @param card The card to be played
+   * @param previousJob The Previous Job card to be dealt with
+   * @param player The player who is playing and receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean playPreviousJob(AbilityCard card, AbilityCard previousJob, Player player) {
+    // max one previous job allowed -> put previous job back to hand cards
+    if (previousJob != null) {
+      player.updateMaxBugCardsPerTurn(1);
+      player.updatePrestige(0);
+      player.removeAbilityCard(previousJob);
+      stackAndHeap.addToHeap(previousJob, player, false);
+    }
+    // may report several bugs per round
+    if (card.getAbility() == Ability.ACCENTURE) {
+      player.updateMaxBugCardsPerTurn(Integer.MAX_VALUE);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " worked at Accenture and can play as many bugs as he/she wants."));
+      return true;
+    }
+    // 1 prestige
+    if (card.getAbility() == Ability.MICROSOFT) {
+      player.updatePrestige(1);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName() + " worked at Microsoft and received a prestige of 1."));
+      return true;
+    }
+    // 2 prestige
+    if (card.getAbility() == Ability.GOOGLE) {
+      player.updatePrestige(2);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName() + " worked at Google and received a prestige of 2."));
+      return true;
+    }
+    // 3 prestige
+    if (card.getAbility() == Ability.NASA) {
+      player.updatePrestige(3);
+      chatMessages.add(
+          new ChatMessage(player.getUserName() + " worked at Nasa and received a prestige of 3."));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Call when a player plays a Garment card. Deals with different garments respectively.
+   *
+   * @param card The card to be played
+   * @param tie The Tie card to be dealt with
+   * @param sunglasses The Sunglasses card to be dealt with
+   * @param player The player who is playing and receiving the card.
+   * @return <code>true</code> if the action was successful, <code>false</code> otherwise
+   */
+  public boolean playGarment(
+      AbilityCard card, AbilityCard tie, AbilityCard sunglasses, Player player) {
+    // max one tie allowed
+    if (tie != null && card.getAbility() == Ability.TIE) {
+      stackAndHeap.addToHeap(tie, player, false);
+      player.removeAbilityCard(tie);
+    }
+    // max one pair of sunglasses allowed
+    if (sunglasses != null && card.getAbility() == Ability.SUNGLASSES) {
+      stackAndHeap.addToHeap(sunglasses, player, false);
+      player.removeAbilityCard(sunglasses);
+    }
+    // Sees everybody with -1 prestige
+    if (card.getAbility() == Ability.SUNGLASSES) {
+      player.putOnSunglasses(true);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName() + " put on sunglasses and sees everybody with -1 prestige."));
+      return true;
+    }
+    // Is seen with +1 prestige by everyone
+    if (card.getAbility() == Ability.TIE) {
+      player.putOnTie(true);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName() + " put on a tie and is seen with +1 prestige by everyone."));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Calculates the prestige which is seen of a player because of garments.
+   *
+   * @param player player who sees
+   * @param receiver player who is seen
+   * @return the calculated prestige
+   */
+  public int calculatePrestige(Player player, Player receiver) {
+    int prestige = receiver.getPrestigeInt();
+    if (player != receiver && receiver.wearsTie()) {
+      prestige += 1;
+    }
+    if (player != receiver && player.wearsSunglasses()) {
+      prestige -= 1;
+    }
+    return prestige;
+  }
+
+  /**
    * Checks whether the game already started, is already filled, the player is already inGame and
    * the games privacy
    *
@@ -406,6 +562,16 @@ public class Game implements Serializable {
 
   public List<Player> getInGamePlayersList() {
     return new ArrayList<Player>(getPlayers().values());
+  }
+
+  public List<String> getInGamePlayerNames() {
+    ArrayList<String> playerNames = new ArrayList<String>();
+    for (Player p : getInGamePlayersList()) {
+      if (host != p.getUserName()) {
+        playerNames.add(p.getUserName());
+      }
+    }
+    return playerNames;
   }
 
   public String getName() {
@@ -470,15 +636,15 @@ public class Game implements Serializable {
   }
 
   public boolean hasStarted() {
-    return hasStarted;
+    return startingTime != null;
+  }
+
+  public void setStartingTimeForTestingOnly(LocalDateTime time) {
+    startingTime = time;
   }
 
   public boolean hasEnded() {
-    return hasEnded;
-  }
-
-  public void setHasStarted(boolean hasStarted) {
-    this.hasStarted = hasStarted;
+    return endingTime != null;
   }
 
   public String getHost() {
@@ -530,11 +696,22 @@ public class Game implements Serializable {
       return;
     }
 
-    if (selectedCard.isBug() && turn.getPlayedBugCardsInThisTurn() >= Turn.MAX_BUG_CARDS_PER_TURN) {
+    if (selectedCard.isBug()
+        && turn.getPlayedBugCardsInThisTurn() >= player.getMaxBugCardsPerTurn()) {
       chatMessages.add(
           new ChatMessage(
               "You cannot play another bug.")); // TODO: Only show player who played card?
       return;
+    }
+    if (selectedCard.isBug()
+        && player.getPrestigeInt() < calculatePrestige(player, receiverOfCard)) {
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " can't attack "
+                  + receiverOfCard.getUserName()
+                  + " because of lower prestige."));
+    	return;
     }
 
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
@@ -549,6 +726,7 @@ public class Game implements Serializable {
         }
       }
       putCardToPlayer(selectedCard, player, receiverOfCard);
+      statistics.playedCard(selectedCard);
     }
   }
 
@@ -556,7 +734,7 @@ public class Game implements Serializable {
     if (!player.hasSelectedCard()) {
       return;
     }
-    
+
     StackCard selectedCard = player.getSelectedHandCard();
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
@@ -575,10 +753,9 @@ public class Game implements Serializable {
 
   public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
     ActionCard bugCard = turn.getLastPlayedBugCard();
-    Player basePlayer = turn.getLastPlayedBugCardBy();
 
     putCardOnHeap(player, lameExcuseCard);
-    putCardOnHeap(basePlayer, bugCard);
+    putCardOnHeap(player, bugCard);
     player.getReceivedCards().remove(lameExcuseCard);
     player.getReceivedCards().remove(bugCard);
 
@@ -597,6 +774,90 @@ public class Game implements Serializable {
   }
 
   /**
+   * Called at beginning of turn and checks whether player has to deal with stumbling block cards.
+   *
+   * @param player The player whose turn it should be.
+   */
+  public void dealWithStumblingBlocks(Player player) {
+    StumblingBlockCard maintenanceCard = null;
+    List<StumblingBlockCard> trainingCards = new ArrayList<StumblingBlockCard>();
+    for (StackCard card : player.getReceivedCards()) {
+      if (((Card) card).getCardType() == CardType.STUMBLING_BLOCK) {
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.MAINTENANCE) {
+          maintenanceCard = (StumblingBlockCard) card;
+        }
+
+        if (((StumblingBlockCard) card).getStumblingBlock() == StumblingBlock.TRAINING) {
+          trainingCards.add((StumblingBlockCard) card);
+        }
+      }
+    }
+    if (maintenanceCard != null) {
+      dealWithMaintenance(player, maintenanceCard);
+    }
+    if (!trainingCards.isEmpty()) {
+      for (StumblingBlockCard trainingCard : trainingCards) {
+        if (dealWithTraining(player, trainingCard)) {
+          turn.switchToNextPlayer();
+          dealWithStumblingBlocks(turn.getCurrentPlayer());
+          return;
+        }
+      }
+    }
+  }
+
+  /**
+   * Called when player has to deal with fortran maintenance card.
+   *
+   * @param player The player whose turn it should be.
+   * @param maintenanceCard The fortran maintenance card which has to be dealt with.
+   */
+  public void dealWithMaintenance(Player player, StumblingBlockCard maintenanceCard) {
+    if (player.hasToDoFortranMaintenance()) {
+      player.addToMentalHealth(-3);
+      stackAndHeap.addToHeap(maintenanceCard, player, false);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
+    } else {
+      Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
+      p.receiveCard(maintenanceCard);
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " doesn't have to do Fortran Maintenance and card moves to "
+                  + p.getUserName()
+                  + "."));
+    }
+    player.removeReceivedCard(maintenanceCard);
+  }
+
+  /**
+   * Called when player has to deal with off-the-job-training card. Returns true if training takes
+   * place, false if training cancelled.
+   *
+   * @param player The player whose turn it should be.
+   * @param trainingCard The off-the-job-training card which has to be dealt with.
+   */
+  public boolean dealWithTraining(Player player, StumblingBlockCard trainingCard) {
+    stackAndHeap.addToHeap(trainingCard, player, false);
+    player.removeReceivedCard(trainingCard);
+    if (player.hasToDoOffTheJobTraining()) {
+      chatMessages.add(
+          new ChatMessage(
+              player.getUserName()
+                  + " has to do an off the job training and has to skip his/her turn."));
+      return true;
+
+    } else {
+      chatMessages.add(
+          new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
+      return false;
+    }
+  }
+
+  /**
    * Called when a player clicks on the "Play Ability"-Button. If he has selected a hand card of the
    * type ability, it will be moved to his uncovered cards. No rules are checked yet.
    *
@@ -607,8 +868,18 @@ public class Game implements Serializable {
     if (turn.getCurrentPlayer() != player || turn.getStage() != TurnStage.PLAYING_CARDS) return;
     StackCard selectedCard = player.getSelectedHandCard();
     if (selectedCard != null && selectedCard instanceof AbilityCard) {
+
+      // all ability cards only playable on self
+      if (player != receiverOfCard) {
+        chatMessages.add(
+            new ChatMessage(
+                "You can only play a " + selectedCard.toString() + " card for yourself."));
+        return;
+      }
+
       if (player.removeHandCard(selectedCard)) {
-        receiverOfCard.addPlayedAbilityCard((AbilityCard) selectedCard);
+        putAbilityCardToPlayer((AbilityCard) selectedCard, player);
+        statistics.playedCard(selectedCard);
       }
     }
   }
@@ -654,7 +925,9 @@ public class Game implements Serializable {
       return;
     }
     if (player.canEndTurn()) {
+      saveMentalHealthInfo();
       turn.switchToNextPlayer();
+      dealWithStumblingBlocks(turn.getCurrentPlayer());
     }
   }
 
@@ -672,8 +945,8 @@ public class Game implements Serializable {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
           || manager.isFired() && allMonkeysFired(monkeys) && developer.isFired()) {
-      endGame();
-    }
+        endGame();
+      }
     } else {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
@@ -681,7 +954,6 @@ public class Game implements Serializable {
         endGame();
       }
     }
-    
   }
 
   public boolean allMonkeysFired(List<Player> monkeys) {
@@ -720,10 +992,10 @@ public class Game implements Serializable {
 
   /** Ends the game. */
   public synchronized void endGame() {
-    if (hasEnded) {
+    if (hasEnded()) {
       return;
     }
-    hasEnded = true;
+    endingTime = LocalDateTime.now();
 
     // Consultant wins
     if (manager.isFired() && allMonkeysFired(monkeys)) {
@@ -815,5 +1087,43 @@ public class Game implements Serializable {
     } else if (allMonkeysWon(monkeys)) {
       return "The Evil Code Monkeys have won!";
     } else return "The Manager and the Honest Developer have won!";
+  }
+
+  /** Each player saves his current count of mental health points. */
+  private void saveMentalHealthInfo() {
+    for (Player player : players.values()) {
+      player.snapshotOfMentalHealth();
+    }
+  }
+
+  public String getStartingTimeAsString() {
+    if (endingTime == null) {
+      return "Game has not started yet.";
+    }
+    return startingTime.format(timeFormatter);
+  }
+
+  public String getEndingTimeAsString() {
+    if (endingTime == null) {
+      return "Game not over yet.";
+    }
+    return endingTime.format(timeFormatter);
+  }
+
+  public String getDurationAsString() {
+    if (endingTime == null || startingTime == null) {
+      return "Game not over yet.";
+    }
+    Duration duration = Duration.between(startingTime, endingTime);
+    return duration.toHours()
+        + "h "
+        + duration.toMinutesPart()
+        + "min "
+        + duration.toSecondsPart()
+        + "s";
+  }
+
+  public GameStatistics getStatistics() {
+    return statistics;
   }
 }
