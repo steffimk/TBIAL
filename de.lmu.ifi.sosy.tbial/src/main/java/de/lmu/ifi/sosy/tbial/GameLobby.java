@@ -212,7 +212,7 @@ public class GameLobby extends BasePage {
 
     startGameLink.setOutputMarkupId(true);
 
-    add(new ChatPanel("chatPanel", game.getChatMessages()));
+    add(new ChatPanel("chatPanel", game.getChatMessages(), game, getSession().getUser()));
 
     add(currentStatusLabel);
     add(isHostLabel);
@@ -275,7 +275,9 @@ public class GameLobby extends BasePage {
       game.getPlayers().remove(player);
       getGameManager().removeUserFromGame(player);
       game.getChatMessages()
-          .addFirst(new ChatMessage(game.getHost() + " removed " + player + " from the game."));
+          .addFirst(
+              new ChatMessage(
+                  game.getHost() + " removed " + player + " from the game.", false, "all"));
     }
   }
 

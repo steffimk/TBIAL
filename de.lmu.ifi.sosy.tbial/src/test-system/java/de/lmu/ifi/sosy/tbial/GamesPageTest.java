@@ -181,7 +181,6 @@ public class GamesPageTest extends PageTestBase {
             if (session.getUser() == testuser4 && game.getName() == "gamename") {
               tester.isEnabled(item.getPath().substring(2) + ":joinGameForm:joinGameButton");
               form.submit("joinGameButton");
-              tester.assertRenderedPage(Lobby.class);
               assertFalse(game.getInGamePlayerNames().contains("testuser4"));
             }
           }
