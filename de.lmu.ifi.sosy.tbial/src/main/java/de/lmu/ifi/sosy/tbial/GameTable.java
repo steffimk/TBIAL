@@ -51,7 +51,6 @@ public class GameTable extends BasePage {
   private Player basePlayer;
 
   public GameTable() {
-
     getApplication().getMarkupSettings().setStripWicketTags(true);
 
     // get current game
@@ -368,7 +367,13 @@ public class GameTable extends BasePage {
 
           @Override
           public void onConfigure() {
-            onConfigureOfGameFlowButtons(this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, null);
+            onConfigureOfGameFlowButtons(
+                this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+            if (currentGame.getTurn().getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
+              onConfigureOfGameFlowButtons(this, TurnStage.CHOOSING_CARD_TO_BLOCK_WITH, null);
+            }
+
+            this.setEnabled(false);
             super.onConfigure();
           }
 
@@ -452,34 +457,49 @@ public class GameTable extends BasePage {
         });
 
     table.add(
-        new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
+        new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            boolean hasLameExcuse = false;
-            boolean hasSolution = false;
 
-            for (StackCard card : basePlayer.getHandCards()) {
-              if (((Card) card).getCardType() == CardType.ACTION) {
-                if (((ActionCard) card).isLameExcuse()) {
-                  hasLameExcuse = true;
-                }
-                if (((ActionCard) card).isSolution()) {
-                  hasSolution = true;
-                }
-              }
+            // Update exclusively player's table who played the bug
+            if (currentGame.getHasPlayedBugBeenDefended()
+                && currentGame.getTurn().getCurrentPlayer() == basePlayer) {
+              currentGame.setHasPlayedBugBeenDefended(false);
+              setResponsePage(getPage());
             }
 
-            if (!basePlayer.getBugBlocks().isEmpty() && (hasLameExcuse || hasSolution)) {
-              if (!modal.isShown()) {
+            if (basePlayer == currentGame.getTurn().getAttackedPlayer()) {
+              boolean canDefendBug = basePlayer.canDefendBug();
+
+              if (canDefendBug
+                  && currentGame.getTurn().getStage() != TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
+                if (!modal.isShown()) {
+                  currentGame
+                      .getChatMessages()
+                      .add(
+                          new ChatMessage(
+                              basePlayer.getUserName() + " is making a decision.", false, "all"));
+                }
+                modal.show(target);
+              } else if (!canDefendBug
+                  && basePlayer
+                      .getReceivedCards()
+                      .contains(currentGame.getTurn().getLastPlayedBugCard())) {
+                currentGame.putCardOnHeap(basePlayer, currentGame.getTurn().getLastPlayedBugCard());
+                basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
+                currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
+                currentGame.getTurn().setAttackedPlayer(null);
+                currentGame.getTurn().setLastPlayedBugCard(null);
+                currentGame.getTurn().setLastPlayedBugCardBy(null);
+
                 currentGame
                     .getChatMessages()
                     .addFirst(
                         new ChatMessage(
                             basePlayer.getUserName() + " is making a decision.", false, "all"));
               }
-              modal.show(target);
             }
           }
         });

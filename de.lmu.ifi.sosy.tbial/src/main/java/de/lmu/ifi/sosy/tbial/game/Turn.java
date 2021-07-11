@@ -24,6 +24,7 @@ public class Turn implements Serializable {
 
   private Player lastPlayedBugCardBy;
   private ActionCard lastPlayedBugCard;
+  private Player attackedPlayer;
 
   public Turn(List<Player> players) {
     this.players = players;
@@ -111,7 +112,8 @@ public class Turn implements Serializable {
     DRAWING_CARDS,
     PLAYING_CARDS,
     DISCARDING_CARDS,
-    WAITING_FOR_PLAYER_RESPONSE
+    WAITING_FOR_PLAYER_RESPONSE,
+    CHOOSING_CARD_TO_BLOCK_WITH
   }
 
   /** Increases the counter for already played bug cards in this turn by 1. */
@@ -153,5 +155,13 @@ public class Turn implements Serializable {
 
   public void setLastPlayedBugCard(ActionCard bugCard) {
     lastPlayedBugCard = bugCard;
+  }
+
+  public Player getAttackedPlayer() {
+    return attackedPlayer;
+  }
+
+  public void setAttackedPlayer(Player player) {
+    attackedPlayer = player;
   }
 }

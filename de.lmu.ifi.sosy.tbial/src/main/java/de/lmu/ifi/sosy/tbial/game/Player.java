@@ -3,6 +3,7 @@ package de.lmu.ifi.sosy.tbial.game;
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
 import de.lmu.ifi.sosy.tbial.game.AbilityCard.Ability;
+import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
 
 import static java.util.Objects.requireNonNull;
@@ -85,6 +86,14 @@ public class Player implements Serializable {
 
   public void blockBug(BugBlock bugBlock) {
     bugBlocks.add(bugBlock);
+  }
+
+  public void clearBugBlocks() {
+    bugBlocks.clear();
+  }
+
+  public String getPrestige() {
+    return "Prestige: " + prestige;
   }
 
   public RoleCard getRoleCard() {
@@ -355,6 +364,24 @@ public class Player implements Serializable {
     }
 
     return isBugDelegationCardPlayed && isBugDelegationCardTriggered;
+  }
+
+  public boolean canDefendBug() {
+    boolean hasLameExcuse = false;
+    boolean hasSolution = false;
+
+    for (StackCard card : getHandCards()) {
+      if (((Card) card).getCardType() == CardType.ACTION) {
+        if (((ActionCard) card).isLameExcuse()) {
+          hasLameExcuse = true;
+        }
+        if (((ActionCard) card).isSolution()) {
+          hasSolution = true;
+        }
+      }
+    }
+
+    return (hasLameExcuse || hasSolution);
   }
 
   /** Adds the current number of mental health points to the mental health development-list */
