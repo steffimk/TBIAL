@@ -104,7 +104,7 @@ public class NotificationPanel extends Panel {
 
                           // send message in game lobby that invitation was accepted
                           game.getChatMessages()
-                              .add(
+                              .addFirst(
                                   new ChatMessage(
                                       user.getName() + " accepted the game invitation."));
                           // redirect to game lobby
@@ -155,7 +155,7 @@ public class NotificationPanel extends Panel {
                         remove(notificationForm);
                         // send message in game lobby that invitation was rejected
                         game.getChatMessages()
-                            .add(
+                            .addFirst(
                                 new ChatMessage(user.getName() + " rejected the game invitation."));
 
                         setResponsePage(getTbialApplication().getHomePage());
