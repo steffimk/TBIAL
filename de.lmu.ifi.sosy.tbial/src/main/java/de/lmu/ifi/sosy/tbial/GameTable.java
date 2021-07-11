@@ -34,6 +34,7 @@ import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
+import de.lmu.ifi.sosy.tbial.game.Game;
 
 /** Game Table */
 @AuthenticationRequired
@@ -509,11 +510,12 @@ public class GameTable extends BasePage {
 
           @Override
           public void onSubmit() {
-            getTbialApplication().getGameManager().removeUserFromGame(basePlayer.getUserName());
+            Game game = getGame();
+            getGameManager().removeUserFromGame(basePlayer.getUserName());
             for (Player player : otherPlayers) {
-              getTbialApplication().getGameManager().removeUserFromGame(player.getUserName());
+              getGameManager().removeUserFromGame(player.getUserName());
             }
-            getTbialApplication().getGameManager().removeGame(getGame());
+            getGameManager().removeGame(game);
             setResponsePage(getApplication().getHomePage());
           }
         };
