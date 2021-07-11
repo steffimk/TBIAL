@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.request.Request;
@@ -114,6 +115,11 @@ public class TBIALSession extends AuthenticatedWebSession {
   }
 
   public Game getGame() {
-    return getTbialApplication().getGameManager().getGameOfUser(user.getName());
+    Game game = getTbialApplication().getGameManager().getGameOfUser(user.getName());
+    if (game == null) {
+      throw new RestartResponseAtInterceptPageException(Lobby.class);
+    }
+    return game;
   }
+ 
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
-import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -30,7 +29,6 @@ import de.lmu.ifi.sosy.tbial.game.ActionCard;
 import de.lmu.ifi.sosy.tbial.game.Card;
 import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
-import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
@@ -46,49 +44,27 @@ public class GameTable extends BasePage {
 
   private WebMarkupContainer table;
 
-  private Game currentGame;
-
   private Player basePlayer;
 
   public GameTable() {
 
     getApplication().getMarkupSettings().setStripWicketTags(true);
 
-    // get current game
-    currentGame = getSession().getGame();
-
     // get number of players in current game
-    int numberOfPlayers = currentGame.getCurrentNumberOfPlayers();
+    int numberOfPlayers = getGame().getCurrentNumberOfPlayers();
 
     // get username of current session player
     String currentPlayerUsername = getSession().getUser().getName();
 
-    add(new Label("gameName", currentGame.getName()));
-    
+    add(new Label("gameName", getGame().getName()));
+
     // get all players of the game
-    Map<String, Player> currentPlayers = currentGame.getPlayers();
+    Map<String, Player> currentPlayers = getGame().getPlayers();
 
     // set current session player as base player
     basePlayer = currentPlayers.get(currentPlayerUsername);
 
-    table =
-        new WebMarkupContainer("table") {
-          /** */
-          static final long serialVersionUID = 1L;
-
-          @Override
-          public void onBeforeRender() {
-            currentGame =
-                getGameManager().getGameOfUser(((TBIALSession) getSession()).getUser().getName());
-
-            if (currentGame == null) {
-              throw new RestartResponseAtInterceptPageException(Lobby.class);
-            }
-            // For debugging:
-            System.out.println("GameId: " + System.identityHashCode(currentGame) + "\n");
-            super.onBeforeRender();
-          }
-        };
+    table = new WebMarkupContainer("table");
     table.setOutputMarkupId(true);
 
     // always add current session player here
@@ -108,7 +84,7 @@ public class GameTable extends BasePage {
             }
           }
         });
-    player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, currentGame, basePlayer, table));
+    player1.add(new PlayerAreaPanel("panel1", () -> basePlayer, getSession(), basePlayer, table));
     player1.setOutputMarkupId(true);
     // get the rest of the players
     ArrayList<Player> otherPlayers = new ArrayList<Player>();
@@ -131,7 +107,8 @@ public class GameTable extends BasePage {
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
             PlayerAreaPanel panel =
-                new PlayerAreaPanel("panel", Model.of(player), currentGame, basePlayer, table);
+                new PlayerAreaPanel(
+                    "panel", Model.of(player), (TBIALSession) getSession(), basePlayer, table);
             // add css classes
             if (player.isFired()) {
               listItem.add(new AttributeModifier("style", "opacity: 0.4;"));
@@ -159,13 +136,13 @@ public class GameTable extends BasePage {
           @Override
           protected void onEvent(AjaxRequestTarget target) {
 
-            currentGame.clickedOnDrawCardsButton(basePlayer);
+            getGame().clickedOnDrawCardsButton(basePlayer);
             target.add(table);
           }
         });
 
     Image stackImage =
-        new Image("stackCard", () -> currentGame.getStackAndHeap().getStack().size()) {
+        new Image("stackCard", () -> getGame().getStackAndHeap().getStack().size()) {
 
           private static final long serialVersionUID = 1L;
 
@@ -195,10 +172,9 @@ public class GameTable extends BasePage {
     stackContainer.add(stackImage);
 
     DroppableArea heapContainer =
-        new DroppableArea(
-            "heapContainer", DroppableType.HEAP, currentGame, basePlayer, null, table);
+        new DroppableArea("heapContainer", DroppableType.HEAP, getGame(), basePlayer, null, table);
     Image heapImage =
-        new Image("heapCard", () -> currentGame.getStackAndHeap().getUppermostCardOfHeap()) {
+        new Image("heapCard", () -> getGame().getStackAndHeap().getUppermostCardOfHeap()) {
 
           private static final long serialVersionUID = 1L;
           private StackCard previousUppermostHeapCard = null;
@@ -223,7 +199,7 @@ public class GameTable extends BasePage {
             }
             // Card changed -> add animation
             else {
-              Player player = currentGame.getStackAndHeap().getLastPlayerToDiscardCard();
+              Player player = getGame().getStackAndHeap().getLastPlayerToDiscardCard();
               this.add(getDiscardingAnimationForPlayer(otherPlayers, player, numberOfPlayers));
             }
             super.onBeforeRender();
@@ -244,7 +220,7 @@ public class GameTable extends BasePage {
     heapContainer.add(heapImage);
 
     Image heapBackgroundImage =
-        new Image("heapBackground", () -> currentGame.getStackAndHeap().getHeap().size()) {
+        new Image("heapBackground", () -> getGame().getStackAndHeap().getHeap().size()) {
 
           private static final long serialVersionUID = 1L;
 
@@ -282,14 +258,14 @@ public class GameTable extends BasePage {
         };
     heapBackgroundImage.setOutputMarkupId(true);
     heapContainer.add(heapBackgroundImage);
-    
+
     heapContainer.add(
         new AjaxEventBehavior("click") {
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onEvent(AjaxRequestTarget target) {
-            boolean success = currentGame.clickedOnHeap(basePlayer);
+            boolean success = getGame().clickedOnHeap(basePlayer);
             if (!success) return;
             target.add(table);
           }
@@ -302,7 +278,7 @@ public class GameTable extends BasePage {
 
           protected boolean shouldTrigger() {
             // update when it's the baseplayer's turn
-            return currentGame.getTurn().getCurrentPlayer() == basePlayer;
+            return getGame().getTurn().getCurrentPlayer() == basePlayer;
           }
         });
 
@@ -326,8 +302,8 @@ public class GameTable extends BasePage {
 
           @Override
           public void onConfigure() {
-            if (currentGame.isTurnOfPlayer(basePlayer)
-                && currentGame.getTurn().getStage() == TurnStage.DRAWING_CARDS) {
+            if (getGame().isTurnOfPlayer(basePlayer)
+                && getGame().getTurn().getStage() == TurnStage.DRAWING_CARDS) {
               this.setEnabled(true);
               this.add(getAttributeModifierForLink("#F4731D"));
             } else {
@@ -338,7 +314,7 @@ public class GameTable extends BasePage {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            currentGame.clickedOnDrawCardsButton(basePlayer);
+            getGame().clickedOnDrawCardsButton(basePlayer);
             target.add(table);
             target.add(gameFlowContainer);
           }
@@ -391,7 +367,7 @@ public class GameTable extends BasePage {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            currentGame.clickedOnDiscardButton(basePlayer);
+            getGame().clickedOnDiscardButton(basePlayer);
             target.add(gameFlowContainer);
           }
         };
@@ -403,8 +379,8 @@ public class GameTable extends BasePage {
 
           @Override
           public void onConfigure() {
-            TurnStage currentStage = currentGame.getTurn().getStage();
-            if (currentGame.isTurnOfPlayer(basePlayer)
+            TurnStage currentStage = getGame().getTurn().getStage();
+            if (getGame().isTurnOfPlayer(basePlayer)
                 && (currentStage == TurnStage.PLAYING_CARDS
                     || currentStage == TurnStage.DISCARDING_CARDS)
                 && basePlayer.canEndTurn()) {
@@ -418,7 +394,7 @@ public class GameTable extends BasePage {
 
           @Override
           public void onClick(AjaxRequestTarget target) {
-            currentGame.clickedOnEndTurnButton(basePlayer);
+            getGame().clickedOnEndTurnButton(basePlayer);
             target.add(gameFlowContainer);
           }
         };
@@ -427,7 +403,7 @@ public class GameTable extends BasePage {
     add(modal = new ModalWindow("blockBugModal"));
     modal.setTitle("Bug played against you!");
     modal.showUnloadConfirmation(false);
-    modal.setContent(new BugBlockPanel(modal.getContentId(), currentGame, basePlayer));
+    modal.setContent(new BugBlockPanel(modal.getContentId(), getSession(), basePlayer));
     modal.setCloseButtonCallback(
         target -> {
           return true;
@@ -447,7 +423,7 @@ public class GameTable extends BasePage {
           @Override
           protected boolean shouldTrigger() {
             // Don't update when it's the baseplayer's turn
-            return currentGame.getTurn().getCurrentPlayer() != basePlayer;
+            return getGame().getTurn().getCurrentPlayer() != basePlayer;
           }
         });
 
@@ -473,7 +449,7 @@ public class GameTable extends BasePage {
 
             if (!basePlayer.getBugBlocks().isEmpty() && (hasLameExcuse || hasSolution)) {
               if (!modal.isShown()) {
-                currentGame
+                getGame()
                     .getChatMessages()
                     .addFirst(new ChatMessage(basePlayer.getUserName() + " is making a decision."));
               }
@@ -507,14 +483,14 @@ public class GameTable extends BasePage {
         new Label(
             "groupWon",
             () -> {
-              return currentGame.getGroupWon();
+              return getGame().getGroupWon();
             });
-    
+
     Label winner =
         new Label(
             "winners",
             () -> {
-              return currentGame.getWinners(basePlayer);
+              return getGame().getWinners(basePlayer);
             });
 
     winner.setOutputMarkupId(true);
@@ -537,7 +513,7 @@ public class GameTable extends BasePage {
             for (Player player : otherPlayers) {
               getTbialApplication().getGameManager().removeUserFromGame(player.getUserName());
             }
-            getTbialApplication().getGameManager().removeGame(currentGame);
+            getTbialApplication().getGameManager().removeGame(getGame());
             setResponsePage(getApplication().getHomePage());
           }
         };
@@ -551,27 +527,27 @@ public class GameTable extends BasePage {
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            if (currentGame.getManager().isFired()) {
+            if (getGame().getManager().isFired()) {
               ceremony.add(new AttributeModifier("class", "visible"));
               if (basePlayer.hasWon()) {
                 confetti.add(new AttributeModifier("style", "display: block;"));
               }
-              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              ceremony.replace(new GameStatisticsContainer(getGame(), basePlayer));
               stop(target);
-            } else if (currentGame.getConsultant().isFired()
-                && currentGame.allMonkeysFired(currentGame.getEvilCodeMonkeys())) {
+            } else if (getGame().getConsultant().isFired()
+                && getGame().allMonkeysFired(getGame().getEvilCodeMonkeys())) {
               ceremony.add(new AttributeModifier("class", "visible"));
               if (basePlayer.hasWon()) {
                 confetti.add(new AttributeModifier("style", "display: block;"));
               }
-              ceremony.replace(new GameStatisticsContainer(currentGame, basePlayer));
+              ceremony.replace(new GameStatisticsContainer(getGame(), basePlayer));
               stop(target);
             }
             target.add(ceremony);
           }
         });
 
-    ceremony.add(new GameStatisticsContainer(currentGame, basePlayer));
+    ceremony.add(new GameStatisticsContainer(getGame(), basePlayer));
     add(ceremony);
  }
 
@@ -580,7 +556,7 @@ public class GameTable extends BasePage {
     int playerIndex = 2 + otherPlayers.indexOf(player);
     // If basePlayer
     if (playerIndex == 1) {
-      if (currentGame.getStackAndHeap().wasNormalDiscard()) {
+      if (getGame().getStackAndHeap().wasNormalDiscard()) {
         return new AttributeModifier("style", "animation-name: none;");
       } else {
         return new AttributeModifier("style", "animation-name: discardAnimation");
@@ -601,8 +577,8 @@ public class GameTable extends BasePage {
   private void onConfigureOfGameFlowButtons(
       AjaxLink<Void> link, TurnStage thisStage, TurnStage transferInStagePossible) {
     link.setEnabled(false);
-    TurnStage currentStage = currentGame.getTurn().getStage();
-    if (currentGame.isTurnOfPlayer(basePlayer)) {
+    TurnStage currentStage = getGame().getTurn().getStage();
+    if (getGame().isTurnOfPlayer(basePlayer)) {
       if (currentStage == transferInStagePossible) {
         link.setEnabled(true);
         link.add(getAttributeModifierForLink("rgba(244, 115, 29, 0.5)"));
@@ -621,7 +597,7 @@ public class GameTable extends BasePage {
   }
   
   private String getTextOfTurnLabel() {
-	  String currentPlayerName = currentGame.getTurn().getCurrentPlayer().getUserName();
+    String currentPlayerName = getGame().getTurn().getCurrentPlayer().getUserName();
 	  if (currentPlayerName == basePlayer.getUserName()) {
 		  return "";
 	  }

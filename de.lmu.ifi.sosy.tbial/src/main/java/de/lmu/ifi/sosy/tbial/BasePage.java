@@ -1,6 +1,7 @@
 package de.lmu.ifi.sosy.tbial;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -17,6 +18,7 @@ import org.apache.wicket.util.time.Duration;
 
 import de.lmu.ifi.sosy.tbial.db.Database;
 import de.lmu.ifi.sosy.tbial.db.User;
+import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.GameManager;
 
 /**
@@ -43,6 +45,19 @@ public abstract class BasePage extends WebPage {
 
   protected GameManager getGameManager() {
     return getTbialApplication().getGameManager();
+  }
+
+  /**
+   * Gets the current game of the user in the session or redirects to the Lobby.
+   *
+   * @return The current game or redirects to the Lobby.
+   */
+  protected Game getGame() {
+    TBIALSession session = getSession();
+    if (session == null || session.getUser() == null || session.getUser().getName() == null) {
+      throw new RestartResponseAtInterceptPageException(Lobby.class);
+    }
+    return session.getGame();
   }
 
   protected TBIALApplication getTbialApplication() {

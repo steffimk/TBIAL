@@ -16,7 +16,6 @@ import org.apache.wicket.markup.html.list.PropertyListView;
 import de.lmu.ifi.sosy.tbial.game.ActionCard;
 import de.lmu.ifi.sosy.tbial.game.Card;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
-import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
@@ -24,7 +23,7 @@ import de.lmu.ifi.sosy.tbial.game.Turn;
 public class BugBlockPanel extends Panel {
   static final long serialVersionUID = 1L;
 
-  BugBlockPanel(String id, Game currentGame, Player player) {
+  BugBlockPanel(String id, TBIALSession session, Player player) {
 	  super(id);
 
     IModel<List<BugBlock>> bugBlockModel =
@@ -42,7 +41,7 @@ public class BugBlockPanel extends Panel {
             final BugBlock bugBlock = item.getModelObject();
             bugBlockForm.add(new Label("bugBlockSender", bugBlock.getSender()));
             bugBlockForm.add(new Label("bugBlockMessage", bugBlock.getTextMessage()));
-            currentGame.getTurn().setStage(Turn.TurnStage.WAITING_FOR_PLAYER_RESPONSE);
+            session.getGame().getTurn().setStage(Turn.TurnStage.WAITING_FOR_PLAYER_RESPONSE);
 
             Button blockButton =
                 new Button("blockButton") {
@@ -58,7 +57,7 @@ public class BugBlockPanel extends Panel {
                             || ((ActionCard) card).isSolution()) {
                           lameExcuseOrSolutionCard = (ActionCard) card;
 
-                          currentGame.defendBugImmediately(player, lameExcuseOrSolutionCard);
+                          session.getGame().defendBugImmediately(player, lameExcuseOrSolutionCard);
 
                           player.getBugBlocks().remove(bugBlock);
                           remove(bugBlockForm);
@@ -70,10 +69,10 @@ public class BugBlockPanel extends Panel {
 
                     if (lameExcuseOrSolutionCard != null) {
                       player.removeHandCard(lameExcuseOrSolutionCard);
-                      currentGame.getStatistics().playedCard(lameExcuseOrSolutionCard);
+                      session.getGame().getStatistics().playedCard(lameExcuseOrSolutionCard);
                     }
 
-                    currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
+                    session.getGame().getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
                   }
                 };
             Button rejectButton =
@@ -86,11 +85,12 @@ public class BugBlockPanel extends Panel {
                     remove(bugBlockForm);
 
                     //
-                    currentGame
+                    session
+                        .getGame()
                         .getChatMessages()
                         .addFirst(new ChatMessage(player.getUserName() + " rejected to block Bug"));
 
-                    currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
+                    session.getGame().getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
                   }
                 };
 
