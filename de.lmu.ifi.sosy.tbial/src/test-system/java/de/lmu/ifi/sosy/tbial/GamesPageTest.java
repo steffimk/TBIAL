@@ -183,4 +183,34 @@ public class GamesPageTest extends PageTestBase {
           }
         });
   }
+
+  @Test
+  public void navigateToCreateNewGame() {
+    tester.startPage(GamesPage.class);
+    tester.assertRenderedPage(GamesPage.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("createGameButton");
+    tester.assertRenderedPage(Lobby.class);
+  }
+
+  @Test
+  public void navigateToGamesPage() {
+    tester.startPage(GamesPage.class);
+    tester.assertRenderedPage(GamesPage.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("showGamesButton");
+    tester.assertRenderedPage(GamesPage.class);
+  }
+
+  @Test
+  public void navigateToPlayersPage() {
+    tester.startPage(GamesPage.class);
+    tester.assertRenderedPage(GamesPage.class);
+
+    FormTester form = tester.newFormTester("menuForm");
+    form.submit("showPlayersButton");
+    tester.assertRenderedPage(PlayersPage.class);
+  }
 }
