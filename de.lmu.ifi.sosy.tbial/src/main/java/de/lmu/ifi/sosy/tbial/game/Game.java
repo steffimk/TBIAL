@@ -271,7 +271,7 @@ public class Game implements Serializable {
     } else {
       message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -290,7 +290,7 @@ public class Game implements Serializable {
     if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
       stackAndHeap.addToHeap(card, receiver, false);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               receiver.getUserName()
                   + " blocked \""
@@ -320,7 +320,7 @@ public class Game implements Serializable {
     }
     stackAndHeap.addToHeap(card, receiver, false);
     String message = player.getUserName() + " played " + card.toString() + ".";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -339,7 +339,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 2 new cards from the stack.";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -358,7 +358,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 3 new cards from the stack.";
-    chatMessages.add(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message));
   }
 
   /**
@@ -414,7 +414,7 @@ public class Game implements Serializable {
     // may report several bugs per round
     if (card.getAbility() == Ability.ACCENTURE) {
       player.updateMaxBugCardsPerTurn(Integer.MAX_VALUE);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " worked at Accenture and can play as many bugs as he/she wants."));
@@ -423,7 +423,7 @@ public class Game implements Serializable {
     // 1 prestige
     if (card.getAbility() == Ability.MICROSOFT) {
       player.updatePrestige(1);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName() + " worked at Microsoft and received a prestige of 1."));
       return true;
@@ -431,7 +431,7 @@ public class Game implements Serializable {
     // 2 prestige
     if (card.getAbility() == Ability.GOOGLE) {
       player.updatePrestige(2);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName() + " worked at Google and received a prestige of 2."));
       return true;
@@ -439,7 +439,7 @@ public class Game implements Serializable {
     // 3 prestige
     if (card.getAbility() == Ability.NASA) {
       player.updatePrestige(3);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(player.getUserName() + " worked at Nasa and received a prestige of 3."));
       return true;
     }
@@ -470,7 +470,7 @@ public class Game implements Serializable {
     // Sees everybody with -1 prestige
     if (card.getAbility() == Ability.SUNGLASSES) {
       player.putOnSunglasses(true);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName() + " put on sunglasses and sees everybody with -1 prestige."));
       return true;
@@ -478,7 +478,7 @@ public class Game implements Serializable {
     // Is seen with +1 prestige by everyone
     if (card.getAbility() == Ability.TIE) {
       player.putOnTie(true);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName() + " put on a tie and is seen with +1 prestige by everyone."));
       return true;
@@ -698,14 +698,14 @@ public class Game implements Serializable {
 
     if (selectedCard.isBug()
         && turn.getPlayedBugCardsInThisTurn() >= player.getMaxBugCardsPerTurn()) {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               "You cannot play another bug.")); // TODO: Only show player who played card?
       return;
     }
     if (selectedCard.isBug()
         && player.getPrestigeInt() < calculatePrestige(player, receiverOfCard)) {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " can't attack "
@@ -714,17 +714,19 @@ public class Game implements Serializable {
     	return;
     }
 
-    if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
-      if (((Card) selectedCard).getCardType() == CardType.ACTION) {
-        if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
-                || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
-            && player != receiverOfCard) {
-          chatMessages.add(
-              new ChatMessage(
-                  "You can only play a " + selectedCard.toString() + " card for yourself."));
-          return;
-        }
+    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+      if (((ActionCard) selectedCard).isLameExcuse()) return; // Lame Excuses cannot be played
+      if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
+              || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
+          && player != receiverOfCard) {
+        chatMessages.addFirst(
+            new ChatMessage(
+                "You can only play a " + selectedCard.toString() + " card for yourself."));
+        return;
       }
+    }
+
+    if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
       putCardToPlayer(selectedCard, player, receiverOfCard);
       statistics.playedCard(selectedCard);
     }
@@ -742,7 +744,7 @@ public class Game implements Serializable {
         discardHandCard(player, selectedCard, false);
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
-        chatMessages.add(
+        chatMessages.addFirst(
             new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
         if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
           player.addToMentalHealth(1);
@@ -763,7 +765,7 @@ public class Game implements Serializable {
       player.addToMentalHealth(1);
     }
 
-    chatMessages.add(
+    chatMessages.addFirst(
         new ChatMessage(
             player.getUserName()
                 + " blocked \""
@@ -816,14 +818,14 @@ public class Game implements Serializable {
     if (player.hasToDoFortranMaintenance()) {
       player.addToMentalHealth(-3);
       stackAndHeap.addToHeap(maintenanceCard, player, false);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
     } else {
       Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
       p.receiveCard(maintenanceCard);
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " doesn't have to do Fortran Maintenance and card moves to "
@@ -844,14 +846,14 @@ public class Game implements Serializable {
     stackAndHeap.addToHeap(trainingCard, player, false);
     player.removeReceivedCard(trainingCard);
     if (player.hasToDoOffTheJobTraining()) {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
                   + " has to do an off the job training and has to skip his/her turn."));
       return true;
 
     } else {
-      chatMessages.add(
+      chatMessages.addFirst(
           new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
       return false;
     }
@@ -871,7 +873,7 @@ public class Game implements Serializable {
 
       // all ability cards only playable on self
       if (player != receiverOfCard) {
-        chatMessages.add(
+        chatMessages.addFirst(
             new ChatMessage(
                 "You can only play a " + selectedCard.toString() + " card for yourself."));
         return;
