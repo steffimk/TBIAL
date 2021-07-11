@@ -88,7 +88,7 @@ public class BugBlockPanel extends Panel {
                     //
                     currentGame
                         .getChatMessages()
-                        .add(
+                        .addFirst(
                             new ChatMessage(
                                 player.getUserName() + " rejected to block Bug", false, "all"));
 

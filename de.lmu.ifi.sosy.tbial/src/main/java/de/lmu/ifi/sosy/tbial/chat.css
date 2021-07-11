@@ -5,21 +5,22 @@
 	border-right: 1px dashed #e0e0e0;
 }
 .chatWindow {
-	height: 100%;
+	height: auto;
 	padding-left: 4px;
 	border: 2px solid rgb(221, 221, 221);
+	border-radius: 10px;
 	background: #e6e6e6;
 	font-style: normal;
 }
 
 .chatWrapper {
-	border: 5px solid #f99451;
+	border: 4px solid #ff6600;
+	border-radius: 10px;
 	float: right;
-	padding: 8px;
-	width: 20%;
+	width: 23%;
 	height: 100%;
 	background: #ff8c40;
-	border-radius: 10px;
+	margin-top: 5vh;
 }
 
 fieldset {
@@ -35,19 +36,28 @@ fieldset p {
 	line-height: normal;
 }
 
+.timestamp {
+	display:block;
+	font-size: small;
+	color: grey;
+}
+
 .username {
 	font-weight: bold;
-	color: grey;
+	vertical-align: baseline;
+	display: inline;
 }
 
 .chatMessage {
 	overflow-wrap: anywhere;
-	color: grey;
+	display: inline;
 }
 
 .inputWrapper {
 	width: 100%;
 	display: flex;
+	margin-top: 2px;
+	margin-bottom: 2px;
 }
 
 .messageInput {

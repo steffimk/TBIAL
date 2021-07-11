@@ -84,7 +84,9 @@ public class GameTableTest extends PageTestBase {
     tester.assertComponent(pathToPanelOfPlayer1 + ":mentalHealth", Label.class);
     tester.assertModelValue(pathToPanelOfPlayer1 + ":mentalHealth", basePlayer.getMentalHealth());
     tester.assertComponent(pathToPanelOfPlayer1 + ":prestige", Label.class);
-    tester.assertModelValue(pathToPanelOfPlayer1 + ":prestige", basePlayer.getPrestige());
+    tester.assertModelValue(
+        pathToPanelOfPlayer1 + ":prestige",
+        "Prestige: " + game.calculatePrestige(basePlayer, basePlayer));
     tester.assertComponent(pathToPanelOfPlayer1 + ":roleName", Label.class);
     tester.assertModelValue(pathToPanelOfPlayer1 + ":roleName", basePlayer.getRoleName());
 
@@ -145,7 +147,7 @@ public class GameTableTest extends PageTestBase {
             tester.assertComponent(player.getPath().substring(2) + ":panel:prestige", Label.class);
             tester.assertModelValue(
                 player.getPath().substring(2) + ":panel:prestige",
-                player.getModelObject().getPrestige());
+                "Prestige: " + game.calculatePrestige(basePlayer, player.getModelObject()));
             tester.assertComponent(
                 player.getPath().substring(2) + ":panel:addCardDropBox", DroppableArea.class);
             tester.assertComponent(
@@ -310,7 +312,7 @@ public class GameTableTest extends PageTestBase {
 
   @SuppressWarnings("unlikely-arg-type")
   @Test
-  public void clickOnPlayAbilityWorks() {
+  public void clickOnPlayAbilityWorksForOneself() {
     tester.startPage(GameTable.class);
     game.getTurn().setTurnPlayerUseForTestingOnly(basePlayer);
     game.getTurn().setStage(TurnStage.PLAYING_CARDS);
@@ -349,9 +351,14 @@ public class GameTableTest extends PageTestBase {
             ((PlayerAreaPanel) tester.getComponentFromLastRenderedPage("table:container:0:panel"))
                 .getDefaultModelObject();
 
+    assertTrue(basePlayer.getHandCards().contains(bugDelegationCard));
+    assertFalse(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
+
+    tester.clickLink(pathToPanelOfPlayer1 + ":playAbilityDropBox:playAbilityButton");
+
     assertFalse(basePlayer.getHandCards().contains(bugDelegationCard));
     assertNull(basePlayer.getSelectedHandCard());
-    assertTrue(receivingPlayer.getPlayedAbilityCards().contains(bugDelegationCard));
+    assertTrue(basePlayer.getPlayedAbilityCards().contains(bugDelegationCard));
     assertEquals(bugDelegationCountBefore + 1, game.getStatistics().getBugDelegationCount());
   }
 

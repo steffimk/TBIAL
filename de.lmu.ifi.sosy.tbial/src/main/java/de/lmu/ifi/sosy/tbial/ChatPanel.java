@@ -49,6 +49,9 @@ public class ChatPanel extends Panel {
 
             ChatMessage chatMessage = item.getModelObject();
 
+              Label time = new Label("time", chatMessage.getTimestamp());
+              item.add(time);
+
             // public messages
             if (!chatMessage.isPersonal()) {
               Label sender = new Label("sender", new PropertyModel<String>(chatMessage, "sender"));
@@ -58,10 +61,9 @@ public class ChatPanel extends Panel {
               item.add(text);
 
               // public update messages
-              if (chatMessage.getPureSender().equals("UPDATE")) {
-                sender.add(new AttributeModifier("style", "color: black;"));
-                text.add(new AttributeModifier("style", "color: black;"));
-              }
+                if (chatMessage.isGameUpdate()) {
+                    text.add(new AttributeModifier("style", "font-style: italic;"));
+                }
             }
             // private messages
             else if (chatMessage.isPersonal()
@@ -72,10 +74,9 @@ public class ChatPanel extends Panel {
                   new Label("textMessage", new PropertyModel<String>(chatMessage, "textMessage"));
 
               // private game updates
-              if (chatMessage.getPureSender().equals("UPDATE")) {
-                sender = new Label("sender", new PropertyModel<String>(chatMessage, "sender"));
-                sender.add(new AttributeModifier("style", "color: black;"));
-                text.add(new AttributeModifier("style", "color: black;"));
+                if (chatMessage.isGameUpdate()) {
+                    sender = new Label("sender", new PropertyModel<String>(chatMessage, "sender"));
+                    text.add(new AttributeModifier("style", "font-style: italic;"));
               }
               // private user messages
               else {
@@ -168,7 +169,7 @@ public class ChatPanel extends Panel {
                   chatMessages.removeFirst();
                 }
 
-                chatMessages.addLast(chatMessage);
+                chatMessages.addFirst(chatMessage);
               }
             }
 

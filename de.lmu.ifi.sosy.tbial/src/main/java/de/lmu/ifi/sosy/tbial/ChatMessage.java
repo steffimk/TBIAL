@@ -1,13 +1,19 @@
 package de.lmu.ifi.sosy.tbial;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ChatMessage implements Serializable {
   private static final long serialVersionUID = 1L;
 
+  private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
   private String sender;
   private String receiver;
   private String textMessage;
+  private boolean isGameUpdate;
+  private String timestamp;
 
   private boolean personal;
 
@@ -15,6 +21,8 @@ public class ChatMessage implements Serializable {
     super();
     this.sender = sender;
     this.textMessage = textMessage;
+    this.isGameUpdate = false;
+    this.timestamp = LocalDateTime.now().format(timeFormatter);
     this.personal = personal;
     this.receiver = receiver;
   }
@@ -28,11 +36,14 @@ public class ChatMessage implements Serializable {
     super();
     this.sender = "UPDATE";
     this.textMessage = textMessage;
+    this.isGameUpdate = true;
+    this.timestamp = LocalDateTime.now().format(timeFormatter);
     this.personal = personal;
     this.receiver = receiver;
   }
 
   public String getSender() {
+    if (isGameUpdate) return "";
     return sender + ": ";
   }
 
@@ -46,6 +57,14 @@ public class ChatMessage implements Serializable {
 
   public boolean isMessageEmpty() {
     return textMessage == null;
+  }
+
+  public String getTimestamp() {
+    return this.timestamp;
+  }
+
+  public boolean isGameUpdate() {
+    return this.isGameUpdate;
   }
 
   public boolean isPersonal() {

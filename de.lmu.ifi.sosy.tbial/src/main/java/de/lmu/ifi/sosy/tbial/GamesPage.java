@@ -115,7 +115,7 @@ public class GamesPage extends BasePage {
                       if (getGameManager().joinGame(userName, game, joinGamePw.getModelObject())) {
                         // send message in game lobby that player joined game
                         game.getChatMessages()
-                            .add(
+                            .addFirst(
                                 new ChatMessage(
                                     user.getName() + " joined the game.", false, "all"));
                         setResponsePage(getTbialApplication().getGameLobbyPage());
