@@ -271,7 +271,7 @@ public class Game implements Serializable {
     } else {
       message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
-    chatMessages.addFirst(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -295,7 +295,9 @@ public class Game implements Serializable {
               receiver.getUserName()
                   + " blocked \""
                   + card.toString()
-                  + "\" with a bug delegation card."));
+                  + "\" with a bug delegation card.",
+              false,
+              "all"));
       statistics.bugDelegationCardBlockedBug();
       return;
     }
@@ -320,7 +322,7 @@ public class Game implements Serializable {
     }
     stackAndHeap.addToHeap(card, receiver, false);
     String message = player.getUserName() + " played " + card.toString() + ".";
-    chatMessages.addFirst(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -339,7 +341,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 2 new cards from the stack.";
-    chatMessages.addFirst(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -358,7 +360,7 @@ public class Game implements Serializable {
             + " played "
             + card.toString()
             + " and received 3 new cards from the stack.";
-    chatMessages.addFirst(new ChatMessage(message));
+    chatMessages.addFirst(new ChatMessage(message, false, "all"));
   }
 
   /**
@@ -417,7 +419,9 @@ public class Game implements Serializable {
       chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
-                  + " worked at Accenture and can play as many bugs as he/she wants."));
+                  + " worked at Accenture and can play as many bugs as he/she wants.",
+              false,
+              "all"));
       return true;
     }
     // 1 prestige
@@ -425,7 +429,9 @@ public class Game implements Serializable {
       player.updatePrestige(1);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " worked at Microsoft and received a prestige of 1."));
+              player.getUserName() + " worked at Microsoft and received a prestige of 1.",
+              false,
+              "all"));
       return true;
     }
     // 2 prestige
@@ -433,14 +439,19 @@ public class Game implements Serializable {
       player.updatePrestige(2);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " worked at Google and received a prestige of 2."));
+              player.getUserName() + " worked at Google and received a prestige of 2.",
+              false,
+              "all"));
       return true;
     }
     // 3 prestige
     if (card.getAbility() == Ability.NASA) {
       player.updatePrestige(3);
       chatMessages.addFirst(
-          new ChatMessage(player.getUserName() + " worked at Nasa and received a prestige of 3."));
+          new ChatMessage(
+              player.getUserName() + " worked at Nasa and received a prestige of 3.",
+              false,
+              "all"));
       return true;
     }
     return false;
@@ -472,7 +483,9 @@ public class Game implements Serializable {
       player.putOnSunglasses(true);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " put on sunglasses and sees everybody with -1 prestige."));
+              player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.",
+              false,
+              "all"));
       return true;
     }
     // Is seen with +1 prestige by everyone
@@ -480,7 +493,9 @@ public class Game implements Serializable {
       player.putOnTie(true);
       chatMessages.addFirst(
           new ChatMessage(
-              player.getUserName() + " put on a tie and is seen with +1 prestige by everyone."));
+              player.getUserName() + " put on a tie and is seen with +1 prestige by everyone.",
+              false,
+              "all"));
       return true;
     }
     return false;
@@ -570,6 +585,14 @@ public class Game implements Serializable {
       if (host != p.getUserName()) {
         playerNames.add(p.getUserName());
       }
+    }
+    return playerNames;
+  }
+
+  public List<String> getAllInGamePlayerNames() {
+    ArrayList<String> playerNames = new ArrayList<String>();
+    for (Player p : getInGamePlayersList()) {
+        playerNames.add(p.getUserName());
     }
     return playerNames;
   }
@@ -698,9 +721,7 @@ public class Game implements Serializable {
 
     if (selectedCard.isBug()
         && turn.getPlayedBugCardsInThisTurn() >= player.getMaxBugCardsPerTurn()) {
-      chatMessages.addFirst(
-          new ChatMessage(
-              "You cannot play another bug.")); // TODO: Only show player who played card?
+      chatMessages.addFirst(new ChatMessage("You cannot play another bug.", true, player.getUserName()));
       return;
     }
     if (selectedCard.isBug()
@@ -710,7 +731,9 @@ public class Game implements Serializable {
               player.getUserName()
                   + " can't attack "
                   + receiverOfCard.getUserName()
-                  + " because of lower prestige."));
+                  + " because of lower prestige.",
+              false,
+              "all"));
     	return;
     }
 
@@ -721,7 +744,9 @@ public class Game implements Serializable {
           && player != receiverOfCard) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can only play the " + selectedCard.toString() + " card for yourself."));
+                "You can only play the " + selectedCard.toString() + " card for yourself.",
+                    true,
+                    player.getUserName()));
         return;
       }
     }
@@ -730,14 +755,18 @@ public class Game implements Serializable {
               && player != receiverOfCard) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can only play the " + selectedCard.toString() + " card for yourself."));
+                "You can only play the " + selectedCard.toString() + " card for yourself.",
+                    true,
+                    player.getUserName()));
         return;
       }
       if (((StumblingBlockCard) selectedCard).getStumblingBlock() == StumblingBlock.TRAINING
               && receiverOfCard.getRole() == Role.MANAGER) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can't play the " + selectedCard.toString() + " card against a Manager."));
+                "You can't play the " + selectedCard.toString() + " card against a Manager.",
+                    true,
+                    player.getUserName()));
         return;
       }
     }
@@ -761,7 +790,8 @@ public class Game implements Serializable {
         putCardOnHeap(player, clickedCard);
         player.getReceivedCards().remove(clickedCard);
         chatMessages.addFirst(
-            new ChatMessage(player.getUserName() + " defends with " + selectedCard.toString()));
+            new ChatMessage(
+                player.getUserName() + " defends with " + selectedCard.toString(), false, "all"));
         if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
           player.addToMentalHealth(1);
         }
@@ -788,7 +818,9 @@ public class Game implements Serializable {
                 + bugCard.toString()
                 + "\" with \""
                 + lameExcuseCard.toString()
-                + "\"."));
+                + "\".",
+            false,
+            "all"));
   }
 
   /**
@@ -837,7 +869,9 @@ public class Game implements Serializable {
       chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
-                  + " has to do Fortran Maintenance and lost 3 Mental Health Points."));
+                  + " has to do Fortran Maintenance and lost 3 Mental Health Points.",
+              false,
+              "all"));
     } else {
       Player p = turn.getNextPlayer(turn.getCurrentPlayerIndex());
       p.receiveCard(maintenanceCard);
@@ -846,7 +880,9 @@ public class Game implements Serializable {
               player.getUserName()
                   + " doesn't have to do Fortran Maintenance and card moves to "
                   + p.getUserName()
-                  + "."));
+                  + ".",
+              false,
+              "all"));
     }
     player.removeReceivedCard(maintenanceCard);
   }
@@ -865,12 +901,15 @@ public class Game implements Serializable {
       chatMessages.addFirst(
           new ChatMessage(
               player.getUserName()
-                  + " has to do an off the job training and has to skip his/her turn."));
+                  + " has to do an off the job training and has to skip his/her turn.",
+              false,
+              "all"));
       return true;
 
     } else {
       chatMessages.addFirst(
-          new ChatMessage(player.getUserName() + " doesn't have to do an off the job training."));
+          new ChatMessage(
+              player.getUserName() + " doesn't have to do an off the job training.", false, "all"));
       return false;
     }
   }
@@ -891,7 +930,9 @@ public class Game implements Serializable {
       if (player != receiverOfCard) {
         chatMessages.addFirst(
             new ChatMessage(
-                "You can only play the " + selectedCard.toString() + " card for yourself."));
+                "You can only play the " + selectedCard.toString() + " card for yourself.",
+                true,
+                player.getUserName()));
         return;
       }
 
@@ -1143,5 +1184,14 @@ public class Game implements Serializable {
 
   public GameStatistics getStatistics() {
     return statistics;
+  }
+
+  public String getSenderOfLastPersonalMessageToMe(String receiver) {
+    for (int i = 0; i < chatMessages.size(); i++) {
+      if (chatMessages.get(i).isPersonal() && chatMessages.get(i).getReceiver().equals(receiver)) {
+        return chatMessages.get(i).getPureSender();
+      }
+    }
+    return null;
   }
 }
