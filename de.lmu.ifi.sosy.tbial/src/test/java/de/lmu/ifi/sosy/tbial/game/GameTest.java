@@ -371,7 +371,7 @@ public class GameTest {
     assertFalse(receivingPlayer.getReceivedCards().contains(testCardMaintenance));
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCardMaintenance.toString() + " card for yourself.");
+        "You can only play the " + testCardMaintenance.toString() + " card for yourself.");
 
     game.clickedOnAddCardToPlayer(player, player);
 
@@ -387,7 +387,7 @@ public class GameTest {
 
     if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardMaintenance) {
       assertEquals(
-          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          game.getChatMessages().get(0).getTextMessage(),
           player.getUserName() + " has to do Fortran Maintenance and lost 3 Mental Health Points.");
       assertEquals(player.getMentalHealthInt(), mentalHealthPrevious - 3);
       assertEquals(player.getReceivedCards().contains(testCardMaintenance), false);
@@ -395,7 +395,7 @@ public class GameTest {
       assertEquals(receivingPlayer.getReceivedCards().contains(testCardMaintenance), true);
       assertEquals(player.getReceivedCards().contains(testCardMaintenance), false);
       assertEquals(
-          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          game.getChatMessages().get(0).getTextMessage(),
           player.getUserName()
               + " doesn't have to do Fortran Maintenance and card moves to "
               + receivingPlayer.getUserName()
@@ -419,7 +419,7 @@ public class GameTest {
       assertFalse(receivingPlayer.getReceivedCards().contains(testCardTraining));
       assertEquals(
           game.getChatMessages().get(0).getTextMessage(),
-          "You can't play a " + testCardTraining.toString() + " card against a Manager.");
+          "You can't play the " + testCardTraining.toString() + " card against a Manager.");
     } else {
 
       int playerIndex = game.getTurn().getCurrentPlayerIndex();
@@ -434,14 +434,14 @@ public class GameTest {
       if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
           && game.getTurn().getCurrentPlayer() == receivingPlayer) {
         assertEquals(
-            game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+            game.getChatMessages().get(0).getTextMessage(),
             receivingPlayer.getUserName() + " doesn't have to do an off the job training.");
         assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
       }
       if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
           && !(game.getTurn().getCurrentPlayer() == receivingPlayer)) {
         assertEquals(
-            game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+            game.getChatMessages().get(0).getTextMessage(),
             receivingPlayer.getUserName()
                 + " has to do an off the job training and has to skip his/her turn.");
         assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
@@ -487,7 +487,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // play one bug card against receivingPlayer
     game.clickedOnHandCard(player, bugCard1);
@@ -616,7 +616,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // test card on self
     game.clickedOnPlayAbility(player, player);
@@ -651,7 +651,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // test card on self
     game.clickedOnPlayAbility(player, player);
@@ -891,7 +891,7 @@ public class GameTest {
     assertEquals(receivingPlayer.getPlayedAbilityCards().size(), 0);
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
-        "You can only play a " + testCard.toString() + " card for yourself.");
+        "You can only play the " + testCard.toString() + " card for yourself.");
 
     // test card on self
     game.clickedOnPlayAbility(player, player);
