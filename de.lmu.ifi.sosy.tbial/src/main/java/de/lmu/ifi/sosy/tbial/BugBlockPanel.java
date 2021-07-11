@@ -13,11 +13,9 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PropertyListView;
 
-import de.lmu.ifi.sosy.tbial.game.ActionCard;
-import de.lmu.ifi.sosy.tbial.game.Card;
-import de.lmu.ifi.sosy.tbial.game.Card.CardType;
+import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
+import de.lmu.ifi.sosy.tbial.game.Game;
 import de.lmu.ifi.sosy.tbial.game.Player;
-import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn;
 
 public class BugBlockPanel extends Panel {
@@ -35,13 +33,14 @@ public class BugBlockPanel extends Panel {
           @Override
           protected void populateItem(ListItem<BugBlock> item) {
             WebMarkupContainer bugBlockForm = new WebMarkupContainer("bugBlockForm");
-            Form<?> block = new Form<>("block");
-            Form<?> reject = new Form<>("reject");
+            Form<?> block = new Form<>("block bug");
+            Form<?> reject = new Form<>("do nothing");
 
             final BugBlock bugBlock = item.getModelObject();
-            bugBlockForm.add(new Label("bugBlockSender", bugBlock.getSender()));
-            bugBlockForm.add(new Label("bugBlockMessage", bugBlock.getTextMessage()));
-            session.getGame().getTurn().setStage(Turn.TurnStage.WAITING_FOR_PLAYER_RESPONSE);
+            bugBlockForm.add(
+                new Label(
+                    "bugBlockSenderMessage",
+                    bugBlock.getSender() + " " + bugBlock.getTextMessage()));
 
             Button blockButton =
                 new Button("blockButton") {
@@ -49,30 +48,7 @@ public class BugBlockPanel extends Panel {
 
                   @Override
                   public void onSubmit() {
-                    ActionCard lameExcuseOrSolutionCard = null;
-
-                    for (StackCard card : player.getHandCards()) {
-                      if (((Card) card).getCardType() == CardType.ACTION) {
-                        if (((ActionCard) card).isLameExcuse()
-                            || ((ActionCard) card).isSolution()) {
-                          lameExcuseOrSolutionCard = (ActionCard) card;
-
-                          session.getGame().defendBugImmediately(player, lameExcuseOrSolutionCard);
-
-                          player.getBugBlocks().remove(bugBlock);
-                          remove(bugBlockForm);
-
-                          break;
-                        }
-                      }
-                    }
-
-                    if (lameExcuseOrSolutionCard != null) {
-                      player.removeHandCard(lameExcuseOrSolutionCard);
-                      session.getGame().getStatistics().playedCard(lameExcuseOrSolutionCard);
-                    }
-
-                    session.getGame().getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
+                    session.getGame().getTurn().setStage(TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
                   }
                 };
             Button rejectButton =
@@ -84,15 +60,22 @@ public class BugBlockPanel extends Panel {
                     player.getBugBlocks().remove(bugBlock);
                     remove(bugBlockForm);
 
-                    //
-                    session
-                        .getGame()
+                    Game currentGame = session.getGame();
+
+                    currentGame.putCardOnHeap(player, currentGame.getTurn().getLastPlayedBugCard());
+                    player.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
+
+                    currentGame.getTurn().setAttackedPlayer(null);
+                    currentGame.getTurn().setLastPlayedBugCard(null);
+                    currentGame.getTurn().setLastPlayedBugCardBy(null);
+
+                    currentGame
                         .getChatMessages()
                         .addFirst(
                             new ChatMessage(
                                 player.getUserName() + " rejected to block Bug", false, "all"));
 
-                    session.getGame().getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
+                    currentGame.getTurn().setStage(Turn.TurnStage.PLAYING_CARDS);
                   }
                 };
 

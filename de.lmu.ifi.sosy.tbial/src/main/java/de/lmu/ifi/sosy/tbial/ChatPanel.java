@@ -33,7 +33,7 @@ public class ChatPanel extends Panel {
 
   private MarkupContainer chatMessagesContainer;
 
-  public ChatPanel(String id, TBIALSession session) {
+  public ChatPanel(String id, TBIALSession session, boolean isGameChat) {
     super(id);
 
     final TextField<String> textField = new TextField<String>("message", new Model<String>());
@@ -41,8 +41,12 @@ public class ChatPanel extends Panel {
 
     chatMessagesContainer = new WebMarkupContainer("chatMessages");
 
-    IModel<List<ChatMessage>> chatMessageModel =
-        (IModel<List<ChatMessage>>) () -> session.getGame().getChatMessages();
+    IModel<List<ChatMessage>> chatMessageModel;
+    if (isGameChat) {
+      chatMessageModel = (IModel<List<ChatMessage>>) () -> session.getGame().getChatMessages();
+    } else {
+      chatMessageModel = (IModel<List<ChatMessage>>) () -> LobbyManager.instance.getChatMessages();
+    }
 
     final PropertyListView<ChatMessage> listView =
         new PropertyListView<ChatMessage>("messages", chatMessageModel) {
@@ -121,72 +125,104 @@ public class ChatPanel extends Panel {
 
           @Override
           protected void onSubmit(AjaxRequestTarget target) {
-            String username = ((TBIALSession) getSession()).getUser().getName();
-            String text = textField.getModelObject();
+            boolean success;
 
-            ChatMessage chatMessage = null;
-            Game game = session.getGame();
-            User user = session.getUser();
-
-            if (text != null) {
-              // whisper private message to other user
-              if (text.contains("/w")) {
-                if (game.getAllInGamePlayerNames().stream().anyMatch(text::contains)) {
-                  String receiver =
-                      game.getAllInGamePlayerNames()
-                          .stream()
-                          .filter(text::contains)
-                          .findAny()
-                          .get();
-                  String[] parts = text.split(" ");
-                  String textMessage = "";
-                  for (int i = 0; i < parts.length; i++) {
-                    if (parts[i].equals(receiver)) {
-                      for (int j = i + 1; j < parts.length; j++) {
-                        textMessage += parts[j] + " ";
-                      }
-                      break;
-                    }
-                  }
-                  chatMessage = new ChatMessage(username, textMessage, true, receiver);
-                } else return;
-
-              }
-
-              // reply to private message
-              else if (text.contains("/r")) {
-                String textMessage = text.substring(3);
-                String sender = game.getSenderOfLastPersonalMessageToMe(user.getName());
-                System.out.println(sender);
-                if (sender != null) {
-                  chatMessage = new ChatMessage(username, textMessage, true, sender);
-                } else return;
-              }
-
-              // all other messages
-              else {
-                chatMessage = new ChatMessage(username, text, false, "all");
-              }
+            if (isGameChat) {
+              success = submitChatMessageInGameChat(textField, session);
+            } else {
+              success = submitChatMessageInLobbyChat(textField, session);
             }
 
-            if (chatMessage != null) {
-              if (chatMessage.isMessageEmpty()) return;
-              LinkedList<ChatMessage> chatMessages = game.getChatMessages();
-              synchronized (chatMessages) {
-                if (chatMessages.size() >= maxMessages) {
-                  chatMessages.removeFirst();
-                }
-
-                chatMessages.addFirst(chatMessage);
-              }
+            if (success) {
+              target.add(chatMessagesContainer, textField);
             }
-
-            textField.setModelObject("");
-            target.add(chatMessagesContainer, textField);
           }
         };
 
     Component chatForm = new Form<String>("form").add(textField, send);
     add(chatForm);
+  }
+
+  private boolean submitChatMessageInGameChat(TextField<String> textField, TBIALSession session) {
+    String text = textField.getModelObject();
+
+    ChatMessage chatMessage = null;
+    Game game = session.getGame();
+    User user = session.getUser();
+
+    if (text != null) {
+      // whisper private message to other user
+      if (text.contains("/w")) {
+        if (game.getAllInGamePlayerNames().stream().anyMatch(text::contains)) {
+          String receiver =
+              game.getAllInGamePlayerNames().stream().filter(text::contains).findAny().get();
+          String[] parts = text.split(" ");
+          String textMessage = "";
+          for (int i = 0; i < parts.length; i++) {
+            if (parts[i].equals(receiver)) {
+              for (int j = i + 1; j < parts.length; j++) {
+                textMessage += parts[j] + " ";
+              }
+              break;
+            }
+          }
+          chatMessage = new ChatMessage(user.getName(), textMessage, true, receiver);
+        } else return false;
+
+      }
+
+      // reply to private message
+      else if (text.contains("/r")) {
+        String textMessage = text.substring(3);
+        String sender = game.getSenderOfLastPersonalMessageToMe(user.getName());
+        System.out.println(sender);
+        if (sender != null) {
+          chatMessage = new ChatMessage(user.getName(), textMessage, true, sender);
+        } else return false;
+      }
+
+      // all other messages
+      else {
+        chatMessage = new ChatMessage(user.getName(), text, false, "all");
+      }
+    }
+
+    if (chatMessage != null) {
+      if (chatMessage.isMessageEmpty()) return false;
+      LinkedList<ChatMessage> chatMessages = game.getChatMessages();
+      synchronized (chatMessages) {
+        if (chatMessages.size() >= maxMessages) {
+          chatMessages.removeLast();
+        }
+        chatMessages.addFirst(chatMessage);
+      }
+    }
+
+    textField.setModelObject("");
+    return true;
+  }
+
+  private boolean submitChatMessageInLobbyChat(TextField<String> textField, TBIALSession session) {
+    String text = textField.getModelObject();
+
+    ChatMessage chatMessage = null;
+    User user = session.getUser();
+
+    if (text != null) {
+      chatMessage = new ChatMessage(user.getName(), text, false, "all");
+
+      if (chatMessage.isMessageEmpty()) return false;
+
+      LinkedList<ChatMessage> chatMessages = LobbyManager.instance.getChatMessages();
+      synchronized (chatMessages) {
+        if (chatMessages.size() >= maxMessages) {
+          chatMessages.removeLast();
+        }
+        chatMessages.addFirst(chatMessage);
+      }
+    }
+
+    textField.setModelObject("");
+    return true;
   }
 }

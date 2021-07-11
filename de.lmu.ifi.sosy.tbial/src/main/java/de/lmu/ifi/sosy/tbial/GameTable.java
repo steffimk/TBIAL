@@ -25,15 +25,12 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.time.Duration;
 
-import de.lmu.ifi.sosy.tbial.game.ActionCard;
-import de.lmu.ifi.sosy.tbial.game.Card;
 import de.lmu.ifi.sosy.tbial.DroppableArea.DroppableType;
 
 import de.lmu.ifi.sosy.tbial.game.Player;
 import de.lmu.ifi.sosy.tbial.game.StackAndHeap;
 import de.lmu.ifi.sosy.tbial.game.StackCard;
 import de.lmu.ifi.sosy.tbial.game.Turn.TurnStage;
-import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.Game;
 
 /** Game Table */
@@ -48,7 +45,6 @@ public class GameTable extends BasePage {
   private Player basePlayer;
 
   public GameTable() {
-
     getApplication().getMarkupSettings().setStripWicketTags(true);
 
     // get number of players in current game
@@ -345,7 +341,13 @@ public class GameTable extends BasePage {
 
           @Override
           public void onConfigure() {
-            onConfigureOfGameFlowButtons(this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, null);
+            onConfigureOfGameFlowButtons(
+                this, TurnStage.WAITING_FOR_PLAYER_RESPONSE, TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+            if (getGame().getTurn().getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
+              onConfigureOfGameFlowButtons(this, TurnStage.CHOOSING_CARD_TO_BLOCK_WITH, null);
+            }
+
+            this.setEnabled(false);
             super.onConfigure();
           }
 
@@ -429,34 +431,50 @@ public class GameTable extends BasePage {
         });
 
     table.add(
-        new AbstractAjaxTimerBehavior(Duration.seconds(5)) {
+        new AbstractAjaxTimerBehavior(Duration.seconds(2)) {
           private static final long serialVersionUID = 1L;
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
-            boolean hasLameExcuse = false;
-            boolean hasSolution = false;
+            Game currentGame = getGame();
 
-            for (StackCard card : basePlayer.getHandCards()) {
-              if (((Card) card).getCardType() == CardType.ACTION) {
-                if (((ActionCard) card).isLameExcuse()) {
-                  hasLameExcuse = true;
-                }
-                if (((ActionCard) card).isSolution()) {
-                  hasSolution = true;
-                }
-              }
+            // Update exclusively player's table who played the bug
+            if (currentGame.getHasPlayedBugBeenDefended()
+                && currentGame.getTurn().getCurrentPlayer() == basePlayer) {
+              currentGame.setHasPlayedBugBeenDefended(false);
+              setResponsePage(getPage());
             }
 
-            if (!basePlayer.getBugBlocks().isEmpty() && (hasLameExcuse || hasSolution)) {
-              if (!modal.isShown()) {
-                getGame()
+            if (basePlayer == currentGame.getTurn().getAttackedPlayer()) {
+              boolean canDefendBug = basePlayer.canDefendBug();
+
+              if (canDefendBug
+                  && currentGame.getTurn().getStage() != TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) {
+                if (!modal.isShown()) {
+                  currentGame
+                      .getChatMessages()
+                      .add(
+                          new ChatMessage(
+                              basePlayer.getUserName() + " is making a decision.", false, "all"));
+                }
+                modal.show(target);
+              } else if (!canDefendBug
+                  && basePlayer
+                      .getReceivedCards()
+                      .contains(currentGame.getTurn().getLastPlayedBugCard())) {
+                currentGame.putCardOnHeap(basePlayer, currentGame.getTurn().getLastPlayedBugCard());
+                basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
+                currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
+                currentGame.getTurn().setAttackedPlayer(null);
+                currentGame.getTurn().setLastPlayedBugCard(null);
+                currentGame.getTurn().setLastPlayedBugCardBy(null);
+
+                currentGame
                     .getChatMessages()
                     .addFirst(
                         new ChatMessage(
                             basePlayer.getUserName() + " is making a decision.", false, "all"));
               }
-              modal.show(target);
             }
           }
         });
@@ -471,7 +489,7 @@ public class GameTable extends BasePage {
     gameFlowContainer.add(endTurnButton);
     add(gameFlowContainer);
 
-    add(new ChatPanel("chatPanel", getSession()));
+    add(new ChatPanel("chatPanel", getSession(), true));
 
     WebMarkupContainer ceremony = new WebMarkupContainer("ceremony");
     Label ceremonyTitle =

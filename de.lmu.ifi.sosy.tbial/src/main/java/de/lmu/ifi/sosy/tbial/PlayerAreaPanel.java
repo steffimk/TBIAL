@@ -184,16 +184,6 @@ public class PlayerAreaPanel extends Panel {
                 new Image(
                     "blockCard",
                     new PackageResourceReference(getClass(), blockCard.getResourceFileName())));
-
-            item.add(
-                new AjaxEventBehavior("click") {
-                  private static final long serialVersionUID = 1L;
-
-                  @Override
-                  protected void onEvent(AjaxRequestTarget target) {
-                    getGame().clickedOnReceivedCard(basePlayer, blockCard);
-                  }
-                });
           }
         };
     addCardDropBox.add(blockCards);

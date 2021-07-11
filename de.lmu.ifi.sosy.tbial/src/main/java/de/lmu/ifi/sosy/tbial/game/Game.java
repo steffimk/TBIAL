@@ -71,6 +71,8 @@ public class Game implements Serializable {
 
   private GameStatistics statistics;
 
+  private boolean hasPlayedBugBeenDefended;
+
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
     this.maxPlayers = requireNonNull(maxPlayers);
@@ -96,6 +98,7 @@ public class Game implements Serializable {
     this.startingTime = null;
     this.endingTime = null;
     this.statistics = new GameStatistics();
+    this.hasPlayedBugBeenDefended = false;
   }
 
   /**
@@ -302,11 +305,13 @@ public class Game implements Serializable {
       return;
     }
     receiver.receiveCard(card);
+    turn.setAttackedPlayer(receiver);
 
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
     receiver.blockBug(new BugBlock(player.getUserName()));
     receiver.addToMentalHealth(-1);
+    turn.setStage(Turn.TurnStage.WAITING_FOR_PLAYER_RESPONSE);
   }
 
   /**
@@ -683,8 +688,28 @@ public class Game implements Serializable {
   }
 
   public void clickedOnHandCard(Player player, StackCard handCard) {
-    if (turn.getCurrentPlayer() != player) return;
+    if (turn.getCurrentPlayer() != player && turn.getStage() != TurnStage.CHOOSING_CARD_TO_BLOCK_WITH) return;
+
     player.setSelectedHandCard(handCard);
+
+    boolean isActionCard = handCard != null && ((Card) handCard).getCardType() == CardType.ACTION;
+    if (turn.getStage() == TurnStage.CHOOSING_CARD_TO_BLOCK_WITH
+        && isActionCard
+        && player.getReceivedCards().contains(turn.getLastPlayedBugCard())) {
+
+        if (((ActionCard) player.getSelectedHandCard()).isLameExcuse()
+            || ((ActionCard) player.getSelectedHandCard()).isSolution()) {
+          defendBugImmediately(player, (ActionCard) player.getSelectedHandCard());
+
+        player.removeHandCard(player.getSelectedHandCard());
+
+        player.clearBugBlocks();
+        turn.setAttackedPlayer(null);
+        turn.setLastPlayedBugCard(null);
+        turn.setLastPlayedBugCardBy(null);
+        turn.setStage(Turn.TurnStage.PLAYING_CARDS);
+      }
+    }
   }
 
   /**
@@ -772,44 +797,39 @@ public class Game implements Serializable {
     }
 
     if (((Card) selectedCard).getCardType() != CardType.ABILITY) {
+      if (((Card) selectedCard).getCardType() == CardType.ACTION) {
+        if ((((ActionCard) selectedCard).getAction() == Action.COFFEE_MACHINE
+                || ((ActionCard) selectedCard).getAction() == Action.RED_BULL)
+            && player != receiverOfCard) {
+        	 chatMessages.addFirst(
+        	            new ChatMessage(
+        	                "You can only play the " + selectedCard.toString() + " card for yourself.",
+        	                    true,
+        	                    player.getUserName()));
+
+        }
+      }
       putCardToPlayer(selectedCard, player, receiverOfCard);
       statistics.playedCard(selectedCard);
     }
   }
 
-  public void clickedOnReceivedCard(Player player, StackCard clickedCard) {
-    if (!player.hasSelectedCard()) {
-      return;
-    }
+  /**
+   * Called when player receives a bug and clicks on a lame excuse or solution card in his hand
+   * cards to defend the bug immediately.
+   *
+   * @param player The player who received the bug.
+   * @param blockingCard Either a solution or lame excuse card.
+   */
+  public void defendBugImmediately(Player player, ActionCard blockingCard) {
 
-    StackCard selectedCard = player.getSelectedHandCard();
-    LOGGER.info(player.getUserName() + " clicked on received Card");
-    if (((Card) selectedCard).getCardType() == CardType.ACTION) {
-      if (((ActionCard) selectedCard).isLameExcuse() || ((ActionCard) selectedCard).isSolution()) {
-        discardHandCard(player, selectedCard, false);
-        putCardOnHeap(player, clickedCard);
-        player.getReceivedCards().remove(clickedCard);
-        chatMessages.addFirst(
-            new ChatMessage(
-                player.getUserName() + " defends with " + selectedCard.toString(), false, "all"));
-        if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
-          player.addToMentalHealth(1);
-        }
-      }
-    }
-  }
+	    ActionCard bugCard = turn.getLastPlayedBugCard();
 
-  public void defendBugImmediately(Player player, ActionCard lameExcuseCard) {
-    ActionCard bugCard = turn.getLastPlayedBugCard();
-
-    putCardOnHeap(player, lameExcuseCard);
-    putCardOnHeap(player, bugCard);
-    player.getReceivedCards().remove(lameExcuseCard);
-    player.getReceivedCards().remove(bugCard);
-
-    if (player.getMentalHealthInt() < player.getCharacterCard().getMaxHealthPoints()) {
-      player.addToMentalHealth(1);
-    }
+	    putCardOnHeap(player, bugCard);
+	    putCardOnHeap(player, blockingCard);
+	    statistics.playedCard(blockingCard);
+	    player.getReceivedCards().remove(bugCard);
+	    player.addToMentalHealth(1);
 
     chatMessages.addFirst(
         new ChatMessage(
@@ -817,11 +837,14 @@ public class Game implements Serializable {
                 + " blocked \""
                 + bugCard.toString()
                 + "\" with \""
-                + lameExcuseCard.toString()
+                + blockingCard.toString()
                 + "\".",
             false,
             "all"));
-  }
+
+	    this.setHasPlayedBugBeenDefended(true);
+	  }
+
 
   /**
    * Called at beginning of turn and checks whether player has to deal with stumbling block cards.
@@ -987,6 +1010,9 @@ public class Game implements Serializable {
       saveMentalHealthInfo();
       turn.switchToNextPlayer();
       dealWithStumblingBlocks(turn.getCurrentPlayer());
+      turn.setAttackedPlayer(null);
+      turn.setLastPlayedBugCard(null);
+      turn.setLastPlayedBugCardBy(null);
     }
   }
 
@@ -1186,6 +1212,14 @@ public class Game implements Serializable {
     return statistics;
   }
 
+  public boolean getHasPlayedBugBeenDefended() {
+    return hasPlayedBugBeenDefended;
+  }
+
+  public void setHasPlayedBugBeenDefended(boolean hasPlayedBugBeenDefended) {
+    this.hasPlayedBugBeenDefended = hasPlayedBugBeenDefended; 
+  }
+  
   public String getSenderOfLastPersonalMessageToMe(String receiver) {
     for (int i = 0; i < chatMessages.size(); i++) {
       if (chatMessages.get(i).isPersonal() && chatMessages.get(i).getReceiver().equals(receiver)) {

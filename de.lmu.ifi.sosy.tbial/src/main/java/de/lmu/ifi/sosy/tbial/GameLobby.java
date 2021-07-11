@@ -210,7 +210,7 @@ public class GameLobby extends BasePage {
 
     startGameLink.setOutputMarkupId(true);
 
-    add(new ChatPanel("chatPanel", getSession()));
+    add(new ChatPanel("chatPanel", getSession(), true));
     add(currentStatusLabel);
     add(isHostLabel);
     add(startGameForm);
