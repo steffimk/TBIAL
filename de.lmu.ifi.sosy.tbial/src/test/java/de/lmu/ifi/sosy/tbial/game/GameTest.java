@@ -745,7 +745,6 @@ public class GameTest {
       receiver = game.getPlayers().get("A");
     }
     receiver.getHandCards().clear();
-    receiver.getPlayedAbilityCards().clear();
 
     int receiverMentalHealth = receiver.getMentalHealthInt();
 
@@ -768,8 +767,6 @@ public class GameTest {
     } else {
       receiver = game.getPlayers().get("A");
     }
-    receiver.getHandCards().clear();
-    receiver.getPlayedAbilityCards().clear();
 
     int receiverMentalHealth = receiver.getMentalHealthInt();
 
@@ -806,9 +803,7 @@ public class GameTest {
     } else {
       receiver = game.getPlayers().get("A");
     }
-    receiver.getHandCards().clear();
-    receiver.getPlayedAbilityCards().clear();
-
+    
     int receiverMentalHealth = receiver.getMentalHealthInt();
 
     StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
@@ -844,9 +839,8 @@ public class GameTest {
     } else {
       receiver = game.getPlayers().get("A");
     }
-    player.getHandCards().clear();
-    receiver.getHandCards().clear();
-    receiver.getPlayedAbilityCards().clear();
+
+    int handCardSizePlayer = player.getHandCards().size();
 
     StackCard testNullpointerBugCard = new ActionCard(Action.NULLPOINTER);
     player.addToHandCards(testNullpointerBugCard);
@@ -856,14 +850,14 @@ public class GameTest {
     StackCard testSolutionCard = new ActionCard(Action.COFFEE);
     receiver.addToHandCards(testSolutionCard);
 
-    assertEquals(player.getHandCards().size(), 2);
+    assertEquals(player.getHandCards().size(), handCardSizePlayer + 2);
     game.clickedOnDrawCardsButton(player);
-    assertEquals(player.getHandCards().size(), 4);
+    assertEquals(player.getHandCards().size(), handCardSizePlayer + 4);
 
     player.setSelectedHandCard(testNullpointerBugCard);
     game.clickedOnAddCardToPlayer(player, receiver);
 
-    assertEquals(player.getHandCards().size(), 3);
+    assertEquals(player.getHandCards().size(), handCardSizePlayer + 3);
     assertThat(player.getHandCards().contains(testNullpointerBugCard), is(false));
     assertEquals(game.getTurn().getPlayedBugCardsInThisTurn(), 1);
 
@@ -913,9 +907,6 @@ public class GameTest {
     } else {
       receiver = game.getPlayers().get("A");
     }
-    player.getHandCards().clear();
-    receiver.getHandCards().clear();
-    receiver.getPlayedAbilityCards().clear();
 
     StackCard testNullpointerBugCard = new ActionCard(Action.NULLPOINTER);
     player.addToHandCards(testNullpointerBugCard);
@@ -941,9 +932,6 @@ public class GameTest {
     } else {
       receiver = game.getPlayers().get("A");
     }
-    player.getHandCards().clear();
-    receiver.getHandCards().clear();
-    receiver.getPlayedAbilityCards().clear();
 
     StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
     player.addToHandCards(testBugCard);
