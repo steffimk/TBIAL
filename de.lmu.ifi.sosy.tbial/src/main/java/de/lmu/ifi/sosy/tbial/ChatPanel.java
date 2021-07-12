@@ -138,6 +138,7 @@ public class ChatPanel extends Panel {
 
           @Override
           protected void onSubmit(AjaxRequestTarget target) {
+
             boolean success;
 
             if (isGameChat) {
@@ -166,34 +167,43 @@ public class ChatPanel extends Panel {
     if (text != null) {
       // whisper private message to other user
       if (text.contains("/w")) {
-        if (game.getAllInGamePlayerNames().stream().anyMatch(text::contains)) {
-          String receiver =
-              game.getAllInGamePlayerNames().stream().filter(text::contains).findAny().get();
-          String[] parts = text.split(" ");
-          String textMessage = "";
-          for (int i = 0; i < parts.length; i++) {
-            if (parts[i].equals(receiver)) {
-              for (int j = i + 1; j < parts.length; j++) {
-                textMessage += parts[j] + " ";
-              }
-              break;
-            }
+        int smallestIndexOfName = Integer.MAX_VALUE;
+        String receiver = "";
+        for (String name : game.getAllInGamePlayerNames()) {
+          int indexOfName = text.indexOf(name + " ");
+          if (indexOfName >= 0 && indexOfName < smallestIndexOfName) {
+            receiver = name;
+            smallestIndexOfName = indexOfName;
           }
-          chatMessage = new ChatMessage(user.getName(), textMessage, true, receiver);
-        } else return false;
+        }
+        // If no name found: return
+        if (smallestIndexOfName == Integer.MAX_VALUE) {
+          return false;
+        }
 
+        String[] parts = text.split(" ");
+        String textMessage = "";
+        for (int i = 0; i < parts.length; i++) {
+          if (parts[i].equals(receiver)) {
+            for (int j = i + 1; j < parts.length; j++) {
+              textMessage += parts[j] + " ";
+            }
+            break;
+          }
+        }
+        chatMessage = new ChatMessage(user.getName(), textMessage, true, receiver);
       }
 
       // reply to private message
       else if (text.contains("/r")) {
         String textMessage = text.substring(3);
         String sender = game.getSenderOfLastPersonalMessageToMe(user.getName());
-        System.out.println(sender);
         if (sender != null) {
           chatMessage = new ChatMessage(user.getName(), textMessage, true, sender);
-        } else return false;
+        } else {
+          return false;
+        }
       }
-
       // all other messages
       else {
         chatMessage = new ChatMessage(user.getName(), text, false, "all");
@@ -201,7 +211,9 @@ public class ChatPanel extends Panel {
     }
 
     if (chatMessage != null) {
-      if (chatMessage.isMessageEmpty()) return false;
+      if (chatMessage.isMessageEmpty()) {
+        return false;
+      }
       LinkedList<ChatMessage> chatMessages = game.getChatMessages();
       synchronized (chatMessages) {
         if (chatMessages.size() >= maxMessages) {
