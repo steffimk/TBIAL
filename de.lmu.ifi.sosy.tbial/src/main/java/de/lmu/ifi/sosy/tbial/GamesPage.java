@@ -181,7 +181,7 @@ public class GamesPage extends BasePage {
 
     WebMarkupContainer gameListContainer = new WebMarkupContainer("gameListContainer");
     gameListContainer.add(gameList);
-    gameListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(10)));
+    gameListContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)));
     gameListContainer.setOutputMarkupId(true);
 
     add(gameListContainer);
