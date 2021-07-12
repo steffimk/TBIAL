@@ -198,7 +198,6 @@ public class ChatPanel extends Panel {
       else if (text.contains("/r")) {
         String textMessage = text.substring(3);
         String sender = game.getSenderOfLastPersonalMessageToMe(user.getName());
-        System.out.println(sender);
         if (sender != null) {
           chatMessage = new ChatMessage(user.getName(), textMessage, true, sender);
         } else {
