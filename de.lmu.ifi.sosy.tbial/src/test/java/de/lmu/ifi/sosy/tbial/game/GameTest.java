@@ -3,7 +3,7 @@ package de.lmu.ifi.sosy.tbial.game;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -364,41 +364,29 @@ public class GameTest {
     Player receivingPlayer = game.getTurn().getNextPlayer(game.getTurn().getCurrentPlayerIndex());
     StackCard testCardMaintenance = new StumblingBlockCard(StumblingBlock.MAINTENANCE);
     player.addToHandCards(testCardMaintenance);
-    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-    game.clickedOnHandCard(player, testCardMaintenance);
-    game.clickedOnAddCardToPlayer(player, receivingPlayer);
-
-    assertFalse(receivingPlayer.getReceivedCards().contains(testCardMaintenance));
-    assertEquals(
-        game.getChatMessages().get(0).getTextMessage(),
-        "You can only play the " + testCardMaintenance.toString() + " card for yourself.");
-
-    game.clickedOnAddCardToPlayer(player, player);
-
-    int mentalHealthPrevious = player.getMentalHealthInt();
-
-    // it needs to be the player's turn again
-    game.getTurn().switchToNextPlayer();
-    game.getTurn().switchToNextPlayer();
-    game.getTurn().switchToNextPlayer();
-    game.getTurn().getCurrentPlayer().removeAllHandCards(player.getHandCards());
+    game.putCardToPlayer(testCardMaintenance, player, receivingPlayer);
+    int mentalHealthPrevious = receivingPlayer.getMentalHealthInt();
+    player.removeAllHandCards(player.getHandCards());
     game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
-    game.clickedOnEndTurnButton(game.getTurn().getCurrentPlayer());
+    game.clickedOnEndTurnButton(player);
 
     if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardMaintenance) {
       assertEquals(
-          game.getChatMessages().get(0).getTextMessage(),
-          player.getUserName() + " has to do Fortran Maintenance and lost 3 Mental Health Points.");
-      assertEquals(player.getMentalHealthInt(), mentalHealthPrevious - 3);
-      assertEquals(player.getReceivedCards().contains(testCardMaintenance), false);
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName()
+              + " has to do Fortran Maintenance and lost 3 Mental Health Points.");
+      assertEquals(receivingPlayer.getMentalHealthInt(), mentalHealthPrevious - 3);
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardMaintenance), false);
     } else {
-      assertEquals(receivingPlayer.getReceivedCards().contains(testCardMaintenance), true);
-      assertEquals(player.getReceivedCards().contains(testCardMaintenance), false);
+      Turn turn = game.getTurn();
+      Player nextPlayer = turn.getNextPlayer(turn.getCurrentPlayerIndex());
+      assertEquals(nextPlayer.getReceivedCards().contains(testCardMaintenance), true);
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardMaintenance), false);
       assertEquals(
-          game.getChatMessages().get(0).getTextMessage(),
-          player.getUserName()
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName()
               + " doesn't have to do Fortran Maintenance and card moves to "
-              + receivingPlayer.getUserName()
+              + nextPlayer.getUserName()
               + ".");
     }
   }
@@ -406,48 +394,36 @@ public class GameTest {
   @Test
   public void stumblingBlocksTraining() {
     Game game = getNewGameThatHasStarted();
-    game.getTurn().setTurnPlayerUseForTestingOnly(game.getPlayers().get("username"));
     Player player = game.getTurn().getCurrentPlayer();
     Player receivingPlayer = game.getTurn().getNextPlayer(game.getTurn().getCurrentPlayerIndex());
     StackCard testCardTraining = new StumblingBlockCard(StumblingBlock.TRAINING);
     player.addToHandCards(testCardTraining);
-    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
-    game.clickedOnHandCard(player, testCardTraining);
-    game.clickedOnAddCardToPlayer(player, receivingPlayer);
+    game.putCardToPlayer(testCardTraining, player, receivingPlayer);
+    int playerIndex = game.getTurn().getCurrentPlayerIndex();
+    playerIndex++;
+    if (playerIndex == game.getPlayers().size()) {
+      playerIndex = 0;
+    }
+    player.removeAllHandCards(player.getHandCards());
+    game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
+    game.clickedOnEndTurnButton(player);
 
-    if (receivingPlayer.getRole() == Role.MANAGER) {
-      assertFalse(receivingPlayer.getReceivedCards().contains(testCardTraining));
+    if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
+        && game.getTurn().getCurrentPlayer() == receivingPlayer) {
       assertEquals(
-          game.getChatMessages().get(0).getTextMessage(),
-          "You can't play the " + testCardTraining.toString() + " card against a Manager.");
-    } else {
-
-      int playerIndex = game.getTurn().getCurrentPlayerIndex();
-      playerIndex++;
-      if (playerIndex == game.getPlayers().size()) {
-        playerIndex = 0;
-      }
-      player.removeAllHandCards(player.getHandCards());
-      game.getTurn().setStage(TurnStage.DISCARDING_CARDS);
-      game.clickedOnEndTurnButton(player);
-
-      if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
-          && game.getTurn().getCurrentPlayer() == receivingPlayer) {
-        assertEquals(
-            game.getChatMessages().get(0).getTextMessage(),
-            receivingPlayer.getUserName() + " doesn't have to do an off the job training.");
-        assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
-      }
-      if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
-          && !(game.getTurn().getCurrentPlayer() == receivingPlayer)) {
-        assertEquals(
-            game.getChatMessages().get(0).getTextMessage(),
-            receivingPlayer.getUserName()
-                + " has to do an off the job training and has to skip his/her turn.");
-        assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
-        assertEquals(
-            game.getTurn().getCurrentPlayer() == game.getTurn().getNextPlayer(playerIndex), true);
-      }
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName() + " doesn't have to do an off the job training.");
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
+    }
+    if (game.getStackAndHeap().getUppermostCardOfHeap() == testCardTraining
+        && !(game.getTurn().getCurrentPlayer() == receivingPlayer)) {
+      assertEquals(
+          game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+          receivingPlayer.getUserName()
+              + " has to do an off the job training and has to skip his/her turn.");
+      assertEquals(receivingPlayer.getReceivedCards().contains(testCardTraining), false);
+      assertEquals(
+          game.getTurn().getCurrentPlayer() == game.getTurn().getNextPlayer(playerIndex), true);
     }
   }
 
@@ -497,14 +473,21 @@ public class GameTest {
     assertEquals(receivingPlayer.getReceivedCards().contains(bugCard1), true);
     assertEquals(receivingPlayer.getBugBlocks().size(), 1);
 
+    game.getTurn().setStage(TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+    ActionCard defend = new ActionCard(Action.COFFEE);
+    receivingPlayer.addToHandCards(defend);
+    game.clickedOnHandCard(receivingPlayer, defend);
+
     // play second bug card against receivingPlayer -> not possible
     game.clickedOnHandCard(player, bugCard2);
     game.clickedOnAddCardToPlayer(player, receivingPlayer);
-    assertEquals(receivingPlayer.getBugBlocks().size(), 1);
-    assertEquals(receivingPlayer.getReceivedCards().size(), 1);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 0);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 0);
     assertEquals(receivingPlayer.getReceivedCards().contains(bugCard2), false);
     assertEquals(player.getHandCards().contains(bugCard2), true);
+
     assertEquals(game.getChatMessages().get(0).getTextMessage(), "You cannot play another bug.");
+
 
     // test Accenture card on self
     game.clickedOnHandCard(player, testCard);
@@ -513,17 +496,17 @@ public class GameTest {
     assertEquals(player.getPrestigeInt(), 0);
     assertEquals(player.getMaxBugCardsPerTurn(), Integer.MAX_VALUE);
     assertEquals(
+
         game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " worked at Accenture and can play as many bugs as he/she wants.");
 
     // play second bug card against receivingPlayer again -> now it works
     game.clickedOnHandCard(player, bugCard2);
     game.clickedOnAddCardToPlayer(player, receivingPlayer);
-    assertEquals(receivingPlayer.getReceivedCards().size(), 2);
-    assertEquals(receivingPlayer.getReceivedCards().contains(bugCard1), true);
+    assertEquals(receivingPlayer.getReceivedCards().size(), 1);
     assertEquals(receivingPlayer.getReceivedCards().contains(bugCard2), true);
     assertEquals(player.getHandCards().contains(bugCard2), false);
-    assertEquals(receivingPlayer.getBugBlocks().size(), 2);
+    assertEquals(receivingPlayer.getBugBlocks().size(), 1);
   }
 
   @Test
@@ -733,6 +716,239 @@ public class GameTest {
     assertEquals(
         game.getChatMessages().get(0).getTextMessage(),
         player.getUserName() + " put on sunglasses and sees everybody with -1 prestige.");
+  }
+
+  @Test
+  public void playBugCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receiver = game.getTurn().getNextPlayer(game.getTurn().getCurrentPlayerIndex());
+
+    StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testBugCard);
+
+    game.putCardToPlayer(testBugCard, player, receiver);
+
+    assertThat(receiver.getReceivedCards().contains(testBugCard), is(true));
+    assertEquals(game.getTurn().getAttackedPlayer(), receiver);
+    assertEquals(game.getTurn().getLastPlayedBugCard(), testBugCard);
+    assertEquals(game.getTurn().getLastPlayedBugCardBy(), player);
+  }
+
+  @Test
+  public void canNotDefendBugCard() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receiver;
+    if (player == game.getPlayers().get("A")) {
+      receiver = game.getPlayers().get("B");
+    } else {
+      receiver = game.getPlayers().get("A");
+    }
+    receiver.getHandCards().clear();
+
+    int receiverMentalHealth = receiver.getMentalHealthInt();
+
+    StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testBugCard);
+
+    game.putCardToPlayer(testBugCard, player, receiver);
+
+    assertThat(receiver.canDefendBug(), is(false));
+    assertNotEquals(receiver.getMentalHealth(), receiverMentalHealth);
+  }
+
+  @Test
+  public void canDefendBugCardWithLameExcuse() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receiver;
+    if (player == game.getPlayers().get("A")) {
+      receiver = game.getPlayers().get("B");
+    } else {
+      receiver = game.getPlayers().get("A");
+    }
+
+    StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testBugCard);
+
+    StackCard testLameExcuseCard = new ActionCard(Action.FEATURE);
+    receiver.addToHandCards(testLameExcuseCard);
+
+    canDefendWithCard(game, player, receiver, testBugCard, testLameExcuseCard);
+  }
+
+  @Test
+  public void canDefendBugCardWithSolution() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receiver;
+    if (player == game.getPlayers().get("A")) {
+      receiver = game.getPlayers().get("B");
+    } else {
+      receiver = game.getPlayers().get("A");
+    }
+
+    StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testBugCard);
+
+    StackCard testSolutionCard = new ActionCard(Action.COFFEE);
+    receiver.addToHandCards(testSolutionCard);
+
+    canDefendWithCard(game, player, receiver, testBugCard, testSolutionCard);
+  }
+
+  public void canDefendWithCard(
+      Game game,
+      Player player,
+      Player receiver,
+      StackCard testBugCard,
+      StackCard cardToDefendWith) {
+    int heapSize = game.getStackAndHeap().getHeap().size();
+    int receiverMentalHealth = receiver.getMentalHealthInt();
+
+    game.putCardToPlayer(testBugCard, player, receiver);
+
+    assertThat(receiver.canDefendBug(), is(true));
+    assertNotEquals(receiver.getMentalHealth(), receiverMentalHealth);
+
+    game.defendBugImmediately(receiver, (ActionCard) cardToDefendWith);
+
+    assertEquals(receiver.getMentalHealthInt(), receiverMentalHealth);
+    assertEquals(game.getStackAndHeap().getHeap().size(), heapSize + 2);
+    assertThat(game.getStackAndHeap().getHeap().contains(testBugCard), is(true));
+    assertThat(game.getStackAndHeap().getHeap().contains(cardToDefendWith), is(true));
+    assertThat(player.getHandCards().contains(cardToDefendWith), is(false));
+    assertThat(player.getReceivedCards().contains(testBugCard), is(false));
+  }
+
+  @Test
+  public void drawTwoCardsAndCanPlayOneBugPerTurn() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receiver;
+    if (player == game.getPlayers().get("A")) {
+      receiver = game.getPlayers().get("B");
+    } else {
+      receiver = game.getPlayers().get("A");
+    }
+
+    int handCardSizePlayer = player.getHandCards().size();
+
+    StackCard testNullpointerBugCard = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testNullpointerBugCard);
+    StackCard testHatesUiBugCard = new ActionCard(Action.HATES_UI);
+    player.addToHandCards(testHatesUiBugCard);
+
+    StackCard testSolutionCard = new ActionCard(Action.COFFEE);
+    receiver.addToHandCards(testSolutionCard);
+
+    assertEquals(player.getHandCards().size(), handCardSizePlayer + 2);
+    game.clickedOnDrawCardsButton(player);
+    assertEquals(player.getHandCards().size(), handCardSizePlayer + 4);
+
+    player.setSelectedHandCard(testNullpointerBugCard);
+    game.clickedOnAddCardToPlayer(player, receiver);
+
+    assertEquals(player.getHandCards().size(), handCardSizePlayer + 3);
+    assertThat(player.getHandCards().contains(testNullpointerBugCard), is(false));
+    assertEquals(game.getTurn().getPlayedBugCardsInThisTurn(), 1);
+
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    player.setSelectedHandCard(testHatesUiBugCard);
+    game.clickedOnAddCardToPlayer(player, receiver);
+
+    assertEquals(
+        game.getChatMessages().get(game.getChatMessages().size() - 1).getTextMessage(),
+        "You cannot play another bug.");
+    assertThat(player.getHandCards().contains(testHatesUiBugCard), is(true));
+    assertEquals(game.getTurn().getPlayedBugCardsInThisTurn(), 1);
+  }
+
+  @Test
+  public void canEndTurn() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+
+    int handCardSizeBeforeDraw = player.getHandCards().size();
+    game.clickedOnDrawCardsButton(player);
+
+    assertEquals(handCardSizeBeforeDraw + 2, player.getHandCards().size());
+    assertThat(player.canEndTurn(), is(false));
+    
+    game.clickedOnDiscardButton(player);
+    assertEquals(game.getTurn().getStage(), TurnStage.DISCARDING_CARDS);
+    assertThat(player.canEndTurn(), is(false));
+    
+    player.setSelectedHandCard(player.getHandCards().stream().findFirst().get());
+    game.clickedOnHeap(player);
+    assertThat(player.canEndTurn(), is(false));
+    
+    player.setSelectedHandCard(player.getHandCards().stream().findFirst().get());
+    game.clickedOnHeap(player);
+    assertThat(player.canEndTurn(), is(true));
+  }
+
+  @Test
+  public void TurnStageChangesIfBugIsPlayedAgainstPlayer() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receiver;
+    if (player == game.getPlayers().get("A")) {
+      receiver = game.getPlayers().get("B");
+    } else {
+      receiver = game.getPlayers().get("A");
+    }
+
+    StackCard testNullpointerBugCard = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testNullpointerBugCard);
+
+    StackCard testSolutionCard = new ActionCard(Action.COFFEE);
+    receiver.addToHandCards(testSolutionCard);
+
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    player.setSelectedHandCard(testNullpointerBugCard);
+    game.clickedOnAddCardToPlayer(player, receiver);
+
+    assertEquals(game.getTurn().getStage(), TurnStage.WAITING_FOR_PLAYER_RESPONSE);
+  }
+
+  @Test
+  public void ChooseCardToDefend() {
+    Game game = getNewGameThatHasStarted();
+    Player player = game.getTurn().getCurrentPlayer();
+    Player receiver;
+    if (player == game.getPlayers().get("A")) {
+      receiver = game.getPlayers().get("B");
+    } else {
+      receiver = game.getPlayers().get("A");
+    }
+
+    StackCard testBugCard = new ActionCard(Action.NULLPOINTER);
+    player.addToHandCards(testBugCard);
+
+    StackCard testSolutionCardCoffee = new ActionCard(Action.COFFEE);
+    receiver.addToHandCards(testSolutionCardCoffee);
+
+    game.getTurn().setStage(TurnStage.PLAYING_CARDS);
+
+    player.setSelectedHandCard(testBugCard);
+    game.clickedOnAddCardToPlayer(player, receiver);
+    assertThat(receiver.getReceivedCards().contains(testBugCard), is(true));
+    assertEquals(game.getTurn().getAttackedPlayer(), receiver);
+    assertEquals(game.getTurn().getLastPlayedBugCard(), testBugCard);
+
+    game.getTurn().setStage(TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+
+    game.clickedOnHandCard(receiver, testSolutionCardCoffee);
+
+    assertEquals(game.getTurn().getAttackedPlayer(), null);
+    assertEquals(game.getTurn().getStage(), TurnStage.PLAYING_CARDS);
+    assertEquals(receiver.getSelectedHandCard(), null);
+    assertThat(receiver.getReceivedCards().contains(testBugCard), is(false));
+    assertThat(receiver.getHandCards().contains(testSolutionCardCoffee), is(false));
   }
 
   @Test

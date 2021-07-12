@@ -6,12 +6,14 @@
 	<wicket:head>
 	<wicket:link>
 		<link rel="stylesheet" href="lobby.css" type="text/css" />
+		<link rel="stylesheet" href="chat.css" type="text/css" />
 	</wicket:link>
 	</wicket:head>
 </head>
 
 <body>
   <wicket:extend>
+    <div class="contentWrapper">
     <h3>The Lobby.</h3>
 
 
@@ -44,6 +46,9 @@
     	<div class="spacer"></div>
     </form>
     </div>
+    </div>
+    <div wicket:id="chatPanel" class="chatWrapper"></div>
+    
 </wicket:extend>
 </body>
 

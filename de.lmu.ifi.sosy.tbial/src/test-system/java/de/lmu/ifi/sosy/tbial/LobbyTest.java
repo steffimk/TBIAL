@@ -16,8 +16,11 @@ import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -126,5 +129,51 @@ public class LobbyTest extends PageTestBase {
                   "gameListContainer:openGames:" + i + ":gamename");
       assertTrue(gameNames.contains(gameNameLabel.getDefaultModelObject()));
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void chatIsWorking() {
+
+    tester.startPage(Lobby.class);
+
+    // check if chat is empty in the beginning
+    assertEquals(LobbyManager.instance.getChatMessages().isEmpty(), true);
+
+    // basePlayer sends two messages
+    FormTester form = tester.newFormTester("chatPanel:form");
+    form.setValue("message", "TestText1");
+    form.submit("send");
+    form.setValue("message", "TestText2");
+    form.submit("send");
+
+    // basePlayer sends an empty message
+    form.setValue("message", "");
+    form.submit("send");
+
+    // check if non-empty messages are displayed
+    ListView<ChatMessage> messageList =
+        (ListView<ChatMessage>)
+            tester.getComponentFromLastRenderedPage("chatPanel:chatMessages:messages");
+
+    messageList.visitChildren(
+        ListItem.class,
+        new IVisitor<ListItem<ChatMessage>, Void>() {
+
+          @Override
+          public void component(ListItem<ChatMessage> item, IVisit<Void> visit) {
+            tester.assertComponent(item.getPath().substring(2) + ":sender", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":sender", item.getModelObject().getSender());
+            tester.assertComponent(item.getPath().substring(2) + ":textMessage", Label.class);
+            tester.assertModelValue(
+                item.getPath().substring(2) + ":textMessage",
+                item.getModelObject().getTextMessage());
+            visit.dontGoDeeper();
+          }
+        });
+
+    // check if empty messages were not sent
+    assertEquals(LobbyManager.instance.getChatMessages().size(), 2);
   }
 }
