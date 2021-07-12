@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.lmu.ifi.sosy.tbial.BugBlock;
 import de.lmu.ifi.sosy.tbial.ChatMessage;
+import de.lmu.ifi.sosy.tbial.db.PlayerStatistics;
 import de.lmu.ifi.sosy.tbial.game.ActionCard.Action;
 import de.lmu.ifi.sosy.tbial.game.Card.CardType;
 import de.lmu.ifi.sosy.tbial.game.RoleCard.Role;
@@ -68,6 +69,8 @@ public class Game implements Serializable {
   private String winners = "";
 
   private GameStatistics statistics;
+
+  private PlayerStatistics playerstatistics;
 
   public Game(String name, int maxPlayers, boolean isPrivate, String password, String userName) {
     this.name = requireNonNull(name);
@@ -264,10 +267,10 @@ public class Game implements Serializable {
     receiver.addToMentalHealth(1);
     stackAndHeap.addToHeap(card, receiver, false);
     String message = "the solution \"" + card.toString() + "\"";
-    if(player.equals(receiver)) {
-    	message = player.getUserName() + " played " + message + ".";
+    if (player.equals(receiver)) {
+      message = player.getUserName() + " played " + message + ".";
     } else {
-    	message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
+      message = receiver.getUserName() + " received " + message + " from " + player.getUserName();
     }
     chatMessages.add(new ChatMessage(message));
   }
@@ -284,6 +287,7 @@ public class Game implements Serializable {
     turn.incrementPlayedBugCardsThisTurn();
     turn.setLastPlayedBugCard((ActionCard) card);
     turn.setLastPlayedBugCardBy(player);
+    player.getPlayerStatistics().setBugCount();
 
     if (receiver.bugGetsBlockedByBugDelegationCard(chatMessages, receiver)) {
       // Receiver moves card to heap immediately without having to react
@@ -298,7 +302,7 @@ public class Game implements Serializable {
       return;
     }
     receiver.receiveCard(card);
-    
+
     LOGGER.info(player.getUserName() + " played bug card " + card.toString());
 
     receiver.blockBug(new BugBlock(player.getUserName()));
@@ -568,7 +572,7 @@ public class Game implements Serializable {
     if (!player.hasSelectedCard()) {
       return;
     }
-    
+
     StackCard selectedCard = player.getSelectedHandCard();
     LOGGER.info(player.getUserName() + " clicked on received Card");
     if (((Card) selectedCard).getCardType() == CardType.ACTION) {
@@ -685,8 +689,8 @@ public class Game implements Serializable {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
           || manager.isFired() && allMonkeysFired(monkeys) && developer.isFired()) {
-      endGame();
-    }
+        endGame();
+      }
     } else {
       if (manager.isFired()
           || consultant.isFired() && allMonkeysFired(monkeys)
@@ -694,7 +698,6 @@ public class Game implements Serializable {
         endGame();
       }
     }
-    
   }
 
   public boolean allMonkeysFired(List<Player> monkeys) {
@@ -821,13 +824,49 @@ public class Game implements Serializable {
   }
 
   public String getGroupWon() {
+    //Set Games and Role Count
+    manager.getPlayerStatistics().setGamesCount();
+    manager.getPlayerStatistics().setManagerCount();
+    consultant.getPlayerStatistics().setGamesCount();
+    consultant.getPlayerStatistics().setConsultantCount();
+    developer.getPlayerStatistics().setGamesCount();
+    developer.getPlayerStatistics().setHonestDeveloperCount();
+    for (Player p : getEvilCodeMonkeys()) {
+      p.getPlayerStatistics().setGamesCount();
+      p.getPlayerStatistics().setEvilCodeMonkeyCount();
+    }
+
     if (manager.hasWon() && developer == null) {
+      manager.getPlayerStatistics().setWinCount();
+      consultant.getPlayerStatistics().setLoseCount();
+      developer.getPlayerStatistics().setLoseCount();
+      for (Player p : getEvilCodeMonkeys()) {
+        p.getPlayerStatistics().setLoseCount();
+      }
       return "The Manager has won!";
     } else if (consultant.hasWon()) {
+      consultant.getPlayerStatistics().setWinCount();
+      manager.getPlayerStatistics().setLoseCount();
+      developer.getPlayerStatistics().setLoseCount();
+      for (Player p : getEvilCodeMonkeys()) {
+        p.getPlayerStatistics().setLoseCount();
+      }
       return "The Consultant has won!";
     } else if (allMonkeysWon(monkeys)) {
+      for (Player p : getEvilCodeMonkeys()) {
+        p.getPlayerStatistics().setWinCount();
+      }
+      manager.getPlayerStatistics().setLoseCount();
+      developer.getPlayerStatistics().setLoseCount();
+      consultant.getPlayerStatistics().setLoseCount();
       return "The Evil Code Monkeys have won!";
-    } else return "The Manager and the Honest Developer have won!";
+    } else manager.getPlayerStatistics().setWinCount();
+    developer.getPlayerStatistics().setWinCount();
+    consultant.getPlayerStatistics().setLoseCount();
+    for (Player p : getEvilCodeMonkeys()) {
+      p.getPlayerStatistics().setLoseCount();
+    }
+    return "The Manager and the Honest Developer have won!";
   }
 
   /** Each player saves his current count of mental health points. */

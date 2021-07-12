@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.ComponentTag;
@@ -143,8 +144,10 @@ public class GameLobby extends BasePage {
           @Override
           protected void populateItem(final ListItem<Player> listItem) {
             final Player player = listItem.getModelObject();
+            final String statisticText = getStatisticText(player);
             if (player.getUserName() == null) throw new NullPointerException("Player is null!");
             listItem.add(new Label("playerName", player.getUserName()));
+            listItem.add(AttributeModifier.append("statisticTooltip", statisticText));
           }
         };
 
@@ -253,6 +256,25 @@ public class GameLobby extends BasePage {
 
     if (currentPlayers > 4) return message + " The host can start the game.";
     else return message + " Waiting for more players to join.";
+  }
+
+  public String getStatisticText(Player player) {
+    return "Games: "
+        + player.getPlayerStatistics().getGamesCount()
+        + "\n Won: "
+        + player.getPlayerStatistics().getWinCount()
+        + "\n Lost: "
+        + player.getPlayerStatistics().getLoseCount()
+        + "\n\n ROLES \n Manager: "
+        + player.getPlayerStatistics().getManagerCount()
+        + "\n Honest Developer: "
+        + player.getPlayerStatistics().getHonestDeveloperCount()
+        + "\n Consultant: "
+        + player.getPlayerStatistics().getConsultantCount()
+        + "\n Evil Code Monkey: "
+        + player.getPlayerStatistics().getEvilCodeMonkeyCount()
+        + "\n\n Bugs played: "
+        + player.getPlayerStatistics().getBugCount();
   }
 
   public Game getGame() {

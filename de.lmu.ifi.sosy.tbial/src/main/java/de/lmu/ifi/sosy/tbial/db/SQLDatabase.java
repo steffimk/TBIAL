@@ -1,8 +1,5 @@
 package de.lmu.ifi.sosy.tbial.db;
 
-import de.lmu.ifi.sosy.tbial.ConfigurationException;
-import de.lmu.ifi.sosy.tbial.DatabaseException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,9 +7,13 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.Objects;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
+import de.lmu.ifi.sosy.tbial.ConfigurationException;
+import de.lmu.ifi.sosy.tbial.DatabaseException;
 
 /**
  * A database using JNDI data source to connect to a real database.
@@ -35,6 +36,19 @@ public class SQLDatabase implements Database {
     }
     if (dataSource == null) {
       throw new ConfigurationException("No data source registered in JNDI for " + JNDI_PATH_DB);
+    }
+  }
+
+  public PlayerStatistics getPlayerStatistics(String name) {
+    Objects.requireNonNull(name, "name is null");
+
+    try (Connection connection = getConnection();
+        PreparedStatement query = userByNameQuery(name, connection);
+        ResultSet result = query.executeQuery()) {
+
+      return getPlayerStatisticsFromResult(result);
+    } catch (SQLException e) {
+      throw new DatabaseException("Error while querying for player-statistics in DB.", e);
     }
   }
 
@@ -90,12 +104,48 @@ public class SQLDatabase implements Database {
     }
   }
 
+  public void updateStatistic(String name, PlayerStatistics statistics) {
+    try (Connection connection = getConnection(false);
+        PreparedStatement update = updateStatisticStatement(name, connection, statistics);
+        ResultSet result = executeUpdate(update)) {
+
+    } catch (SQLException ex) {
+      throw new DatabaseException("Error while updating the player statistic of " + name, ex);
+    }
+  }
+
   private User getUserFromResult(ResultSet result) throws SQLException {
     if (result.next()) {
       int id = result.getInt("ID");
       String name = result.getString("NAME");
       String password = result.getString("PASSWORD");
       return new User(id, name, password);
+    } else {
+      return null;
+    }
+  }
+
+  private PlayerStatistics getPlayerStatisticsFromResult(ResultSet result) throws SQLException {
+    if (result.next()) {
+      String name = result.getString("NAME");
+      int gameCount = result.getInt("GAMES");
+      int winCount = result.getInt("WINS");
+      int looseCount = result.getInt("LOSES");
+      int managerCount = result.getInt("MANAGER");
+      int consultantCount = result.getInt("CONSULTANT");
+      int honestDeveloperCount = result.getInt("DEVELOPER");
+      int evilCodeMonkeyCount = result.getInt("MONKEY");
+      int bugCount = result.getInt("BUGS");
+      return new PlayerStatistics(
+          name,
+          gameCount,
+          winCount,
+          looseCount,
+          managerCount,
+          consultantCount,
+          honestDeveloperCount,
+          evilCodeMonkeyCount,
+          bugCount);
     } else {
       return null;
     }
@@ -138,4 +188,42 @@ public class SQLDatabase implements Database {
     return insertUser;
   }
 
+  private PreparedStatement updateStatisticStatement(
+      String playerName, Connection connection, PlayerStatistics statistics) throws SQLException {
+    int id = statistics.id;
+    String name = statistics.name;
+    int games = statistics.games;
+    int wins = statistics.won;
+    int loses = statistics.lost;
+    int manager = statistics.managerCount;
+    int consultant = statistics.consultantCount;
+    int developer = statistics.honestDeveloperCount;
+    int monkey = statistics.evilCodeMonkeyCount;
+    int bugs = statistics.bugs;
+    PreparedStatement statement =
+        connection.prepareStatement(
+            "UPDATE Statistics SET ID="
+                + id
+                + " NAME="
+                + name
+                + " GAMES="
+                + games
+                + " WINS="
+                + wins
+                + " Loses="
+                + loses
+                + " MANAGER="
+                + manager
+                + " CONSULTANT="
+                + consultant
+                + " DEVELOPER"
+                + developer
+                + " MONKEY="
+                + monkey
+                + " BUGS="
+                + bugs
+                + " WHERE NAME=?");
+    statement.setString(1, name);
+    return statement;
+  }
 }
