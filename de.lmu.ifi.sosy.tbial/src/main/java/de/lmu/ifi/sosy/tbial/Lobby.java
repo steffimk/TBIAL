@@ -185,7 +185,7 @@ public class Lobby extends BasePage {
         .add(newGameButton);
     add(newGameForm);
 
-    add(new ChatPanel("chatPanel", LobbyManager.instance.getChatMessages()));
+    add(new ChatPanel("chatPanel", getSession(), false));
   }
 
   /**

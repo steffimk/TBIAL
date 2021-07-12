@@ -41,10 +41,8 @@ public class GameLobby extends BasePage {
 
   public GameLobby() {
 
-    Game game = this.getGame();
-
     // Go to lobby, if there is no game in the session
-    if (game == null || getSession().getUser() == null) {
+    if (getGame() == null || getSession().getUser() == null) {
       LOGGER.debug("Game or User in Session null -- redirecting to Lobby");
       throw new RestartResponseAtInterceptPageException(Lobby.class);
     }
@@ -82,12 +80,12 @@ public class GameLobby extends BasePage {
 
           @Override
           public boolean isEnabled() {
-            return game.getPlayers().size() > 3;
+            return getGame().getPlayers().size() > 3;
           }
 
           @Override
           protected void onComponentTag(ComponentTag tag) {
-            if (game.getPlayers().size() < 4) {
+            if (getGame().getPlayers().size() < 4) {
               customCSS = "disabledStyle";
             } else {
               customCSS = "linkstyle";
@@ -212,8 +210,7 @@ public class GameLobby extends BasePage {
 
     startGameLink.setOutputMarkupId(true);
 
-    add(new ChatPanel("chatPanel", game.getChatMessages(), game, getSession().getUser()));
-
+    add(new ChatPanel("chatPanel", getSession(), true));
     add(currentStatusLabel);
     add(isHostLabel);
     add(startGameForm);
@@ -313,12 +310,5 @@ public class GameLobby extends BasePage {
 
     if (currentPlayers > 4) return message + " The host can start the game.";
     else return message + " Waiting for more players to join.";
-  }
-
-  public Game getGame() {
-    if (getGameManager().getGameOfUser(getSession().getUser().getName()) == null) {
-      throw new RestartResponseAtInterceptPageException(Lobby.class);
-    }
-    return getGameManager().getGameOfUser(getSession().getUser().getName());
   }
 }

@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -41,9 +42,17 @@ public class PlayerAreaPanel extends Panel {
 
   private static final Logger LOGGER = LogManager.getLogger(PlayerAreaPanel.class);
 
+  private TBIALSession session;
+
   public PlayerAreaPanel(
-      String id, IModel<Player> player, Game game, Player basePlayer, WebMarkupContainer table) {
+      String id,
+      IModel<Player> player,
+      TBIALSession session,
+      Player basePlayer,
+      WebMarkupContainer table) {
     super(id, new CompoundPropertyModel<Player>(player));
+
+    this.session = session;
 
     add(new Label("userName"));
     Label role = new Label("roleName");
@@ -61,7 +70,7 @@ public class PlayerAreaPanel extends Panel {
     add(
         new Label(
             "prestige",
-            () -> "Prestige: " + game.calculatePrestige(basePlayer, player.getObject())));
+            () -> "Prestige: " + getGame().calculatePrestige(basePlayer, player.getObject())));
 
     // update mental health; if mental health == 0 (-> fire player) -> show role of player on game
     // table
@@ -72,6 +81,7 @@ public class PlayerAreaPanel extends Panel {
 
           @Override
           protected void onTimer(AjaxRequestTarget target) {
+            Game game = getGame();
             if (player.getObject().getMentalHealthInt() <= 0) {
               game.firePlayer(player.getObject(), player.getObject().getHandCards());
               role.setVisible(true);
@@ -83,7 +93,6 @@ public class PlayerAreaPanel extends Panel {
               stop(target);
             }
 
-            // TODO maybe this update should be triggered somewhere else in the future
             target.add(mentalHealth);
           }
         });
@@ -100,7 +109,7 @@ public class PlayerAreaPanel extends Panel {
                 basePlayer.getUserName()
                     + " clicked on play ability button of "
                     + player.getObject().getUserName());
-            game.clickedOnPlayAbility(basePlayer, player.getObject());
+            getGame().clickedOnPlayAbility(basePlayer, player.getObject());
             target.add(table);
           }
         };
@@ -108,7 +117,7 @@ public class PlayerAreaPanel extends Panel {
         new DroppableArea(
             "playAbilityDropBox",
             DroppableType.PLAY_ABILITY,
-            game,
+            getGame(),
             basePlayer,
             player.getObject(),
             table);
@@ -128,8 +137,6 @@ public class PlayerAreaPanel extends Panel {
                 new Image(
                     "playedCard",
                     new PackageResourceReference(getClass(), abilityCard.getResourceFileName())));
-
-           
           }
         };
     playAbilityDropBox.add(playedAbilityCards);
@@ -148,14 +155,19 @@ public class PlayerAreaPanel extends Panel {
                 basePlayer.getUserName()
                     + " clicked on add card button of "
                     + player.getObject().getUserName());
-            game.clickedOnAddCardToPlayer(basePlayer, player.getObject());
+            getGame().clickedOnAddCardToPlayer(basePlayer, player.getObject());
 
             target.add(table);
           }
         };
     Droppable<Void> addCardDropBox =
         new DroppableArea(
-            "addCardDropBox", DroppableType.ADD_CARD, game, basePlayer, player.getObject(), table);
+            "addCardDropBox",
+            DroppableType.ADD_CARD,
+            getGame(),
+            basePlayer,
+            player.getObject(),
+            table);
     addCardDropBox.add(addCardButton);
 
     IModel<List<StackCard>> blockCardModel =
@@ -185,7 +197,7 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected boolean shouldTrigger() {
             // update when it's the baseplayer's turn
-            return game.getTurn().getCurrentPlayer() == basePlayer;
+            return getGame().getTurn().getCurrentPlayer() == basePlayer;
           }
         });
 
@@ -205,7 +217,6 @@ public class PlayerAreaPanel extends Panel {
           @Override
           protected void populateItem(final ListItem<StackCard> listItem) {
             final StackCard handCard = listItem.getModelObject();
-
             if (player.getObject().equals(basePlayer)) {
               listItem.add(
                   new AjaxEventBehavior("click") {
@@ -214,7 +225,7 @@ public class PlayerAreaPanel extends Panel {
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {
                       LOGGER.info(player.getObject().getUserName() + " clicked on a hand card");
-                      game.clickedOnHandCard(player.getObject(), handCard);
+                      getGame().clickedOnHandCard(player.getObject(), handCard);
                       target.add(handCardContainer);
                     }
                   });
@@ -224,12 +235,12 @@ public class PlayerAreaPanel extends Panel {
                       new PackageResourceReference(getClass(), handCard.getResourceFileName()));
               card.setOutputMarkupId(true);
               // If it is the turn of the player: Cards are draggable
-              if (game.getTurn().getCurrentPlayer() == player.getObject()) {
+              if (getGame().getTurn().getCurrentPlayer() == player.getObject()) {
                 if (player.getObject().getSelectedHandCard() == handCard) {
                   card.add(new AttributeModifier("class", "handcard selected"));
                 }
                 Draggable<StackCard> draggable =
-                    getNewDraggableInstance(handCard, game, player.getObject());
+                    getNewDraggableInstance(handCard, player.getObject());
                 draggable.add(card);
                 listItem.add(draggable);
               } else {
@@ -263,13 +274,13 @@ public class PlayerAreaPanel extends Panel {
    * @param player The player whose card it is
    * @return
    */
-  private Draggable<StackCard> getNewDraggableInstance(StackCard card, Game game, Player player) {
+  private Draggable<StackCard> getNewDraggableInstance(StackCard card, Player player) {
     return new Draggable<StackCard>("draggable", () -> card) {
       private static final long serialVersionUID = 1L;
 
       @Override
       public void onDragStart(AjaxRequestTarget target, int top, int left) {
-        game.clickedOnHandCard(player, card);
+        getGame().clickedOnHandCard(player, card);
         getApplication().getMarkupSettings().setStripWicketTags(true);
         Component handCard =
             this.get("handCard")
@@ -278,5 +289,16 @@ public class PlayerAreaPanel extends Panel {
       }
     };
   }
-}
 
+  /**
+   * Gets the current game of the user in the session or redirects to the Lobby.
+   *
+   * @return The current game or redirects to the Lobby.
+   */
+  private Game getGame() {
+    if (session == null || session.getUser() == null || session.getUser().getName() == null) {
+      throw new RestartResponseAtInterceptPageException(Lobby.class);
+    }
+    return session.getGame();
+  }
+}

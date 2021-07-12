@@ -21,7 +21,7 @@ import de.lmu.ifi.sosy.tbial.game.Turn;
 public class BugBlockPanel extends Panel {
   static final long serialVersionUID = 1L;
 
-  BugBlockPanel(String id, Game currentGame, Player player) {
+  BugBlockPanel(String id, TBIALSession session, Player player) {
 	  super(id);
 
     IModel<List<BugBlock>> bugBlockModel =
@@ -48,7 +48,7 @@ public class BugBlockPanel extends Panel {
 
                   @Override
                   public void onSubmit() {
-                    currentGame.getTurn().setStage(TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
+                    session.getGame().getTurn().setStage(TurnStage.CHOOSING_CARD_TO_BLOCK_WITH);
                   }
                 };
             Button rejectButton =
@@ -59,6 +59,8 @@ public class BugBlockPanel extends Panel {
                   public void onSubmit() {
                     player.getBugBlocks().remove(bugBlock);
                     remove(bugBlockForm);
+
+                    Game currentGame = session.getGame();
 
                     currentGame.putCardOnHeap(player, currentGame.getTurn().getLastPlayedBugCard());
                     player.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
