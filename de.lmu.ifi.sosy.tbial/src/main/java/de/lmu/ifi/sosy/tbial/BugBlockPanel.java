@@ -65,6 +65,7 @@ public class BugBlockPanel extends Panel {
                     currentGame.putCardOnHeap(player, currentGame.getTurn().getLastPlayedBugCard());
                     player.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
 
+                    player.clearBugBlocks();
                     currentGame.getTurn().setAttackedPlayer(null);
                     currentGame.getTurn().setLastPlayedBugCard(null);
                     currentGame.getTurn().setLastPlayedBugCardBy(null);

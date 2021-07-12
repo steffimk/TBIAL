@@ -453,7 +453,7 @@ public class GameTable extends BasePage {
                 if (!modal.isShown()) {
                   currentGame
                       .getChatMessages()
-                      .add(
+                      .addFirst(
                           new ChatMessage(
                               basePlayer.getUserName() + " is making a decision.", false, "all"));
                 }
@@ -464,6 +464,7 @@ public class GameTable extends BasePage {
                       .contains(currentGame.getTurn().getLastPlayedBugCard())) {
                 currentGame.putCardOnHeap(basePlayer, currentGame.getTurn().getLastPlayedBugCard());
                 basePlayer.getReceivedCards().remove(currentGame.getTurn().getLastPlayedBugCard());
+                basePlayer.clearBugBlocks();
                 currentGame.getTurn().setStage(TurnStage.PLAYING_CARDS);
                 currentGame.getTurn().setAttackedPlayer(null);
                 currentGame.getTurn().setLastPlayedBugCard(null);
@@ -473,7 +474,9 @@ public class GameTable extends BasePage {
                     .getChatMessages()
                     .addFirst(
                         new ChatMessage(
-                            basePlayer.getUserName() + " is making a decision.", false, "all"));
+                            basePlayer.getUserName() + " couldn't block bug (-1 mental health)",
+                            false,
+                            "all"));
               }
             }
           }
