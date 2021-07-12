@@ -39,6 +39,19 @@ public class ChatPanel extends Panel {
     final TextField<String> textField = new TextField<String>("message", new Model<String>());
     textField.setOutputMarkupId(true);
 
+    WebMarkupContainer tooltip =
+        new WebMarkupContainer("tooltip") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public boolean isVisible() {
+            return isGameChat;
+          }
+        };
+    add(tooltip);
+
     chatMessagesContainer = new WebMarkupContainer("chatMessages");
 
     IModel<List<ChatMessage>> chatMessageModel;
