@@ -381,6 +381,7 @@ public class Game implements Serializable {
     AbilityCard previousJob = null;
     AbilityCard tie = null;
     AbilityCard sunglasses = null;
+    AbilityCard bugDelegation = null;
     for (AbilityCard ab : player.getPlayedAbilityCards()) {
       if (ab.isPreviousJob()) {
         previousJob = ab;
@@ -391,8 +392,17 @@ public class Game implements Serializable {
       if (ab.isGarment() && ab.getAbility() == Ability.SUNGLASSES) {
         sunglasses = ab;
       }
+      if (ab.isBugDelegation()) {
+        bugDelegation = ab;
+      }
     }
     player.addPlayedAbilityCard((AbilityCard) card);
+    if (card.isBugDelegation()) {
+      if (bugDelegation != null) {
+        player.removeAbilityCard(bugDelegation);
+        stackAndHeap.addToHeap(bugDelegation, player, false);
+      }
+    }
     if (card.isPreviousJob()) {
       return playPreviousJob(card, previousJob, player);
     }

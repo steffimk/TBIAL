@@ -24,6 +24,10 @@ public class AbilityCard extends Card implements StackCard {
     return ability.abilityType == AbilityType.GARMENT;
   }
 
+  public boolean isBugDelegation() {
+    return ability.abilityType == AbilityType.OTHER;
+  }
+
   @Override
   public String getResourceFileName() {
     return ability.fileName;
