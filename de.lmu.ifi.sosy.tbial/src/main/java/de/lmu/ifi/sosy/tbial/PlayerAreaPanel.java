@@ -65,6 +65,18 @@ public class PlayerAreaPanel extends Panel {
     role.setOutputMarkupPlaceholderTag(true);
     add(role);
     Label mentalHealth = new Label("mentalHealth");
+    mentalHealth.add(
+        new AjaxEventBehavior("click") {
+
+          /** */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onEvent(AjaxRequestTarget target) {
+            int currentMentalHealth = player.getObject().getMentalHealthInt();
+            player.getObject().addToMentalHealth(-currentMentalHealth);
+          }
+        });
 
     add(mentalHealth);
     add(
