@@ -32,7 +32,6 @@ public class StackAndHeap implements Serializable {
     this.heap = Collections.synchronizedList(new LinkedList<StackCard>());
     
     addAllCards();
-    Collections.shuffle(stack);
   }
 
   /** Adds all cards to the stack. */
@@ -57,6 +56,18 @@ public class StackAndHeap implements Serializable {
         stack.add(new StumblingBlockCard(stumblingBlock));
       }
     }
+    Collections.shuffle(stack);
+    stack.add(new AbilityCard(Ability.TIE));
+    stack.add(new ActionCard(Action.NOT_FOUND));
+    stack.add(new StumblingBlockCard(StumblingBlock.MAINTENANCE));
+    stack.add(new ActionCard(Action.COFFEE_MACHINE));
+    stack.add(new ActionCard(Action.LAN));
+    stack.add(new AbilityCard(Ability.BUG_DELEGATION));
+    stack.add(new ActionCard(Action.REGEX));
+    stack.add(new AbilityCard(Ability.ACCENTURE));
+    stack.add(new StumblingBlockCard(StumblingBlock.TRAINING));
+    stack.add(new ActionCard(Action.NULLPOINTER));
+    stack.add(new AbilityCard(Ability.NASA));
   }
 
   /**

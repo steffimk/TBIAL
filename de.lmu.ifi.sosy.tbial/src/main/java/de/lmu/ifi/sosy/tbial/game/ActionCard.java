@@ -54,12 +54,12 @@ public class ActionCard extends Card implements StackCard {
   public enum Action {
     RED_BULL("Red Bull Dispenser", 1, ActionType.SPECIAL, "imgs/cards/card14.png", true),
     HEISENBUG("Heisenbug", 1, ActionType.SPECIAL, "imgs/cards/card15.png", false),
-    LAN("LAN Party", 1, ActionType.SPECIAL, "imgs/cards/card16.png", true),
+    LAN("LAN Party", 0, ActionType.SPECIAL, "imgs/cards/card16.png", true),
     COFFEE("Coffee", 2, ActionType.SOLUTION, "imgs/cards/card22.png", true),
     CODE_FIX("Code+Fix Session", 2, ActionType.SOLUTION, "imgs/cards/card23.png", true),
-    REGEX("I know regular expressions", 2, ActionType.SOLUTION, "imgs/cards/card24.png", true),
+    REGEX("I know regular expressions", 1, ActionType.SOLUTION, "imgs/cards/card24.png", true),
     STAND_UP("Standup Meeting", 2, ActionType.SPECIAL, "imgs/cards/card25.png", false),
-    COFFEE_MACHINE("Personal Coffee Machine", 2, ActionType.SPECIAL, "imgs/cards/card26.png", true),
+    COFFEE_MACHINE("Personal Coffee Machine", 1, ActionType.SPECIAL, "imgs/cards/card26.png", true),
     BORING("Boring Meeting", 2, ActionType.SPECIAL, "imgs/cards/card30.png", false),
     REFACTORED(
         "I refactored your code. Away.", 4, ActionType.SPECIAL, "imgs/cards/card31.png", false),
@@ -68,9 +68,9 @@ public class ActionCard extends Card implements StackCard {
     WORKS("Works for me!", 4, ActionType.LAME_EXCUSE, "imgs/cards/card41.png", true),
     FEATURE("It's a Feature", 4, ActionType.LAME_EXCUSE, "imgs/cards/card42.png", true),
     NOT_RESP("I'm not Responsible!", 4, ActionType.LAME_EXCUSE, "imgs/cards/card43.png", true),
-    NULLPOINTER("Nullpointer!", 4, ActionType.BUG, "imgs/cards/card35.png", true),
+    NULLPOINTER("Nullpointer!", 3, ActionType.BUG, "imgs/cards/card35.png", true),
     OFF_BY_ONE("Off By One!", 4, ActionType.BUG, "imgs/cards/card36.png", true),
-    NOT_FOUND("Class Not Found!", 4, ActionType.BUG, "imgs/cards/card37.png", true),
+    NOT_FOUND("Class Not Found!", 3, ActionType.BUG, "imgs/cards/card37.png", true),
     SYS_HANGS("System Hangs!", 4, ActionType.BUG, "imgs/cards/card38.png", true),
     CORE_DUMP("Core Dump!", 4, ActionType.BUG, "imgs/cards/card39.png", true),
     HATES_UI("Customer hates UI!", 4, ActionType.BUG, "imgs/cards/card40.png", true);
