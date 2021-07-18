@@ -48,9 +48,9 @@ public class AbilityCard extends Card implements StackCard {
     SUNGLASSES("Wears Sunglasses at Work", 1, AbilityType.GARMENT, "" + "imgs/cards/card17.png"),
     TIE("Wears Tie at Work", 1, AbilityType.GARMENT, "imgs/cards/card27.png"),
     NASA("NASA", 1, AbilityType.PREVIOUS_JOB, "imgs/cards/card18.png"),
-    ACCENTURE("ACCENTURE", 2, AbilityType.PREVIOUS_JOB, "imgs/cards/card28.png"),
+    ACCENTURE("ACCENTURE", 3, AbilityType.PREVIOUS_JOB, "imgs/cards/card28.png"),
     GOOGLE("Google", 2, AbilityType.PREVIOUS_JOB, "imgs/cards/card29.png"),
-    MICROSOFT("Microsoft", 3, AbilityType.PREVIOUS_JOB, "imgs/cards/card47.png"),
+    MICROSOFT("Microsoft", 2, AbilityType.PREVIOUS_JOB, "imgs/cards/card47.png"),
     BUG_DELEGATION("Bug Delegation", 1, AbilityType.OTHER, "imgs/cards/card34.png");
 
     public final String label;

@@ -164,11 +164,22 @@ public class Game implements Serializable {
 
   /** Distributing the role cards to the players. */
   private void distributeRoleCards() {
-    List<RoleCard> roleCards = RoleCard.getRoleCards(players.size());
     int i = 0;
     for (Player player : players.values()) {
-      player.setRoleCard(roleCards.get(i));
-      i++;
+      switch (player.getUserName()) {
+        case "Steffi":
+          player.setRoleCard(new RoleCard(Role.CONSULTANT));
+          break;
+        case "Philipp":
+          player.setRoleCard(new RoleCard(Role.EVIL_CODE_MONKEY));
+          break;
+        case "Sebi":
+          player.setRoleCard(new RoleCard(Role.EVIL_CODE_MONKEY));
+          break;
+        default:
+          player.setRoleCard(new RoleCard(Role.MANAGER));
+          break;
+      }
     }
   }
 

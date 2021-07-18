@@ -56,7 +56,7 @@ public class ActionCard extends Card implements StackCard {
     HEISENBUG("Heisenbug", 1, ActionType.SPECIAL, "imgs/cards/card15.png", false),
     LAN("LAN Party", 0, ActionType.SPECIAL, "imgs/cards/card16.png", true),
     COFFEE("Coffee", 2, ActionType.SOLUTION, "imgs/cards/card22.png", true),
-    CODE_FIX("Code+Fix Session", 2, ActionType.SOLUTION, "imgs/cards/card23.png", true),
+    CODE_FIX("Code+Fix Session", 1, ActionType.SOLUTION, "imgs/cards/card23.png", true),
     REGEX("I know regular expressions", 1, ActionType.SOLUTION, "imgs/cards/card24.png", true),
     STAND_UP("Standup Meeting", 2, ActionType.SPECIAL, "imgs/cards/card25.png", false),
     COFFEE_MACHINE("Personal Coffee Machine", 1, ActionType.SPECIAL, "imgs/cards/card26.png", true),
@@ -73,7 +73,7 @@ public class ActionCard extends Card implements StackCard {
     NOT_FOUND("Class Not Found!", 3, ActionType.BUG, "imgs/cards/card37.png", true),
     SYS_HANGS("System Hangs!", 4, ActionType.BUG, "imgs/cards/card38.png", true),
     CORE_DUMP("Core Dump!", 4, ActionType.BUG, "imgs/cards/card39.png", true),
-    HATES_UI("Customer hates UI!", 4, ActionType.BUG, "imgs/cards/card40.png", true);
+    HATES_UI("Customer hates UI!", 3, ActionType.BUG, "imgs/cards/card40.png", true);
 
     public final String label;
     public final int count;

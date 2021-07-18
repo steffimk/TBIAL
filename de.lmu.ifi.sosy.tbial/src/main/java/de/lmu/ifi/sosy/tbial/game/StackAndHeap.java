@@ -36,38 +36,48 @@ public class StackAndHeap implements Serializable {
 
   /** Adds all cards to the stack. */
   private void addAllCards() {
+
+    stack.add(new ActionCard(Action.COFFEE_MACHINE));
+    stack.add(new ActionCard(Action.NOT_FOUND));
+    stack.add(new StumblingBlockCard(StumblingBlock.MAINTENANCE));
+    stack.add(new AbilityCard(Ability.TIE));
+
+    stack.add(new ActionCard(Action.REGEX));
+
+    stack.add(new AbilityCard(Ability.MICROSOFT));
+    stack.add(new StumblingBlockCard(StumblingBlock.TRAINING));
+    stack.add(new ActionCard(Action.NULLPOINTER));
+    stack.add(new AbilityCard(Ability.BUG_DELEGATION));
+
+    stack.add(new ActionCard(Action.HATES_UI));
+    stack.add(new AbilityCard(Ability.NASA));
+    stack.add(new ActionCard(Action.LAN));
+    stack.add(new ActionCard(Action.CODE_FIX));
+
+    List<StackCard> otherCards = new LinkedList<>();
     // Add Ability Cards
     for (Ability ability : Ability.values()) {
       for (int i = 0; i < ability.count; i++) {
-        stack.add(new AbilityCard(ability));
+        otherCards.add(new AbilityCard(ability));
       }
     }
     // Add Action Cards
     for (Action action : Action.values()) {
       if (action.isImplemented) {
         for (int i = 0; i < action.count; i++) {
-          stack.add(new ActionCard(action));
+          otherCards.add(new ActionCard(action));
         }
       }
     }
     // Add Stumbling Block Cards
     for (StumblingBlock stumblingBlock : StumblingBlock.values()) {
       for (int i = 0; i < stumblingBlock.count; i++) {
-        stack.add(new StumblingBlockCard(stumblingBlock));
+        otherCards.add(new StumblingBlockCard(stumblingBlock));
       }
     }
-    Collections.shuffle(stack);
-    stack.add(new AbilityCard(Ability.TIE));
-    stack.add(new ActionCard(Action.NOT_FOUND));
-    stack.add(new StumblingBlockCard(StumblingBlock.MAINTENANCE));
-    stack.add(new ActionCard(Action.COFFEE_MACHINE));
-    stack.add(new ActionCard(Action.LAN));
-    stack.add(new AbilityCard(Ability.BUG_DELEGATION));
-    stack.add(new ActionCard(Action.REGEX));
-    stack.add(new AbilityCard(Ability.ACCENTURE));
-    stack.add(new StumblingBlockCard(StumblingBlock.TRAINING));
-    stack.add(new ActionCard(Action.NULLPOINTER));
-    stack.add(new AbilityCard(Ability.NASA));
+    Collections.shuffle(otherCards);
+
+    stack.addAll(otherCards);
   }
 
   /**
